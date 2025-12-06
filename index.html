@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Captura las Mariposas</title>
+<style>
+/* ==========================
+   Variables & Temas
+   ========================== */
+:root{
+  --bg:#0f0b12;
+  --card:rgba(20,10,30,.6);
+  --accent:#8b5cf6;
+  --accent-2:#b084ff;
+  --hud:rgba(255,255,255,.92);
+  --butterfly-shadow:0 6px 18px rgba(139,92,246,.22);
+  --modal-bg:rgba(15,9,20,.6);
+  --particle:rgba(176,140,255,.14);
+  --level-accent: linear-gradient(90deg,var(--accent),var(--accent-2));
+  --muted: rgba(255,255,255,0.06);
+  --glass: rgba(255,255,255,0.04);
+}
+
+/* Themes */
+.theme-aurora{
+  --bg:linear-gradient(180deg,#0b0710 0%, #25102b 60%);
+  --card:rgba(28,10,36,.55);
+  --accent:#9b57ff;
+  --accent-2:#d6b3ff;
+  --hud:rgba(255,249,255,.95);
+  --modal-bg:rgba(22,8,30,.56);
+  --particle:rgba(188,160,255,.12);
+  --butterfly-shadow:0 10px 24px rgba(155,87,255,.22);
+}
+.theme-default{
+  --bg:#0f0b12;
+  --card:rgba(18,12,22,.6);
+  --accent:#7b4cff;
+  --accent-2:#ad8bff;
+  --hud:rgba(240,240,250,.95);
+  --modal-bg:rgba(15,9,20,.6);
+  --particle:rgba(150,120,255,.08);
+}
+.theme-night{
+  --bg:linear-gradient(180deg,#070507 0%, #0b0610 100%);
+  --card:rgba(6,6,10,.68);
+  --accent:#6f4bb3;
+  --accent-2:#8a63d1;
+  --hud:rgba(230,230,240,.92);
+  --modal-bg:rgba(6,6,10,.7);
+  --particle:rgba(120,90,160,.10);
+  --butterfly-shadow:0 8px 22px rgba(90,60,120,.16);
+}
+.theme-sunrise{
+  --bg:linear-gradient(180deg,#0b0710 0%, #3b1227 40%, #ffcdb2 100%);
+  --card:rgba(30,12,20,.6);
+  --accent:#ff8fb1;
+  --accent-2:#ffd6a5;
+  --hud:rgba(255,255,255,.95); /* <-- letras blancas para visibilidad */
+  --modal-bg:rgba(255,250,245,.08);
+  --particle:rgba(255,200,180,.10);
+  --butterfly-shadow:0 10px 30px rgba(255,140,140,.12);
+}
+.theme-galaxy{
+  --bg:linear-gradient(180deg,#020018 0%, #120035 60%);
+  --card:rgba(8,6,22,.6);
+  --accent:#6ec3ff;
+  --accent-2:#a35bff;
+  --hud:rgba(235,245,255,.94);
+  --modal-bg:rgba(10,6,20,.7);
+  --particle:rgba(120,160,255,.10);
+  --butterfly-shadow:0 12px 34px rgba(100,80,180,.14);
+}
+
+/* ==========================
+   Base / Layout
+   ========================== */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+body{background:var(--bg);color:var(--hud);overflow:hidden;-webkit-font-smoothing:antialiased}
+.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:18px}
+/* Topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:60}
+.title{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--butterfly-shadow);display:grid;place-items:center;font-weight:700;color:#fff;font-size:16px}
+.title h1{font-size:18px;margin:0}
+.title .subtitle{font-size:12px;opacity:.75;margin-top:3px}
+
+/* Controls */
+.controls{display:flex;gap:10px;align-items:center}
+button.btn{background:var(--card);color:var(--hud);border:1px solid rgba(255,255,255,.04);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;backdrop-filter:blur(6px);transition:all .16s}
+button.btn:active{transform:translateY(1px)}
+button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:center;min-width:44px}
+
+/* HUD */
+.hud{position:absolute;right:18px;top:72px;z-index:60;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.hud .panel{background:var(--card);padding:8px 12px;border-radius:10px;font-weight:700;min-width:140px;display:flex;flex-direction:column;gap:6px}
+.level-row{display:flex;align-items:center;gap:8px}
+.level-bar{height:8px;width:120px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+.level-progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .28s cubic-bezier(.2,.9,.3,1)}
+
+/* Stage */
+.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent}
+.particle{position:absolute;bottom:-10px;border-radius:50%;opacity:.9;pointer-events:none;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-120vh);opacity:0}}
+
+/* Butterfly */
+.butterfly{position:absolute;left:0;top:0;transform-origin:center center;pointer-events:auto;width:48px;height:48px;display:block;z-index:30;filter:drop-shadow(var(--butterfly-shadow));transition:transform .12s ease}
+.butterfly .wing{position:absolute;width:56%;height:60%;top:4%;border-radius:60% 40% 60% 40%/70% 40% 60% 45%;opacity:0.98;transform-origin:10% 50%}
+.butterfly .wing.left{left:0;background:linear-gradient(135deg,var(--accent),transparent);transform-origin:right 50%}
+.butterfly .wing.right{right:0;background:linear-gradient(-135deg,var(--accent-2),transparent);transform-origin:left 50%}
+.butterfly .body{position:absolute;left:50%;top:12%;transform:translateX(-50%);width:10%;height:80%;background:rgba(255,255,255,.06);border-radius:8px}
+@keyframes flapL{0%{transform:rotate(8deg)}50%{transform:rotate(-20deg)}100%{transform:rotate(8deg)}}
+@keyframes flapR{0%{transform:rotate(-8deg)}50%{transform:rotate(20deg)}100%{transform:rotate(-8deg)}}
+.butterfly .wing.left{animation:flapL 900ms ease-in-out infinite}
+.butterfly .wing.right{animation:flapR 900ms ease-in-out infinite}
+
+/* Capture anim */
+.pop-out{animation:pop .28s ease forwards}
+@keyframes pop{to{transform:scale(.2);opacity:0;filter:blur(1px)}}
+
+/* Floating message */
+.floating-msg{position:fixed;left:50%;transform:translateX(-50%);bottom:8vh;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02));padding:10px 16px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;z-index:120;box-shadow:0 6px 30px rgba(0,0,0,.38)}
+.floating-msg.show{animation:floatUp 2.1s ease forwards}
+@keyframes floatUp{0%{transform:translate(-50%,18px);opacity:0}10%{opacity:1}70%{transform:translate(-50%,-60px);opacity:.95}100%{transform:translate(-50%,-110px);opacity:0}}
+
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-backdrop.show{display:flex}
+.modal{width:min(920px,94%);max-height:86vh;overflow:auto;background:var(--modal-bg);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px);box-shadow:0 20px 50px rgba(0,0,0,0.6);transform:translateY(18px);opacity:0}
+.modal.show{animation:modalIn .28s cubic-bezier(.16,.9,.3,1) forwards}
+@keyframes modalIn{to{opacity:1;transform:none}}
+
+/* Diary & Collection */
+.diary-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+.entry{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
+.collection-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:12px}
+.collect-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;gap:8px}
+.collect-card img{width:100%;height:auto;border-radius:8px}
+
+/* Footer */
+.footer{position:relative;z-index:40;display:flex;justify-content:center;padding:8px 0;color:rgba(255,255,255,0.5);font-size:13px}
+
+/* ==========================
+   HUD counters for special butterflies
+   ========================== */
+.hud div {
+  margin-bottom: 4px;      /* separación entre contadores */
+  font-weight: bold;        /* letras más visibles */
+  font-size: 14px;          /* tamaño base */
+}
+
+/* Colores brillantes según tipo de mariposa */
+#goldCounter { color: #FFD700; }  /* Dorado */
+#blueCounter { color: #6490FF; }  /* Azul brillante */
+#pinkCounter { color: #D778FF; }  /* Rosa brillante */
+
+/* ==========================
+   Mobile tweaks (mejora)
+   ========================== */
+@media (max-width:720px){
+  .butterfly{width:66px;height:66px; touch-action: manipulation;}
+  .title h1{font-size:16px}
+  .controls button{padding:12px 16px;border-radius:14px; font-size:14px;}
+  .hud{
+    right:10px;
+    top: auto;      /* desactiva la posición desde arriba */
+    bottom: 20px;   /* distancia desde el borde inferior */
+    gap:6px;
+    font-size:14px;
+  }
+  .hud div { font-size: 12px; margin-bottom: 2px; }
+  .logo{width:40px;height:40px;font-size:14px}
+  .floating-msg{font-size:14px;padding:8px 12px}
+  .stage{border-radius:0; margin-top:6px;}
+  /* mayor área táctil para mariposas */
+  .butterfly { min-width: 54px; min-height: 54px; }
+}
+</style>
+</head>
+<body class="theme-aurora">
+  <div class="app" role="application" aria-label="Captura las Mariposas">
+    <div class="topbar">
+      <div class="title">
+        <div class="logo" aria-hidden="true">CM</div>
+        <div>
+          <h1>Captura las Mariposas</h1>
+          <div class="subtitle">Toca la pantalla para capturar — cada 5 se desbloquea el Diario.</div>
+        </div>
+      </div>
+
+      <div class="controls" role="toolbar" aria-label="Controles del juego">
+        <button class="btn" id="themeBtn" title="Cambiar tema">Cambiar Tema</button>
+        <button class="btn" id="challengeBtn" title="Iniciar desafío 30s">Desafío 30s</button>
+        <button class="btn" id="diaryBtn" title="Abrir diario">Diario</button>
+        <button class="btn" id="collectionBtn" title="Abrir colección">Colección</button>
+        <button class="btn" id="musicToggle" title="Reproducir/pausar música">🔊 Música</button>
+      </div>
+    </div>
+
+    <div class="stage" id="stage" aria-hidden="false"></div>
+
+    <div class="hud" id="hud" aria-live="polite">
+      <div id="goldCounter">Gold: 0</div>
+      <div id="blueCounter">Blue: 0</div>
+      <div id="pinkCounter">Pink: 0</div>
+      <div class="panel" id="scorePanel">Puntos: <span id="score">0</span></div>
+      <div class="panel" id="levelPanel">
+        Nivel: <span id="level">1</span>
+        <div class="level-row">
+          <div class="level-bar" aria-hidden="true"><div id="levelProgress" class="level-progress" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="panel" id="timerPanel" style="display:none">Tiempo: <span id="timer">30</span>s</div>
+    </div>
+
+    <div class="footer">Hecho con todo su amor y cariño por Axel Silva </div>
+  </div>
+
+  <div class="floating-msg" id="floatingMsg" aria-hidden="true"></div>
+
+  <!-- Modal Diario -->
+  <div class="modal-backdrop" id="diaryModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <h2 style="margin:0">Diario — Frases desbloqueadas</h2>
+        <div><button class="btn" id="closeDiary">Cerrar</button></div>
+      </div>
+      <div class="diary-list" id="diaryList"></div>
+      <div style="margin-top:12px;text-align:right"><button class="btn" id="clearDiary">Borrar Diario</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Colección -->
+  <div class="modal-backdrop" id="collectionModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <h2 style="margin:0">Colección</h2>
+        <div><button class="btn" id="closeCollection">Cerrar</button></div>
+      </div>
+      <p style="opacity:.7;margin-top:8px">Mariposas especiales que encontraste.</p>
+      <div class="collection-grid" id="collectionGrid"></div>
+    </div>
+  </div>
+
+  <!-- Modal Resultado Desafío -->
+  <div class="modal-backdrop" id="resultModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h2 id="resultTitle">Desafío terminado</h2>
+      <p style="margin-top:6px">Puntos: <strong id="finalScore">0</strong></p>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
+        <button class="btn" id="retryBtn">Reintentar</button>
+        <button class="btn" id="closeResult">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden audio element for external mp3 (place musica.mp3 in same folder) -->
+  <audio id="bgMusic" src="musica.mp3" preload="auto"></audio>
+
+<script>
+/* ==========================
+   Mejoras técnicas y UX
+   - central animation loop (requestAnimationFrame)
+   - spawn control
+   - level progress visuals + particles on level up
+   - keep all behavior from original code + extra themes
+   - external mp3 playback + WebAudio small effects
+   ========================== */
+
+/* -------- WebAudio (effects) -------- */
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioCtx = new AudioContext();
+let s_masterGain = audioCtx.createGain(); s_masterGain.gain.value = 0.9; s_masterGain.connect(audioCtx.destination);
+
+function playTone(freq, dur=0.14, type='sine', vol=0.12) {
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  g.gain.setValueAtTime(vol, audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+  o.connect(g); g.connect(s_masterGain);
+  o.start(); o.stop(audioCtx.currentTime + dur);
+}
+function soundCapture(){ playTone(780,0.18,'sine',0.12); }
+function soundPop(){ playTone(420,0.12,'triangle',0.15); }
+function soundUnlock(){ playTone(880,0.36,'triangle',0.14); }
+function soundLevelUp(){ playTone(560,0.32,'sine',0.14); setTimeout(()=>playTone(720,0.26,'sine',0.12),70); }
+
+/* -------- Data & State (keep original keys) -------- */
+const POEMS = [
+  "Eres la melodía que mi corazón no sabía que necesitaba.",
+  "Cada mariposa que capturas me acerca más a ti.",
+  "Tu presencia convierte lo ordinario en extraordinario.",
+  "No sé de distancias: solo de personas que valen la espera.",
+  "Cada vez que sonríes, el mundo se vuelve un poco más brillante.",
+  "Tus ojos guardan secretos que quiero descubrir lentamente.",
+  "Me has movido el mundo sin siquiera estar cerca.",
+  "No prometo estrellas, pero sí quedarme cuando el cielo oscurece.",
+  "Tu risa encontró mis silencios y les dio dirección.",
+  "En cada pequeño detalle tuyo, hallé una canción que no sabía que necesitaba."
+];
+
+const COLLECT_IMAGES = {
+  gold: "data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%20200'><defs><radialGradient%20id='g'%20cx='50%25'%20cy='40%25'%20r='60%25'><stop%20offset='0'%20stop-color='%23ffd86b'/><stop%20offset='1'%20stop-color='%23ff9f3b'/></radialGradient><filter%20id='f'%20x='-30%25'%20y='-30%25'%20width='160%25'%20height='160%25'><feGaussianBlur%20stdDeviation='6'%20result='b'/></filter></defs><rect%20width='100%25'%20height='100%25'%20fill='transparent'/><g%20filter='url(%23f)'><ellipse%20cx='100'%20cy='100'%20rx='62'%20ry='44'%20fill='url(%23g)'%20opacity='0.95'/></g><path%20d='M60%20100%20C30%2060%2080%2050%20100%2070%20C120%2050%20170%2060%20140%20100%20C170%20140%20120%20150%20100%20130%20C80%20150%2030%20140%2060%20100Z'%20fill='rgba(255,255,255,.12)'/></svg>",
+  blue: "data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%20200'><defs><radialGradient%20id='g'%20cx='50%25'%20cy='40%25'%20r='60%25'><stop%20offset='0'%20stop-color='%239fb9ff'/><stop%20offset='1'%20stop-color='%236f9bff'/></radialGradient><filter%20id='f'%20x='-30%25'%20y='-30%25'%20width='160%25'%20height='160%25'><feGaussianBlur%20stdDeviation='6'%20result='b'/></filter></defs><rect%20width='100%25'%20height='100%25'%20fill='transparent'/><g%20filter='url(%23f)'><ellipse%20cx='100'%20cy='100'%20rx='62'%20ry='44'%20fill='url(%23g)'%20opacity='0.95'/></g><path%20d='M60%20100%20C30%2060%2080%2050%20100%2070%20C120%2050%20170%2060%20140%20100%20C170%20140%20120%20150%20100%20130%20C80%20150%2030%20140%2060%20100Z'%20fill='rgba(255,255,255,.06)'/></svg>",
+  pink: "data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%20200'><defs><radialGradient%20id='g'%20cx='50%25'%20cy='40%25'%20r='60%25'><stop%20offset='0'%20stop-color='%23ffa3e0'/><stop%20offset='1'%20stop-color='%23d77bff'/></radialGradient><filter%20id='f'%20x='-30%25'%20y='-30%25'%20width='160%25'%20height='160%25'><feGaussianBlur%20stdDeviation='6'%20result='b'/></filter></defs><rect%20width='100%25'%20height='100%25'%20fill='transparent'/><g%20filter='url(%23f)'><ellipse%20cx='100'%20cy='100'%20rx='62'%20ry='44'%20fill='url(%23g)'%20opacity='0.95'/></g><path%20d='M60%20100%20C30%2060%2080%2050%20100%2070%20C120%2050%20170%2060%20140%20100%20C170%20140%20120%20150%20100%20130%20C80%20150%2030%20140%2060%20100Z'%20fill='rgba(255,255,255,.08)'/></svg>"
+};
+
+const stage = document.getElementById('stage');
+const scoreEl = document.getElementById('score');
+const levelEl = document.getElementById('level');
+const floatingMsg = document.getElementById('floatingMsg');
+const diaryModal = document.getElementById('diaryModal');
+const diaryList = document.getElementById('diaryList');
+const collectionModal = document.getElementById('collectionModal');
+const collectionGrid = document.getElementById('collectionGrid');
+const resultModal = document.getElementById('resultModal');
+const finalScoreEl = document.getElementById('finalScore');
+const levelProgressEl = document.getElementById('levelProgress');
+
+let score = 0;
+let level = 1;
+let unlocked = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ return []; } })();
+let collection = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ return {}; } })();
+
+let spawnInterval = null;
+let paused = false;
+let challengeCountdown = null;
+let challengeTimer = 30;
+// ==========================
+// Butterfly counters (Gold, Blue, Pink)
+// ==========================
+let butterflyCounters = { gold: 0, blue: 0, pink: 0 };
+
+// cargar desde localStorage si existe
+const storedCounters = JSON.parse(localStorage.getItem('butterflyCounters_v1'));
+if(storedCounters) butterflyCounters = storedCounters;
+
+// ==========================
+// Inicializar HUD con contadores
+// ==========================
+document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
+document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
+document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
+
+// central arrays for active entities
+const butterflies = [];
+const particles = [];
+
+/* ==========================
+   PARTICLES (background subtle ones)
+   ========================== */
+function createParticles(count=32){
+  const rect = stage.getBoundingClientRect();
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 2 + Math.random()*4;
+    p.style.width = p.style.height = size + 'px';
+    p.style.left = (Math.random()*100) + '%';
+    p.style.bottom = (-Math.random()*20) + 'px';
+    p.style.background = getComputedStyle(document.body).getPropertyValue('--particle') || 'rgba(200,160,255,0.12)';
+    p.style.animationDuration = (18 + Math.random()*36) + 's';
+    p.style.opacity = (0.04 + Math.random()*0.48);
+    stage.appendChild(p);
+    particles.push({el:p, dur: parseFloat(p.style.animationDuration)});
+  }
+}
+createParticles(30);
+
+/* ==========================
+   SPAWN LOGIC (uses adaptive timeout, not heavy intervals)
+   ========================== */
+let spawnTimerId = null;
+function scheduleNextSpawn(rateMs = 1200){
+  // small randomization for organic feel
+  clearTimeout(spawnTimerId);
+  spawnTimerId = setTimeout(()=>{ spawnButterfly(); scheduleNextSpawn(rateMs + (Math.random()*500 - 250)); }, rateMs + Math.random()*400);
+}
+function startSpawning(rateMs=1200){
+  if(spawnTimerId) clearTimeout(spawnTimerId);
+  scheduleNextSpawn(rateMs);
+}
+function stopSpawning(){
+  if(spawnTimerId) clearTimeout(spawnTimerId);
+  spawnTimerId = null;
+}
+
+/* ==========================
+   Create a butterfly (DOM + model entry)
+   ========================== */
+let butterflyId = 0;
+function spawnButterfly(){
+  const b = document.createElement('div');
+  b.className = 'butterfly';
+  b.dataset.id = ++butterflyId;
+
+  // size variability
+  const scale = (0.75 + Math.random()*0.9);
+  b.style.width = (48*scale) + 'px';
+  b.style.height = (48*scale) + 'px';
+
+  b.innerHTML = `<div class="wing left"></div><div class="wing right"></div><div class="body"></div>`;
+
+  const rect = stage.getBoundingClientRect();
+  const startX = Math.random()*rect.width;
+  const startY = rect.height + 40;
+  b.style.left = startX + 'px';
+  b.style.top = startY + 'px';
+
+  // types & rarity (same as original)
+  const r = Math.random();
+  if(r < 0.03){ b.dataset.type='gold'; b.dataset.points=5; b.style.filter='drop-shadow(0 14px 30px rgba(255,200,120,.18))'; }
+  else if(r < 0.09){ b.dataset.type='blue'; b.dataset.points=2; b.style.filter='drop-shadow(0 10px 24px rgba(100,140,255,.12))'; }
+  else if(r < 0.16){ b.dataset.type='pink'; b.dataset.points=1; b.style.filter='drop-shadow(0 10px 24px rgba(215,120,255,.12))'; }
+  else { b.dataset.type='normal'; b.dataset.points=1; }
+
+  const paths = ['up','zigzag','wave'];
+  const path = paths[Math.floor(Math.random()*paths.length)];
+
+  const duration = 7000 + Math.random()*9000;
+  const model = {
+    id: b.dataset.id,
+    el: b,
+    sx: startX,
+    sy: startY,
+    t0: performance.now(),
+    duration,
+    path,
+    captured: false,
+    scale
+  };
+
+  if(b.dataset.type==='gold') b.style.filter='drop-shadow(0 14px 30px rgba(255,255,100,.4))';
+  if(b.dataset.type==='blue') b.style.filter='drop-shadow(0 10px 24px rgba(100,200,255,.4))';
+  if(b.dataset.type==='pink') b.style.filter='drop-shadow(0 10px 24px rgba(255,120,255,.4))';
+
+  // pointer handler
+  b.addEventListener('pointerdown', onCapture);
+
+  // append and register
+  stage.appendChild(b);
+  butterflies.push(model);
+
+  // auto remove as backup (will be removed via animation loop too)
+  setTimeout(()=>{ if(b.parentNode){ b.remove(); } }, duration + 1400);
+}
+
+/* ==========================
+   Central animation loop
+   - updates butterflies & particles (one RAF)
+   ========================== */
+function animateAll(now){
+  // butterflies
+  for(let i = butterflies.length - 1; i >= 0; i--){
+    const m = butterflies[i];
+    if(!m.el.parentNode){
+      butterflies.splice(i,1);
+      continue;
+    }
+    if(paused) { m.t0 += 0; continue; } // keep time consistent; do nothing when paused
+
+    const elapsed = now - m.t0;
+    const p = Math.min(1, elapsed / m.duration);
+    const rect = stage.getBoundingClientRect();
+    const ease = easeInOutSine(p);
+    let x = m.sx;
+    let y = m.sy - (rect.height + 220) * ease;
+
+    if(m.path === 'zigzag'){
+      x = m.sx + Math.sin(p*Math.PI*6) * (60 + 80*p);
+    } else if(m.path === 'wave'){
+      x = m.sx + Math.sin(p*Math.PI*2) * 90;
+      y = m.sy - (rect.height*0.9) * ease - Math.sin(p*Math.PI*4)*12;
+    }
+
+    const rot = Math.sin(p*Math.PI*2) * 12;
+    m.el.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+    // minor vertical bob to avoid strict transform-only layout jitter in some browsers
+    const bob = Math.sin(now/220 + m.sx) * 2;
+    m.el.style.top = (y + bob) + 'px';
+
+    if(p >= 1){
+      // remove from DOM and array
+      if(m.el.parentNode) m.el.remove();
+      butterflies.splice(i,1);
+    }
+  }
+
+  // particles are pure-css animated, no need to update here; keep loop lightweight
+  requestAnimationFrame(animateAll);
+}
+requestAnimationFrame(animateAll);
+
+/* ==========================
+   Ease
+   ========================== */
+function easeInOutSine(x){ return -(Math.cos(Math.PI*x)-1)/2; }
+
+/* ==========================
+   Capture handling (keeps original behavior + improvements)
+   ========================== */
+let lastSpecialRomanticAt = -1; // avoid repeating special romantic message too often
+function onCapture(e){
+  // resume audio context on user gesture if suspended (for mobile)
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+
+  const el = e.currentTarget;
+  if(!el || el._captured) return;
+  el._captured = true;
+  el.style.pointerEvents = 'none';
+  el.classList.add('pop-out');
+  setTimeout(()=>{ if(el.parentNode) el.remove(); }, 320);
+
+  // points
+  const pts = Number(el.dataset.points||1);
+  score += pts;
+  scoreEl.textContent = score;
+
+  // sounds
+  soundCapture(); soundPop();
+
+  // random poem
+  const poem = POEMS[Math.floor(Math.random()*POEMS.length)];
+  showFloatingMessage(poem);
+
+if(el.dataset.type === 'gold'){
+  butterflyCounters.gold++;
+  collection.gold = true;
+  localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
+  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+  document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
+  showFloatingMessage('¡Eres increíble! ¡Capturaste una Dorada!');
+  soundUnlock();
+}
+
+if(el.dataset.type === 'blue'){
+  butterflyCounters.blue++;
+  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+  document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
+  slowAllButterflies(3500);
+  showFloatingMessage('Mariposa azul - El tiempo parece ralentizarse.');
+}
+
+if(el.dataset.type === 'pink'){
+  butterflyCounters.pink++;
+  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+  document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
+  const special = "Mariposa Rosa - Hay cosas que sólo se dicen cuando volamos juntos.";
+  showFloatingMessage(special);
+  collection.pink = true;
+  localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
+}
+
+
+  // unlock diary every 5 points
+  if(score % 5 === 0){
+    const remaining = POEMS.filter(p => !unlocked.includes(p));
+    const pick = remaining.length ? remaining[Math.floor(Math.random()*remaining.length)] : POEMS[Math.floor(Math.random()*POEMS.length)];
+    unlocked.push(pick);
+    localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked));
+    showFloatingMessage('Frase desbloqueada para tu Diario.');
+    soundUnlock();
+  }
+
+  // Level up every 10 points - update level & progress
+  const newLevel = Math.floor(score / 10) + 1;
+  if(newLevel > level){
+    level = newLevel;
+    levelEl.textContent = level;
+    onLevelUp();
+  }
+  updateLevelProgress();
+
+  // Romantic special message at 20 points (only once per crossing)
+  if(score >= 20 && lastSpecialRomanticAt < 20){
+    lastSpecialRomanticAt = 20;
+    showFloatingMessage('✨ Mensaje romántico especial desbloqueado — 20 puntos ✨');
+    // push a special phrase into unlocked (optional)
+    const specialPhrase = "Cuando llegaste, el mundo cambió su color.";
+    if(!unlocked.includes(specialPhrase)){ unlocked.push(specialPhrase); localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); }
+    soundUnlock();
+  }
+}
+
+/* ==========================
+   slow effect
+   ========================== */
+function slowAllButterflies(duration=3000){
+  const list = Array.from(stage.querySelectorAll('.butterfly'));
+  list.forEach(b=>{ b.style.transition = 'filter .3s, opacity .3s'; b.style.opacity = 0.78; b._slow = true; });
+  setTimeout(()=>{ list.forEach(b=>{ if(b.parentNode){ b.style.opacity = 1; b._slow = false; } }); }, duration);
+}
+
+/* ==========================
+   Level up visuals & spawn rate tweak
+   ========================== */
+function onLevelUp(){
+  soundLevelUp();
+  // increase spawn frequency (cap)
+  const rate = Math.max(420, 1200 - (level-1)*80);
+  startSpawning(rate);
+  // particle burst
+  spawnLevelParticles();
+  showFloatingMessage('¡Nivel '+level+'!');
+}
+function spawnLevelParticles(){
+  const burstCount = 14 + Math.floor(level*2);
+  for(let i=0;i<burstCount;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 3 + Math.random()*6;
+    p.style.width = p.style.height = size + 'px';
+    // spawn roughly from center-top of stage for effect
+    p.style.left = (40 + Math.random()*20) + '%';
+    p.style.bottom = '12%';
+    p.style.background = getComputedStyle(document.body).getPropertyValue('--accent') || '#9b57ff';
+    p.style.opacity = 0.95;
+    p.style.animationDuration = (0.8 + Math.random()*1.2) + 's';
+    stage.appendChild(p);
+    // remove after animation
+    setTimeout(()=>{ if(p.parentNode) p.remove(); }, 1600);
+  }
+}
+
+/* ==========================
+   Floating message (smooth)
+   ========================== */
+let floatTimeout = null;
+function showFloatingMessage(text){
+  floatingMsg.textContent = text;
+  floatingMsg.classList.remove('show');
+  void floatingMsg.offsetWidth;
+  floatingMsg.classList.add('show');
+  if(floatTimeout) clearTimeout(floatTimeout);
+  floatTimeout = setTimeout(()=>{ floatingMsg.classList.remove('show'); }, 2200);
+}
+
+/* ==========================
+   Diary & Collection (modals)
+   ========================== */
+document.getElementById('diaryBtn').addEventListener('click', ()=> openDiary());
+document.getElementById('closeDiary').addEventListener('click', ()=> closeDiary());
+document.getElementById('clearDiary').addEventListener('click', ()=>{ unlocked = []; localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); renderDiary(); });
+
+function renderDiary(){
+  diaryList.innerHTML = '';
+  if(unlocked.length === 0){
+    diaryList.innerHTML = '<div style="opacity:.6">No hay frases desbloqueadas. Captura 5 mariposas para empezar.</div>';
+    return;
+  }
+  unlocked.forEach(p=>{
+    const d = document.createElement('div'); d.className='entry'; d.textContent = p; diaryList.appendChild(d);
+  });
+}
+function openDiary(){ renderDiary(); diaryModal.classList.add('show'); diaryModal.setAttribute('aria-hidden','false'); diaryModal.querySelector('.modal').classList.add('show'); }
+function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); }
+
+document.getElementById('collectionBtn').addEventListener('click', ()=> openCollection());
+document.getElementById('closeCollection').addEventListener('click', ()=> closeCollection());
+function renderCollection(){
+  collectionGrid.innerHTML = '';
+  const keys = ['gold','blue','pink'];
+  keys.forEach(k=>{
+    const card = document.createElement('div'); card.className='collect-card';
+    if(collection[k]){
+      const img = document.createElement('img'); img.src = COLLECT_IMAGES[k]; card.appendChild(img);
+      const h = document.createElement('div'); h.textContent = k.charAt(0).toUpperCase()+k.slice(1)+' — Desbloqueada'; card.appendChild(h);
+    } else {
+      const placeholder = document.createElement('div'); placeholder.style.width='100%'; placeholder.style.height='86px'; placeholder.style.display='grid'; placeholder.style.placeItems='center'; placeholder.style.opacity='.35'; placeholder.textContent='???'; card.appendChild(placeholder);
+      const h = document.createElement('div'); h.textContent = k.charAt(0).toUpperCase()+k.slice(1)+' — Bloqueada'; card.appendChild(h);
+    }
+    collectionGrid.appendChild(card);
+  });
+}
+function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
+function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); }
+
+/* ==========================
+   Themes cycling (extended: aurora, default, night, sunrise, galaxy)
+   ========================== */
+const themes = ['theme-aurora','theme-default','theme-night','theme-sunrise','theme-galaxy'];
+let themeIndex = 0;
+document.getElementById('themeBtn').addEventListener('click', ()=>{
+  document.body.classList.remove(...themes);
+  themeIndex = (themeIndex + 1) % themes.length;
+  document.body.classList.add(themes[themeIndex]);
+});
+
+/* ==========================
+   Challenge 30s (uses existing UI)
+   ========================== */
+document.getElementById('challengeBtn').addEventListener('click', ()=> startChallenge(30));
+document.getElementById('retryBtn').addEventListener('click', ()=> { closeResult(); resetAfterChallengeStart(); });
+document.getElementById('closeResult').addEventListener('click', ()=> { closeResult(); resumeNormal(); });
+
+function startChallenge(seconds=30){
+  // reset
+  score = 0; scoreEl.textContent = '0';
+  unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2') || '[]') || unlocked;
+  level = 1; levelEl.textContent = level; updateLevelProgress();
+  paused = false;
+  document.getElementById('timerPanel').style.display = 'block';
+  challengeTimer = seconds; document.getElementById('timer').textContent = challengeTimer;
+  // more intense spawn
+  startSpawning(800);
+  if(challengeCountdown) clearInterval(challengeCountdown);
+  challengeCountdown = setInterval(()=>{
+    challengeTimer--; document.getElementById('timer').textContent = challengeTimer;
+    if(challengeTimer <= 0){ endChallenge(); }
+  },1000);
+}
+function endChallenge(){
+  clearInterval(challengeCountdown);
+  challengeCountdown = null;
+  document.getElementById('timerPanel').style.display = 'none';
+  stopSpawning();
+  // show modal
+  finalScoreEl.textContent = score;
+  resultModal.classList.add('show'); resultModal.setAttribute('aria-hidden','false'); resultModal.querySelector('.modal').classList.add('show');
+}
+function closeResult(){ resultModal.classList.remove('show'); resultModal.setAttribute('aria-hidden','true'); resultModal.querySelector('.modal').classList.remove('show'); }
+function resetAfterChallengeStart(){ closeResult(); startSpawning(1200); document.getElementById('timerPanel').style.display = 'none'; }
+function resumeNormal(){ startSpawning(1200); }
+
+/* ==========================
+   Music: external mp3 + toggle (mobile friendly)
+   - plays once (no loop) as requested
+   ========================== */
+const bgAudio = document.getElementById('bgMusic');
+let musicPlaying = false;
+document.getElementById('musicToggle').addEventListener('click', async ()=>{
+  // ensure audio context resume if needed (some browsers require user gesture)
+  if(audioCtx.state === 'suspended') await audioCtx.resume();
+  try{
+    if(!musicPlaying){
+      // play once; do not loop
+      await bgAudio.play();
+      musicPlaying = true;
+      document.getElementById('musicToggle').textContent = '🔊 Música On';
+      // when it ends, update UI
+      bgAudio.onended = ()=>{ musicPlaying = false; document.getElementById('musicToggle').textContent = '🔇 Música Off'; };
+    } else {
+      bgAudio.pause();
+      musicPlaying = false;
+      document.getElementById('musicToggle').textContent = '🔇 Música Off';
+    }
+  }catch(e){
+    showFloatingMessage('Toca para permitir reproducción de audio (algunos navegadores bloquean autoplay).');
+  }
+});
+
+/* ==========================
+   Touch prevention + mobile pointer support
+   ========================== */
+document.addEventListener('touchmove', function(e){
+  if(e.target.closest('#stage')) e.preventDefault();
+},{passive:false});
+
+/* Aumentar área táctil en móviles para las mariposas */
+stage.addEventListener('pointerdown', function(e){
+  const b = e.target.closest('.butterfly');
+  if(b) b.dispatchEvent(new Event('pointerdown',{bubbles:true,cancelable:true}));
+});
+
+/* ==========================
+   Level progress visual (each 10 pts = level)
+   ========================== */
+function updateLevelProgress(){
+  const exp = score;
+  const progressPct = ((exp % 10) / 10) * 100;
+  levelProgressEl.style.width = progressPct + '%';
+}
+
+/* ==========================
+   Accessibility & small helpers
+   ========================== */
+// (touchmove listener already above)
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    // close modals if open
+    if(diaryModal.classList.contains('show')) closeDiary();
+    if(collectionModal.classList.contains('show')) closeCollection();
+    if(resultModal.classList.contains('show')) closeResult();
+  }
+});
+
+/* ==========================
+   Small performance note:
+   - spawning uses adaptive timeout scheduling
+   - animation all handled in single RAF
+   - particles mostly CSS-driven
+   ========================== */
+
+/* ==========================
+   Init & start
+   ========================== */
+(function init(){
+  // ensure theme
+  document.body.classList.remove(...themes);
+  document.body.classList.add('theme-aurora');
+  themeIndex = 0;
+
+  document.getElementById('level').textContent = level;
+  scoreEl.textContent = score;
+  updateLevelProgress();
+  startSpawning(1200);
+
+  // ensure saved state exists
+  try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ unlocked = []; }
+  try{ collection = JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ collection = {}; }
+
+  // responsiveness: add more particles on resize if needed
+  window.addEventListener('resize', ()=>{
+    const existing = stage.querySelectorAll('.particle').length;
+    const want = Math.max(16, Math.min(96, Math.floor(window.innerWidth/24)));
+    if(existing < want) createParticles(want - existing);
+  });
+})();
+
+/* ==========================
+   Expose spawn function globally (for debugging)
+   ========================== */
+window.spawnButterfly = spawnButterfly;
+
+/* ==========================
+   Utility: find and remove butterflies by id (if needed)
+   ========================== */
+function removeButterflyById(id){
+  for(let i=butterflies.length-1;i>=0;i--){
+    if(butterflies[i].id == id){
+      if(butterflies[i].el.parentNode) butterflies[i].el.remove();
+      butterflies.splice(i,1);
+    }
+  }
+}
+
+/* ==========================
+   Update: convert old interval-based spawn to our schedule
+   - call scheduleNextSpawn initially
+   ========================== */
+startSpawning(1200);
+
+</script>
+</body>
+</html>
