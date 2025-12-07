@@ -57,7 +57,7 @@
   --card:rgba(30,12,20,.6);
   --accent:#ff8fb1;
   --accent-2:#ffd6a5;
-  --hud:rgba(255,255,255,.95); /* <-- letras blancas para visibilidad */
+  --hud:rgba(255,255,255,.95);
   --modal-bg:rgba(255,250,245,.08);
   --particle:rgba(255,200,180,.10);
   --butterfly-shadow:0 10px 30px rgba(255,140,140,.12);
@@ -93,6 +93,12 @@ button.btn{background:var(--card);color:var(--hud);border:1px solid rgba(255,255
 button.btn:active{transform:translateY(1px)}
 button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:center;min-width:44px}
 
+/* Mobile hamburger */
+.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px}
+.hamburger .bar{width:22px;height:2px;background:var(--hud);margin:4px 0;border-radius:2px;display:block;transition:transform .18s, opacity .18s}
+.mobileMenu{position:fixed;right:12px;top:72px;background:var(--card);padding:12px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:none;flex-direction:column;gap:8px;z-index:180;min-width:180px}
+.mobileMenu.open{display:flex}
+
 /* HUD */
 .hud{position:absolute;right:18px;top:72px;z-index:60;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 .hud .panel{background:var(--card);padding:8px 12px;border-radius:10px;font-weight:700;min-width:140px;display:flex;flex-direction:column;gap:6px}
@@ -115,6 +121,35 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 @keyframes flapR{0%{transform:rotate(-8deg)}50%{transform:rotate(20deg)}100%{transform:rotate(-8deg)}}
 .butterfly .wing.left{animation:flapL 900ms ease-in-out infinite}
 .butterfly .wing.right{animation:flapR 900ms ease-in-out infinite}
+
+/* Glow pulse shared animation */
+@keyframes glowPulse{
+  0%{filter:drop-shadow(0 8px 18px rgba(0,0,0,0)); transform:scale(1)}
+  50%{filter:drop-shadow(0 18px 44px rgba(255,255,255,.12)); transform:scale(1.03)}
+  100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,0)); transform:scale(1)}
+}
+
+/* Stronger glow for special butterflies (increased as requested) */
+.butterfly[data-type="gold"] .wing.left,
+.butterfly[data-type="gold"] .wing.right {
+  box-shadow: 0 0 22px 6px rgba(255,215,80,0.18), inset 0 0 10px rgba(255,240,180,0.22);
+  animation: glowPulse 2.4s ease-in-out infinite;
+}
+.butterfly[data-type="gold"] { filter: drop-shadow(0 20px 46px rgba(255,200,80,0.42)); }
+
+.butterfly[data-type="blue"] .wing.left,
+.butterfly[data-type="blue"] .wing.right {
+  box-shadow: 0 0 20px 6px rgba(100,170,255,0.16), inset 0 0 8px rgba(170,210,255,0.18);
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+.butterfly[data-type="blue"] { filter: drop-shadow(0 18px 40px rgba(110,180,255,0.34)); }
+
+.butterfly[data-type="pink"] .wing.left,
+.butterfly[data-type="pink"] .wing.right {
+  box-shadow: 0 0 20px 6px rgba(220,120,255,0.16), inset 0 0 8px rgba(255,160,230,0.18);
+  animation: glowPulse 2.2s ease-in-out infinite;
+}
+.butterfly[data-type="pink"] { filter: drop-shadow(0 18px 40px rgba(220,120,255,0.36)); }
 
 /* Capture anim */
 .pop-out{animation:pop .28s ease forwards}
@@ -146,9 +181,9 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
    HUD counters for special butterflies
    ========================== */
 .hud div {
-  margin-bottom: 4px;      /* separación entre contadores */
-  font-weight: bold;        /* letras más visibles */
-  font-size: 14px;          /* tamaño base */
+  margin-bottom: 4px;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 /* Colores brillantes según tipo de mariposa */
@@ -165,8 +200,8 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   .controls button{padding:12px 16px;border-radius:14px; font-size:14px;}
   .hud{
     right:10px;
-    top: auto;      /* desactiva la posición desde arriba */
-    bottom: 20px;   /* distancia desde el borde inferior */
+    top: auto;
+    bottom: 20px;
     gap:6px;
     font-size:14px;
   }
@@ -174,8 +209,12 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   .logo{width:40px;height:40px;font-size:14px}
   .floating-msg{font-size:14px;padding:8px 12px}
   .stage{border-radius:0; margin-top:6px;}
-  /* mayor área táctil para mariposas */
   .butterfly { min-width: 54px; min-height: 54px; }
+
+  /* show hamburger on small screens */
+  .hamburger{display:inline-flex}
+  .controls{display:none} /* hide original controls (we expose them in mobileMenu) */
+  .mobileMenu{right:12px; top:64px; min-width:200px}
 }
 </style>
 </head>
@@ -190,13 +229,27 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
         </div>
       </div>
 
-      <div class="controls" role="toolbar" aria-label="Controles del juego">
-        <button class="btn" id="themeBtn" title="Cambiar tema">Cambiar Tema</button>
-        <button class="btn" id="challengeBtn" title="Iniciar desafío 30s">Desafío 30s</button>
-        <button class="btn" id="diaryBtn" title="Abrir diario">Diario</button>
-        <button class="btn" id="collectionBtn" title="Abrir colección">Colección</button>
-        <button class="btn" id="musicToggle" title="Reproducir/pausar música">🔊 Música</button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <!-- hamburger (mobile) -->
+        <button class="hamburger" id="menuToggle" aria-label="Abrir menú">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+
+        <div class="controls" role="toolbar" aria-label="Controles del juego">
+          <button class="btn" id="themeBtn" title="Cambiar tema">Cambiar Tema</button>
+          <button class="btn" id="challengeBtn" title="Iniciar desafío 30s">Desafío 30s</button>
+          <button class="btn" id="diaryBtn" title="Abrir diario">Diario</button>
+          <button class="btn" id="collectionBtn" title="Abrir colección">Colección</button>
+          <button class="btn" id="musicToggle" title="Reproducir/pausar música">🔇 Música Off</button>
+        </div>
       </div>
+    </div>
+
+    <!-- mobile menu (replicates functionality but triggers original buttons) -->
+    <div class="mobileMenu" id="mobileMenu" aria-hidden="true" role="menu">
+      <!-- JS will populate buttons that call the original controls -->
     </div>
 
     <div class="stage" id="stage" aria-hidden="false"></div>
@@ -239,7 +292,12 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
         <h2 style="margin:0">Colección</h2>
         <div><button class="btn" id="closeCollection">Cerrar</button></div>
       </div>
-      <p style="opacity:.7;margin-top:8px">Mariposas especiales que encontraste.</p>
+      <p style="opacity:.7;margin-top:8px">Mariposas especiales que encontraste — contadores incluidos.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+        <div style="font-weight:800">Doradas: <span id="colCountGold">0</span></div>
+        <div style="font-weight:800">Azules: <span id="colCountBlue">0</span></div>
+        <div style="font-weight:800">Rosadas: <span id="colCountPink">0</span></div>
+      </div>
       <div class="collection-grid" id="collectionGrid"></div>
     </div>
   </div>
@@ -262,11 +320,10 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 <script>
 /* ==========================
    Mejoras técnicas y UX
-   - central animation loop (requestAnimationFrame)
-   - spawn control
-   - level progress visuals + particles on level up
-   - keep all behavior from original code + extra themes
-   - external mp3 playback + WebAudio small effects
+   - reproducción mp3 desde elemento audio con control por botón
+   - glow aumentado para mariposas especiales (CSS + data-type)
+   - contador mostrado en colección
+   - menú hamburguesa móvil (slider) que llama a controles originales
    ========================== */
 
 /* -------- WebAudio (effects) -------- */
@@ -336,22 +393,20 @@ let challengeTimer = 30;
 let butterflyCounters = { gold: 0, blue: 0, pink: 0 };
 
 // cargar desde localStorage si existe
-const storedCounters = JSON.parse(localStorage.getItem('butterflyCounters_v1'));
+const storedCounters = JSON.parse(localStorage.getItem('butterflyCounters_v1') || 'null');
 if(storedCounters) butterflyCounters = storedCounters;
 
-// ==========================
 // Inicializar HUD con contadores
-// ==========================
 document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
 document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
 document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
 
-// central arrays for active entities
+/* central arrays for active entities */
 const butterflies = [];
 const particles = [];
 
 /* ==========================
-   PARTICLES (background subtle ones)
+   PARTICLES
    ========================== */
 function createParticles(count=32){
   const rect = stage.getBoundingClientRect();
@@ -372,11 +427,10 @@ function createParticles(count=32){
 createParticles(30);
 
 /* ==========================
-   SPAWN LOGIC (uses adaptive timeout, not heavy intervals)
+   SPAWN LOGIC
    ========================== */
 let spawnTimerId = null;
 function scheduleNextSpawn(rateMs = 1200){
-  // small randomization for organic feel
   clearTimeout(spawnTimerId);
   spawnTimerId = setTimeout(()=>{ spawnButterfly(); scheduleNextSpawn(rateMs + (Math.random()*500 - 250)); }, rateMs + Math.random()*400);
 }
@@ -411,12 +465,15 @@ function spawnButterfly(){
   b.style.left = startX + 'px';
   b.style.top = startY + 'px';
 
-  // types & rarity (same as original)
+  // types & rarity
   const r = Math.random();
-  if(r < 0.03){ b.dataset.type='gold'; b.dataset.points=5; b.style.filter='drop-shadow(0 14px 30px rgba(255,200,120,.18))'; }
-  else if(r < 0.09){ b.dataset.type='blue'; b.dataset.points=2; b.style.filter='drop-shadow(0 10px 24px rgba(100,140,255,.12))'; }
-  else if(r < 0.16){ b.dataset.type='pink'; b.dataset.points=1; b.style.filter='drop-shadow(0 10px 24px rgba(215,120,255,.12))'; }
+  if(r < 0.03){ b.dataset.type='gold'; b.dataset.points=5; }
+  else if(r < 0.09){ b.dataset.type='blue'; b.dataset.points=2; }
+  else if(r < 0.16){ b.dataset.type='pink'; b.dataset.points=1; }
   else { b.dataset.type='normal'; b.dataset.points=1; }
+
+  // add data-type class so CSS selectors work robustly
+  b.classList.add(b.dataset.type);
 
   const paths = ['up','zigzag','wave'];
   const path = paths[Math.floor(Math.random()*paths.length)];
@@ -434,10 +491,6 @@ function spawnButterfly(){
     scale
   };
 
-  if(b.dataset.type==='gold') b.style.filter='drop-shadow(0 14px 30px rgba(255,255,100,.4))';
-  if(b.dataset.type==='blue') b.style.filter='drop-shadow(0 10px 24px rgba(100,200,255,.4))';
-  if(b.dataset.type==='pink') b.style.filter='drop-shadow(0 10px 24px rgba(255,120,255,.4))';
-
   // pointer handler
   b.addEventListener('pointerdown', onCapture);
 
@@ -445,23 +498,21 @@ function spawnButterfly(){
   stage.appendChild(b);
   butterflies.push(model);
 
-  // auto remove as backup (will be removed via animation loop too)
+  // auto remove as backup
   setTimeout(()=>{ if(b.parentNode){ b.remove(); } }, duration + 1400);
 }
 
 /* ==========================
    Central animation loop
-   - updates butterflies & particles (one RAF)
    ========================== */
 function animateAll(now){
-  // butterflies
   for(let i = butterflies.length - 1; i >= 0; i--){
     const m = butterflies[i];
     if(!m.el.parentNode){
       butterflies.splice(i,1);
       continue;
     }
-    if(paused) { m.t0 += 0; continue; } // keep time consistent; do nothing when paused
+    if(paused) { m.t0 += 0; continue; }
 
     const elapsed = now - m.t0;
     const p = Math.min(1, elapsed / m.duration);
@@ -479,18 +530,15 @@ function animateAll(now){
 
     const rot = Math.sin(p*Math.PI*2) * 12;
     m.el.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
-    // minor vertical bob to avoid strict transform-only layout jitter in some browsers
     const bob = Math.sin(now/220 + m.sx) * 2;
     m.el.style.top = (y + bob) + 'px';
 
     if(p >= 1){
-      // remove from DOM and array
       if(m.el.parentNode) m.el.remove();
       butterflies.splice(i,1);
     }
   }
 
-  // particles are pure-css animated, no need to update here; keep loop lightweight
   requestAnimationFrame(animateAll);
 }
 requestAnimationFrame(animateAll);
@@ -501,11 +549,10 @@ requestAnimationFrame(animateAll);
 function easeInOutSine(x){ return -(Math.cos(Math.PI*x)-1)/2; }
 
 /* ==========================
-   Capture handling (keeps original behavior + improvements)
+   Capture handling
    ========================== */
-let lastSpecialRomanticAt = -1; // avoid repeating special romantic message too often
+let lastSpecialRomanticAt = -1;
 function onCapture(e){
-  // resume audio context on user gesture if suspended (for mobile)
   if(audioCtx.state === 'suspended') audioCtx.resume();
 
   const el = e.currentTarget;
@@ -515,46 +562,42 @@ function onCapture(e){
   el.classList.add('pop-out');
   setTimeout(()=>{ if(el.parentNode) el.remove(); }, 320);
 
-  // points
   const pts = Number(el.dataset.points||1);
   score += pts;
   scoreEl.textContent = score;
 
-  // sounds
   soundCapture(); soundPop();
 
-  // random poem
   const poem = POEMS[Math.floor(Math.random()*POEMS.length)];
   showFloatingMessage(poem);
 
-if(el.dataset.type === 'gold'){
-  butterflyCounters.gold++;
-  collection.gold = true;
-  localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
-  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
-  document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
-  showFloatingMessage('¡Eres increíble! ¡Capturaste una Dorada!');
-  soundUnlock();
-}
+  if(el.dataset.type === 'gold'){
+    butterflyCounters.gold++;
+    collection.gold = true;
+    localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
+    localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+    document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
+    showFloatingMessage('¡Eres increíble! ¡Capturaste una Dorada!');
+    soundUnlock();
+  }
 
-if(el.dataset.type === 'blue'){
-  butterflyCounters.blue++;
-  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
-  document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
-  slowAllButterflies(3500);
-  showFloatingMessage('Mariposa azul - El tiempo parece ralentizarse.');
-}
+  if(el.dataset.type === 'blue'){
+    butterflyCounters.blue++;
+    localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+    document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
+    slowAllButterflies(3500);
+    showFloatingMessage('Mariposa azul - El tiempo parece ralentizarse.');
+  }
 
-if(el.dataset.type === 'pink'){
-  butterflyCounters.pink++;
-  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
-  document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
-  const special = "Mariposa Rosa - Hay cosas que sólo se dicen cuando volamos juntos.";
-  showFloatingMessage(special);
-  collection.pink = true;
-  localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
-}
-
+  if(el.dataset.type === 'pink'){
+    butterflyCounters.pink++;
+    localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+    document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
+    const special = "Mariposa Rosa - Hay cosas que sólo se dicen cuando volamos juntos.";
+    showFloatingMessage(special);
+    collection.pink = true;
+    localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
+  }
 
   // unlock diary every 5 points
   if(score % 5 === 0){
@@ -566,7 +609,7 @@ if(el.dataset.type === 'pink'){
     soundUnlock();
   }
 
-  // Level up every 10 points - update level & progress
+  // Level up every 10 points
   const newLevel = Math.floor(score / 10) + 1;
   if(newLevel > level){
     level = newLevel;
@@ -579,7 +622,6 @@ if(el.dataset.type === 'pink'){
   if(score >= 20 && lastSpecialRomanticAt < 20){
     lastSpecialRomanticAt = 20;
     showFloatingMessage('✨ Mensaje romántico especial desbloqueado — 20 puntos ✨');
-    // push a special phrase into unlocked (optional)
     const specialPhrase = "Cuando llegaste, el mundo cambió su color.";
     if(!unlocked.includes(specialPhrase)){ unlocked.push(specialPhrase); localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); }
     soundUnlock();
@@ -600,10 +642,8 @@ function slowAllButterflies(duration=3000){
    ========================== */
 function onLevelUp(){
   soundLevelUp();
-  // increase spawn frequency (cap)
   const rate = Math.max(420, 1200 - (level-1)*80);
   startSpawning(rate);
-  // particle burst
   spawnLevelParticles();
   showFloatingMessage('¡Nivel '+level+'!');
 }
@@ -614,20 +654,18 @@ function spawnLevelParticles(){
     p.className = 'particle';
     const size = 3 + Math.random()*6;
     p.style.width = p.style.height = size + 'px';
-    // spawn roughly from center-top of stage for effect
     p.style.left = (40 + Math.random()*20) + '%';
     p.style.bottom = '12%';
     p.style.background = getComputedStyle(document.body).getPropertyValue('--accent') || '#9b57ff';
     p.style.opacity = 0.95;
     p.style.animationDuration = (0.8 + Math.random()*1.2) + 's';
     stage.appendChild(p);
-    // remove after animation
     setTimeout(()=>{ if(p.parentNode) p.remove(); }, 1600);
   }
 }
 
 /* ==========================
-   Floating message (smooth)
+   Floating message
    ========================== */
 let floatTimeout = null;
 function showFloatingMessage(text){
@@ -673,14 +711,25 @@ function renderCollection(){
       const placeholder = document.createElement('div'); placeholder.style.width='100%'; placeholder.style.height='86px'; placeholder.style.display='grid'; placeholder.style.placeItems='center'; placeholder.style.opacity='.35'; placeholder.textContent='???'; card.appendChild(placeholder);
       const h = document.createElement('div'); h.textContent = k.charAt(0).toUpperCase()+k.slice(1)+' — Bloqueada'; card.appendChild(h);
     }
+    // show count (new): how many of this special type the player has captured
+    const cnt = document.createElement('div'); cnt.style.fontWeight='800'; cnt.style.marginTop='6px';
+    if(k === 'gold') cnt.textContent = `Capturadas: ${butterflyCounters.gold || 0}`;
+    if(k === 'blue') cnt.textContent = `Capturadas: ${butterflyCounters.blue || 0}`;
+    if(k === 'pink') cnt.textContent = `Capturadas: ${butterflyCounters.pink || 0}`;
+    card.appendChild(cnt);
     collectionGrid.appendChild(card);
   });
+
+  // also update the numeric summary counters in modal header
+  document.getElementById('colCountGold').textContent = butterflyCounters.gold || 0;
+  document.getElementById('colCountBlue').textContent = butterflyCounters.blue || 0;
+  document.getElementById('colCountPink').textContent = butterflyCounters.pink || 0;
 }
 function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
 function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); }
 
 /* ==========================
-   Themes cycling (extended: aurora, default, night, sunrise, galaxy)
+   Themes cycling
    ========================== */
 const themes = ['theme-aurora','theme-default','theme-night','theme-sunrise','theme-galaxy'];
 let themeIndex = 0;
@@ -691,21 +740,19 @@ document.getElementById('themeBtn').addEventListener('click', ()=>{
 });
 
 /* ==========================
-   Challenge 30s (uses existing UI)
+   Challenge 30s
    ========================== */
 document.getElementById('challengeBtn').addEventListener('click', ()=> startChallenge(30));
 document.getElementById('retryBtn').addEventListener('click', ()=> { closeResult(); resetAfterChallengeStart(); });
 document.getElementById('closeResult').addEventListener('click', ()=> { closeResult(); resumeNormal(); });
 
 function startChallenge(seconds=30){
-  // reset
   score = 0; scoreEl.textContent = '0';
   unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2') || '[]') || unlocked;
   level = 1; levelEl.textContent = level; updateLevelProgress();
   paused = false;
   document.getElementById('timerPanel').style.display = 'block';
   challengeTimer = seconds; document.getElementById('timer').textContent = challengeTimer;
-  // more intense spawn
   startSpawning(800);
   if(challengeCountdown) clearInterval(challengeCountdown);
   challengeCountdown = setInterval(()=>{
@@ -718,7 +765,6 @@ function endChallenge(){
   challengeCountdown = null;
   document.getElementById('timerPanel').style.display = 'none';
   stopSpawning();
-  // show modal
   finalScoreEl.textContent = score;
   resultModal.classList.add('show'); resultModal.setAttribute('aria-hidden','false'); resultModal.querySelector('.modal').classList.add('show');
 }
@@ -727,26 +773,25 @@ function resetAfterChallengeStart(){ closeResult(); startSpawning(1200); documen
 function resumeNormal(){ startSpawning(1200); }
 
 /* ==========================
-   Music: external mp3 + toggle (mobile friendly)
-   - plays once (no loop) as requested
+   Music: external mp3 + toggle
    ========================== */
 const bgAudio = document.getElementById('bgMusic');
 let musicPlaying = false;
+const musicToggleBtn = document.getElementById('musicToggle');
+// ensure button shows actual state on load
+musicToggleBtn.textContent = '🔇 Música Off';
 document.getElementById('musicToggle').addEventListener('click', async ()=>{
-  // ensure audio context resume if needed (some browsers require user gesture)
   if(audioCtx.state === 'suspended') await audioCtx.resume();
   try{
     if(!musicPlaying){
-      // play once; do not loop
       await bgAudio.play();
       musicPlaying = true;
-      document.getElementById('musicToggle').textContent = '🔊 Música On';
-      // when it ends, update UI
-      bgAudio.onended = ()=>{ musicPlaying = false; document.getElementById('musicToggle').textContent = '🔇 Música Off'; };
+      musicToggleBtn.textContent = '🔊 Música On';
+      bgAudio.onended = ()=>{ musicPlaying = false; musicToggleBtn.textContent = '🔇 Música Off'; };
     } else {
       bgAudio.pause();
       musicPlaying = false;
-      document.getElementById('musicToggle').textContent = '🔇 Música Off';
+      musicToggleBtn.textContent = '🔇 Música Off';
     }
   }catch(e){
     showFloatingMessage('Toca para permitir reproducción de audio (algunos navegadores bloquean autoplay).');
@@ -760,14 +805,13 @@ document.addEventListener('touchmove', function(e){
   if(e.target.closest('#stage')) e.preventDefault();
 },{passive:false});
 
-/* Aumentar área táctil en móviles para las mariposas */
 stage.addEventListener('pointerdown', function(e){
   const b = e.target.closest('.butterfly');
   if(b) b.dispatchEvent(new Event('pointerdown',{bubbles:true,cancelable:true}));
 });
 
 /* ==========================
-   Level progress visual (each 10 pts = level)
+   Level progress visual
    ========================== */
 function updateLevelProgress(){
   const exp = score;
@@ -776,30 +820,22 @@ function updateLevelProgress(){
 }
 
 /* ==========================
-   Accessibility & small helpers
+   Accessibility & helpers
    ========================== */
-// (touchmove listener already above)
 document.addEventListener('keydown', (e)=>{
   if(e.key === 'Escape'){
-    // close modals if open
     if(diaryModal.classList.contains('show')) closeDiary();
     if(collectionModal.classList.contains('show')) closeCollection();
     if(resultModal.classList.contains('show')) closeResult();
+    // hide mobile menu if open
+    document.getElementById('mobileMenu').classList.remove('open');
   }
 });
-
-/* ==========================
-   Small performance note:
-   - spawning uses adaptive timeout scheduling
-   - animation all handled in single RAF
-   - particles mostly CSS-driven
-   ========================== */
 
 /* ==========================
    Init & start
    ========================== */
 (function init(){
-  // ensure theme
   document.body.classList.remove(...themes);
   document.body.classList.add('theme-aurora');
   themeIndex = 0;
@@ -809,26 +845,46 @@ document.addEventListener('keydown', (e)=>{
   updateLevelProgress();
   startSpawning(1200);
 
-  // ensure saved state exists
   try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ unlocked = []; }
   try{ collection = JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ collection = {}; }
 
-  // responsiveness: add more particles on resize if needed
+  // responsiveness: add particles on resize if needed
   window.addEventListener('resize', ()=>{
     const existing = stage.querySelectorAll('.particle').length;
     const want = Math.max(16, Math.min(96, Math.floor(window.innerWidth/24)));
     if(existing < want) createParticles(want - existing);
   });
+
+  // build mobileMenu buttons that call original controls by id
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileButtons = [
+    {label:'Cambiar Tema', target:'themeBtn'},
+    {label:'Desafío 30s', target:'challengeBtn'},
+    {label:'Diario', target:'diaryBtn'},
+    {label:'Colección', target:'collectionBtn'},
+    {label:'Música', target:'musicToggle'}
+  ];
+  mobileButtons.forEach(b=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = b.label;
+    btn.addEventListener('click', ()=> {
+      const orig = document.getElementById(b.target);
+      if(orig) orig.click();
+      // close mobile menu after action
+      mobileMenu.classList.remove('open');
+    });
+    mobileMenu.appendChild(btn);
+  });
+
+  // hamburger toggle
+  document.getElementById('menuToggle').addEventListener('click', ()=> {
+    const m = document.getElementById('mobileMenu');
+    m.classList.toggle('open');
+  });
+
 })();
-
-/* ==========================
-   Expose spawn function globally (for debugging)
-   ========================== */
 window.spawnButterfly = spawnButterfly;
-
-/* ==========================
-   Utility: find and remove butterflies by id (if needed)
-   ========================== */
 function removeButterflyById(id){
   for(let i=butterflies.length-1;i>=0;i--){
     if(butterflies[i].id == id){
@@ -837,13 +893,8 @@ function removeButterflyById(id){
     }
   }
 }
-
-/* ==========================
-   Update: convert old interval-based spawn to our schedule
-   - call scheduleNextSpawn initially
-   ========================== */
 startSpawning(1200);
-
 </script>
 </body>
 </html>
+  
