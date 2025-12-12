@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Captura las Mariposas</title>
 <style>
-/* ==========================
-   Variables & Temas
-   ========================== */
 :root{
   --bg:#0f0b12;
   --card:rgba(20,10,30,.6);
@@ -17,12 +14,11 @@
   --butterfly-shadow:0 6px 18px rgba(139,92,246,.22);
   --modal-bg:rgba(15,9,20,.6);
   --particle:rgba(176,140,255,.14);
-  --level-accent: linear-gradient(90deg,var(--accent),var(--accent-2));
-  --muted: rgba(255,255,255,0.06);
-  --glass: rgba(255,255,255,0.04);
+  --panel-radius:14px;
+  --logo-gradient: linear-gradient(135deg,var(--accent),var(--accent-2));
 }
 
-/* Themes */
+/* Theme: aurora (default) */
 .theme-aurora{
   --bg:linear-gradient(180deg,#0b0710 0%, #25102b 60%);
   --card:rgba(28,10,36,.55);
@@ -32,60 +28,64 @@
   --modal-bg:rgba(22,8,30,.56);
   --particle:rgba(188,160,255,.12);
   --butterfly-shadow:0 10px 24px rgba(155,87,255,.22);
+  --logo-gradient: linear-gradient(135deg,#9b57ff,#d6b3ff);
 }
-.theme-default{
-  --bg:#0f0b12;
-  --card:rgba(18,12,22,.6);
-  --accent:#7b4cff;
-  --accent-2:#ad8bff;
-  --hud:rgba(240,240,250,.95);
-  --modal-bg:rgba(15,9,20,.6);
-  --particle:rgba(150,120,255,.08);
-}
+
+/* Theme: night (high contrast dark) */
 .theme-night{
-  --bg:linear-gradient(180deg,#070507 0%, #0b0610 100%);
-  --card:rgba(6,6,10,.68);
-  --accent:#6f4bb3;
-  --accent-2:#8a63d1;
-  --hud:rgba(230,230,240,.92);
-  --modal-bg:rgba(6,6,10,.7);
-  --particle:rgba(120,90,160,.10);
-  --butterfly-shadow:0 8px 22px rgba(90,60,120,.16);
+  --bg:linear-gradient(180deg,#03040a 0%, #0b1020 70%);
+  --card:rgba(10,12,22,.8);
+  --accent:#3dd3ff;
+  --accent-2:#37a6ff;
+  --hud:rgba(230,245,255,.96);
+  --modal-bg:rgba(6,8,16,.78);
+  --particle:rgba(60,170,255,.10);
+  --butterfly-shadow:0 10px 28px rgba(40,140,220,.18);
+  --logo-gradient: linear-gradient(135deg,#3dd3ff,#37a6ff);
 }
-.theme-sunrise{
-  --bg:linear-gradient(180deg,#0b0710 0%, #3b1227 40%, #ffcdb2 100%);
-  --card:rgba(30,12,20,.6);
-  --accent:#ff8fb1;
-  --accent-2:#ffd6a5;
-  --hud:rgba(255,255,255,.95);
-  --modal-bg:rgba(255,250,245,.08);
-  --particle:rgba(255,200,180,.10);
-  --butterfly-shadow:0 10px 30px rgba(255,140,140,.12);
+
+/* Theme: sunset (warm) */
+.theme-sunset{
+  --bg:linear-gradient(180deg,#2b0710 0%, #3a151c 70%);
+  --card:rgba(40,14,22,.68);
+  --accent:#ff6b6b;
+  --accent-2:#ffb86b;
+  --hud:rgba(255,250,245,.95);
+  --modal-bg:rgba(40,14,22,.7);
+  --particle:rgba(255,140,120,.08);
+  --butterfly-shadow:0 10px 26px rgba(255,120,90,.16);
+  --logo-gradient: linear-gradient(135deg,#ff6b6b,#ffb86b);
 }
-.theme-galaxy{
-  --bg:linear-gradient(180deg,#020018 0%, #120035 60%);
-  --card:rgba(8,6,22,.6);
-  --accent:#6ec3ff;
-  --accent-2:#a35bff;
-  --hud:rgba(235,245,255,.94);
-  --modal-bg:rgba(10,6,20,.7);
-  --particle:rgba(120,160,255,.10);
-  --butterfly-shadow:0 12px 34px rgba(100,80,180,.14);
+
+/* Theme: pastel (lightish) */
+.theme-pastel{
+  --bg:linear-gradient(180deg,#fff7fb 0%, #f2f6ff 100%);
+  --card:rgba(255,255,255,.88);
+  --accent:#b997ff;
+  --accent-2:#9bd1ff;
+  --hud:rgba(18,18,20,.92);
+  --modal-bg:rgba(255,255,255,.94);
+  --particle:rgba(150,170,255,.06);
+  --butterfly-shadow:0 10px 30px rgba(120,120,180,.06);
+  --logo-gradient: linear-gradient(135deg,#b997ff,#9bd1ff);
 }
 
 /* ==========================
-   Base / Layout
-   ========================== */
+  Base / Layout (kept + minor tweaks)
+  ========================== */
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
 body{background:var(--bg);color:var(--hud);overflow:hidden;-webkit-font-smoothing:antialiased}
-.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:18px}
+.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:14px}
+
 /* Topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:60}
 .title{display:flex;gap:12px;align-items:center}
-.logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--butterfly-shadow);display:grid;place-items:center;font-weight:700;color:#fff;font-size:16px}
+.logo{width:56px;height:56px;border-radius:12px;background:var(--logo-gradient);box-shadow:var(--butterfly-shadow);display:grid;place-items:center;font-weight:700;color:#fff;font-size:16px}
+.logo svg{width:36px;height:36px}
 .title h1{font-size:18px;margin:0}
-.title .subtitle{font-size:12px;opacity:.75;margin-top:3px}
+.title .subtitle{font-size:12px;opacity:.85;margin-top:3px;line-height:1.1}
+.badge-next{font-size:11px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.05);margin-left:8px;font-weight:700}
 
 /* Controls */
 .controls{display:flex;gap:10px;align-items:center}
@@ -93,21 +93,39 @@ button.btn{background:var(--card);color:var(--hud);border:1px solid rgba(255,255
 button.btn:active{transform:translateY(1px)}
 button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:center;min-width:44px}
 
-/* Mobile hamburger */
-.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px}
-.hamburger .bar{width:22px;height:2px;background:var(--hud);margin:4px 0;border-radius:2px;display:block;transition:transform .18s, opacity .18s}
-.mobileMenu{position:fixed;right:12px;top:72px;background:var(--card);padding:12px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:none;flex-direction:column;gap:8px;z-index:180;min-width:180px}
-.mobileMenu.open{display:flex}
+/* Hamburger (mobile) - stacked */
+.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px;align-items:center}
+.hamburger{ /* ensure column stacking when visible */
+  display:inline-flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  width:46px;
+  height:46px;
+}
+.hamburger .bar{width:22px;height:2px;background:var(--hud);border-radius:2px;display:block;transition:transform .22s, opacity .18s}
+.hamburger.open .bar:nth-child(1){transform:translateY(6px) rotate(45deg)}
+.hamburger.open .bar:nth-child(2){opacity:0}
+.hamburger.open .bar:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* Mobile slide panel */
+.mobileMenu{
+  position:fixed;right:16px;top:12px;background:transparent;padding:0;border-radius:12px;z-index:180;min-width:240px;
+  transform:translateX(110%); transition:transform .28s cubic-bezier(.22,.9,.32,1);
+}
+.mobileMenu.panel{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,0.04)}
+.mobileMenu.open{transform:translateX(0)}
 
 /* HUD */
-.hud{position:absolute;right:18px;top:72px;z-index:60;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+.hud{position:absolute;right:18px;top:90px;z-index:60;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 .hud .panel{background:var(--card);padding:8px 12px;border-radius:10px;font-weight:700;min-width:140px;display:flex;flex-direction:column;gap:6px}
 .level-row{display:flex;align-items:center;gap:8px}
 .level-bar{height:8px;width:120px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
 .level-progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .28s cubic-bezier(.2,.9,.3,1)}
 
 /* Stage */
-.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent}
+.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - 180px); }
 .particle{position:absolute;bottom:-10px;border-radius:50%;opacity:.9;pointer-events:none;animation:rise linear infinite}
 @keyframes rise{to{transform:translateY(-120vh);opacity:0}}
 
@@ -122,35 +140,6 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 .butterfly .wing.left{animation:flapL 900ms ease-in-out infinite}
 .butterfly .wing.right{animation:flapR 900ms ease-in-out infinite}
 
-/* Glow pulse shared animation */
-@keyframes glowPulse{
-  0%{filter:drop-shadow(0 8px 18px rgba(0,0,0,0)); transform:scale(1)}
-  50%{filter:drop-shadow(0 18px 44px rgba(255,255,255,.12)); transform:scale(1.03)}
-  100%{filter:drop-shadow(0 8px 18px rgba(0,0,0,0)); transform:scale(1)}
-}
-
-/* Stronger glow for special butterflies (increased as requested) */
-.butterfly[data-type="gold"] .wing.left,
-.butterfly[data-type="gold"] .wing.right {
-  box-shadow: 0 0 22px 6px rgba(255,215,80,0.18), inset 0 0 10px rgba(255,240,180,0.22);
-  animation: glowPulse 2.4s ease-in-out infinite;
-}
-.butterfly[data-type="gold"] { filter: drop-shadow(0 20px 46px rgba(255,200,80,0.42)); }
-
-.butterfly[data-type="blue"] .wing.left,
-.butterfly[data-type="blue"] .wing.right {
-  box-shadow: 0 0 20px 6px rgba(100,170,255,0.16), inset 0 0 8px rgba(170,210,255,0.18);
-  animation: glowPulse 2.2s ease-in-out infinite;
-}
-.butterfly[data-type="blue"] { filter: drop-shadow(0 18px 40px rgba(110,180,255,0.34)); }
-
-.butterfly[data-type="pink"] .wing.left,
-.butterfly[data-type="pink"] .wing.right {
-  box-shadow: 0 0 20px 6px rgba(220,120,255,0.16), inset 0 0 8px rgba(255,160,230,0.18);
-  animation: glowPulse 2.2s ease-in-out infinite;
-}
-.butterfly[data-type="pink"] { filter: drop-shadow(0 18px 40px rgba(220,120,255,0.36)); }
-
 /* Capture anim */
 .pop-out{animation:pop .28s ease forwards}
 @keyframes pop{to{transform:scale(.2);opacity:0;filter:blur(1px)}}
@@ -160,72 +149,287 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 .floating-msg.show{animation:floatUp 2.1s ease forwards}
 @keyframes floatUp{0%{transform:translate(-50%,18px);opacity:0}10%{opacity:1}70%{transform:translate(-50%,-60px);opacity:.95}100%{transform:translate(-50%,-110px);opacity:0}}
 
-/* Modal */
+/* Modal & Theme modal */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:200}
 .modal-backdrop.show{display:flex}
-.modal{width:min(920px,94%);max-height:86vh;overflow:auto;background:var(--modal-bg);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px);box-shadow:0 20px 50px rgba(0,0,0,0.6);transform:translateY(18px);opacity:0}
+.modal{width:min(920px,94%);max-height:86vh;overflow:auto;background:var(--modal-bg);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px);box-shadow:0 20px 50px rgba(0,0,0,.6);transform:translateY(18px);opacity:0}
 .modal.show{animation:modalIn .28s cubic-bezier(.16,.9,.3,1) forwards}
 @keyframes modalIn{to{opacity:1;transform:none}}
 
-/* Diary & Collection */
-.diary-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
-.entry{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)}
-.collection-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:12px}
-.collect-card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;align-items:center;gap:8px}
-.collect-card img{width:100%;height:auto;border-radius:8px}
+/* Theme modal specific styles */
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
+.theme-card{border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:10px;display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.theme-preview{height:86px;border-radius:8px;box-shadow:inset 0 -10px 20px rgba(0,0,0,0.08)}
+.theme-actions{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.small{font-size:12px;opacity:.86}
+
+/* ==========================
+  DIARY & COLLECTION — UPDATED STYLES (only visual changes)
+  (These rules replace the original ones to improve mobile rendering)
+  ========================== */
+
+/* Diary list entries: keep structure but improve spacing + readable on mobile */
+.diary-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:12px;
+  margin-top:12px;
+  padding-bottom:6px;
+}
+.entry{
+  background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  font-size:14px;
+  line-height:1.4;
+  position:relative;
+  color:var(--hud);
+  word-wrap:break-word;
+}
+.entry:before{
+  content:"“";
+  position:absolute;
+  left:10px;
+  top:6px;
+  font-size:34px;
+  opacity:.10;
+  color:var(--hud);
+}
+
+/* Collection grid and cards: make thumbs preserve original SVG colors and stack nicely on mobile */
+.collection-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  margin-top:12px;
+}
+
+/* card layout: on desktop compact column, on larger screens allow row-like */
+.collect-card{
+  background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.03);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  min-height:120px;
+  transition:transform .14s, box-shadow .14s;
+}
+.collect-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,0.45)}
+
+/* ensure svg thumbs aren't tinted by CSS and keep fixed size */
+.collect-card > div:first-child img,
+.collect-card > div:first-child svg,
+.collect-card > div:first-child > svg{
+  width:86px;
+  height:86px;
+  display:block;
+  border-radius:8px;
+  flex-shrink:0;
+}
+
+/* phrases area */
+.collect-phrases{
+  width:100%;
+  margin-top:8px;
+  max-height:140px;
+  overflow:auto;
+  padding:8px;
+  border-radius:8px;
+  background:rgba(255,255,255,0.02);
+  font-size:13px;
+  line-height:1.3;
+  border:1px solid rgba(255,255,255,0.02);
+}
+
+/* compact text for counters inside cards */
+.collect-card .counter{font-weight:800;margin-top:6px;font-size:13px;color:var(--hud)}
+
+/* custom scrollbar for phrases and diary for better touch control */
+.collect-phrases::-webkit-scrollbar, .diary-list::-webkit-scrollbar{height:10px;width:8px}
+.collect-phrases::-webkit-scrollbar-thumb, .diary-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:999px}
+.collect-phrases::-webkit-scrollbar-track, .diary-list::-webkit-scrollbar-track{background:transparent}
+
+/* small helper */
+.muted{color:rgba(255,255,255,0.6);font-size:13px}
+
+/* ==========================
+  PREVIEW: mini-mariposas in collection cards (live visual previews)
+  ========================== */
+
+/* container for the thumb (keeps SVG fallback working) */
+.collect-card .thumb{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:86px;
+}
+
+/* Renderizar una mini-mariposa que use mismas clases/animaciones in-game */
+.collect-card .butterfly.preview{
+  position:relative;
+  width:72px;
+  height:72px;
+  pointer-events:none; /* no interactiva */
+  transform:none !important;
+  filter:none !important;
+  box-shadow:none !important;
+  margin:0 auto;
+}
+
+/* ajustar proporciones para el preview */
+.collect-card .butterfly.preview .wing{
+  width:50%;
+  height:50%;
+  top:10%;
+}
+.collect-card .butterfly.preview .body{
+  width:12%;
+  height:36%;
+  top:24%;
+}
+
+/* colores específicos por tipo (preview sólo) */
+.collect-card .butterfly.preview.gold .wing.left{ background: linear-gradient(135deg,#ffd86b,#ff9f3b); }
+.collect-card .butterfly.preview.gold .wing.right{ background: linear-gradient(-135deg,#ff9f3b,#ffd86b); }
+
+.collect-card .butterfly.preview.blue .wing.left{ background: linear-gradient(135deg,#9fb9ff,#6f9bff); }
+.collect-card .butterfly.preview.blue .wing.right{ background: linear-gradient(-135deg,#6f9bff,#9fb9ff); }
+
+.collect-card .butterfly.preview.pink .wing.left{ background: linear-gradient(135deg,#ffa3e0,#d77bff); }
+.collect-card .butterfly.preview.pink .wing.right{ background: linear-gradient(-135deg,#d77bff,#ffa3e0); }
+
+/* Forzar animación de alas */
+.collect-card .butterfly.preview .wing.left{ animation: flapL 900ms ease-in-out infinite; }
+.collect-card .butterfly.preview .wing.right{ animation: flapR 900ms ease-in-out infinite; }
+
+/* fallback sizing for existing SVG thumbnails inside card */
+.collect-card > div:first-child svg,
+.collect-card > div:first-child img{ max-width:86px; max-height:86px; }
+
+/* ==========================
+  Modal mobile adjustments — keep modals accessible but full-width on mobile
+  ========================== */
+@media (max-width:720px){
+  .modal{
+    width: calc(100% - 20px);
+    height: 92vh;
+    max-height: 92vh;
+    border-radius:12px;
+    padding:12px;
+    margin:0 10px;
+    overflow:hidden;
+  }
+  .modal .modal-inner-scroll{
+    height:100%;
+    overflow:auto;
+    padding-right:6px;
+  }
+
+  /* stack collection card content for narrow screens */
+  .collect-card{
+    flex-direction:row;
+    align-items:flex-start;
+    gap:10px;
+    padding:10px;
+  }
+  .collect-card > div:first-child svg,
+  .collect-card > div:first-child img{
+    width:64px;
+    height:64px;
+  }
+  .collect-card .meta{display:flex;flex-direction:column;align-items:flex-start}
+  .collect-phrases{max-height:88px;font-size:12px;overflow:auto}
+
+  /* diary single column */
+  .diary-list{grid-template-columns:repeat(1,1fr)}
+  .entry{font-size:15px;padding:12px;border-radius:10px}
+  #volumePanel { display:none !important; }
+}
 
 /* Footer */
 .footer{position:relative;z-index:40;display:flex;justify-content:center;padding:8px 0;color:rgba(255,255,255,0.5);font-size:13px}
 
-/* ==========================
-   HUD counters for special butterflies
-   ========================== */
-.hud div {
-  margin-bottom: 4px;
-  font-weight: bold;
-  font-size: 14px;
-}
+/* HUD counters for special butterflies */
+.hud div { margin-bottom: 4px; font-weight: bold; font-size: 14px; }
+#goldCounter { color: #FFD700; }
+#blueCounter { color: #6490FF; }
+#pinkCounter { color: #D778FF; }
 
-/* Colores brillantes según tipo de mariposa */
-#goldCounter { color: #FFD700; }  /* Dorado */
-#blueCounter { color: #6490FF; }  /* Azul brillante */
-#pinkCounter { color: #D778FF; }  /* Rosa brillante */
-
-/* ==========================
-   Mobile tweaks (mejora)
-   ========================== */
+/* Mobile tweaks (kept) */
 @media (max-width:720px){
+  #volumePanel { display:none !important; }
+  body{padding:10px}
   .butterfly{width:66px;height:66px; touch-action: manipulation;}
   .title h1{font-size:16px}
   .controls button{padding:12px 16px;border-radius:14px; font-size:14px;}
   .hud{
-    right:10px;
-    top: auto;
-    bottom: 20px;
+    right:8px;
+    top:auto;
+    bottom:18px;
     gap:6px;
-    font-size:14px;
+    font-size:13px;
   }
   .hud div { font-size: 12px; margin-bottom: 2px; }
-  .logo{width:40px;height:40px;font-size:14px}
+  .logo{width:48px;height:48px;font-size:14px; border-radius:10px}
   .floating-msg{font-size:14px;padding:8px 12px}
-  .stage{border-radius:0; margin-top:6px;}
+  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - 160px); }
   .butterfly { min-width: 54px; min-height: 54px; }
 
   /* show hamburger on small screens */
   .hamburger{display:inline-flex}
   .controls{display:none} /* hide original controls (we expose them in mobileMenu) */
-  .mobileMenu{right:12px; top:64px; min-width:200px}
+  .mobileMenu{right:10px; top:12px; min-width:220px}
 }
 </style>
 </head>
-<body class="theme-aurora">
+<body>
+  <div id="volumePanel" style="
+  position:absolute;
+  right:14px;
+  top:78px;
+  z-index:200;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  width:170px;
+  background:var(--card);
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.05);
+  backdrop-filter:blur(6px);
+  animation:fadeInVolume .45s ease forwards;
+">
+  <label style="font-size:12px; opacity:.75;">Volumen Música</label>
+  <input id="musicSlider" type="range" min="0" max="1" step="0.01"/>
+
+  <label style="font-size:12px; opacity:.75;">Volumen Efectos</label>
+  <input id="fxSlider" type="range" min="0" max="1" step="0.01"/>
+</div>
+
   <div class="app" role="application" aria-label="Captura las Mariposas">
     <div class="topbar">
-      <div class="title">
-        <div class="logo" aria-hidden="true">CM</div>
+      <div class="title" style="align-items:center">
+        <div class="logo" aria-hidden="true" title="Captura las Mariposas">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <g fill="none" stroke="#fff" stroke-opacity=".95" stroke-width="1.2">
+              <path d="M32 32c6-8 14-10 20-6 4 3 4 12-4 18-6 4-12 2-16-2" fill="rgba(255,255,255,0.06)"></path>
+              <path d="M32 32c-6-8-14-10-20-6-4 3-4 12 4 18 6 4 12 2 16-2" fill="rgba(255,255,255,0.06)"></path>
+              <circle cx="32" cy="30" r="1.6" fill="#fff"></circle>
+            </g>
+          </svg>
+        </div>
         <div>
           <h1>Captura las Mariposas</h1>
-          <div class="subtitle">Toca la pantalla para capturar — cada 5 se desbloquea el Diario.</div>
+          <div style="display:flex;align-items:center">
+            <div class="subtitle">Toca para atrapar mariposas y desbloquear frases románticas.</div>
+            <div class="badge-next" id="nextBadge" title="Capturas para la próxima frase">Próx frase: 5</div>
+          </div>
         </div>
       </div>
 
@@ -238,26 +442,40 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
         </button>
 
         <div class="controls" role="toolbar" aria-label="Controles del juego">
-          <button class="btn" id="themeBtn" title="Cambiar tema">Cambiar Tema</button>
+          <button class="btn" id="themeBtn" title="Abrir selector de temas">Cambiar Tema</button>
           <button class="btn" id="challengeBtn" title="Iniciar desafío 30s">Desafío 30s</button>
           <button class="btn" id="diaryBtn" title="Abrir diario">Diario</button>
           <button class="btn" id="collectionBtn" title="Abrir colección">Colección</button>
-          <button class="btn" id="musicToggle" title="Reproducir/pausar música">🔇 Música Off</button>
+          <button class="btn" id="musicToggle" title="Reproducir/pausar música">Música Off</button>
+            <div id="volumePanel" style="
+            margin-top:6px;
+            display:flex;
+            flex-direction:column;
+            gap:6px;
+            width:170px;
+            opacity:0;
+            animation:fadeInVolume .45s ease forwards;
+          ">
+            <label style="font-size:12px; opacity:.75;">Volumen Música</label>
+            <input id="musicSlider" type="range" min="0" max="1" step="0.01" style="width:100%;" />
+
+            <label style="font-size:12px; opacity:.75; margin-top:4px;">Volumen Efectos</label>
+            <input id="fxSlider" type="range" min="0" max="1" step="0.01" style="width:100%;" />
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- mobile menu (replicates functionality but triggers original buttons) -->
     <div class="mobileMenu" id="mobileMenu" aria-hidden="true" role="menu">
-      <!-- JS will populate buttons that call the original controls -->
+      <div class="panel" id="mobilePanel"></div>
     </div>
 
     <div class="stage" id="stage" aria-hidden="false"></div>
 
     <div class="hud" id="hud" aria-live="polite">
-      <div id="goldCounter">Gold: 0</div>
-      <div id="blueCounter">Blue: 0</div>
-      <div id="pinkCounter">Pink: 0</div>
+      <div id="goldCounter"></div>
+      <div id="blueCounter"></div>
+      <div id="pinkCounter"></div>
       <div class="panel" id="scorePanel">Puntos: <span id="score">0</span></div>
       <div class="panel" id="levelPanel">
         Nivel: <span id="level">1</span>
@@ -273,7 +491,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 
   <div class="floating-msg" id="floatingMsg" aria-hidden="true"></div>
 
-  <!-- Modal Diario -->
+  <!-- Diary Modal -->
   <div class="modal-backdrop" id="diaryModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
@@ -285,24 +503,24 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
     </div>
   </div>
 
-  <!-- Modal Colección -->
+  <!-- Collection Modal -->
   <div class="modal-backdrop" id="collectionModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
         <h2 style="margin:0">Colección</h2>
         <div><button class="btn" id="closeCollection">Cerrar</button></div>
       </div>
-      <p style="opacity:.7;margin-top:8px">Mariposas especiales que encontraste — contadores incluidos.</p>
+      <p style="opacity:.7;margin-top:8px">Mariposas especiales que encontraste</p>
       <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
-        <div style="font-weight:800">Doradas: <span id="colCountGold">0</span></div>
-        <div style="font-weight:800">Azules: <span id="colCountBlue">0</span></div>
-        <div style="font-weight:800">Rosadas: <span id="colCountPink">0</span></div>
+        <div style="font-weight:800"><span id="colCountGold">0</span></div>
+        <div style="font-weight:800"><span id="colCountBlue">0</span></div>
+        <div style="font-weight:800"><span id="colCountPink">0</span></div>
       </div>
       <div class="collection-grid" id="collectionGrid"></div>
     </div>
   </div>
 
-  <!-- Modal Resultado Desafío -->
+  <!-- Result Modal -->
   <div class="modal-backdrop" id="resultModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document">
       <h2 id="resultTitle">Desafío terminado</h2>
@@ -314,24 +532,50 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
     </div>
   </div>
 
-  <!-- Hidden audio element for external mp3 (place musica.mp3 in same folder) -->
+  <!-- THEME Modal -->
+  <div class="modal-backdrop" id="themeModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <h2 style="margin:0">Temas</h2>
+        <div><button class="btn" id="closeTheme">Cerrar</button></div>
+      </div>
+      <p class="small" style="opacity:.75;margin-top:8px">Elige un tema para la app. La selección se guarda y se aplica inmediatamente.</p>
+      <div class="theme-grid" id="themeGrid">
+        <!-- JS will populate theme cards -->
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button class="btn" id="resetTheme">Restablecer a Auroras</button>
+      </div>
+    </div>
+  </div>
+
   <audio id="bgMusic" src="musica.mp3" preload="auto"></audio>
+  <div id="sliderContainer">
+  <div id="volumePanel">
+    <label>Volumen Música</label>
+    <input id="musicSlider" type="range" min="0" max="1" step="0.01">
+    <label>Volumen Efectos</label>
+    <input id="fxSlider" type="range" min="0" max="1" step="0.01">
+  </div>
+</div>
 
 <script>
-/* ==========================
-   Mejoras técnicas y UX
-   - reproducción mp3 desde elemento audio con control por botón
-   - glow aumentado para mariposas especiales (CSS + data-type)
-   - contador mostrado en colección
-   - menú hamburguesa móvil (slider) que llama a controles originales
-   ========================== */
+/* --------------------------
+  Mantengo y extiendo funciones existentes:
+  - Preview en collection cards
+  - Spawn multiple butterflies per tick with variable frequency
+  ---------------------------*/
 
-/* -------- WebAudio (effects) -------- */
+/* ---------------------------
+  Audio helpers (iguales)
+  ---------------------------*/
 const AudioContext = window.AudioContext || window.webkitAudioContext;
-const audioCtx = new AudioContext();
-let s_masterGain = audioCtx.createGain(); s_masterGain.gain.value = 0.9; s_masterGain.connect(audioCtx.destination);
-
+let audioCtx;
+try{ audioCtx = new AudioContext(); }catch(e){ audioCtx = null; }
+let s_masterGain = audioCtx ? audioCtx.createGain() : null;
+if(s_masterGain){ s_masterGain.gain.value = 0.9; s_masterGain.connect(audioCtx.destination); }
 function playTone(freq, dur=0.14, type='sine', vol=0.12) {
+  if(!audioCtx) return;
   const o = audioCtx.createOscillator();
   const g = audioCtx.createGain();
   o.type = type;
@@ -346,7 +590,9 @@ function soundPop(){ playTone(420,0.12,'triangle',0.15); }
 function soundUnlock(){ playTone(880,0.36,'triangle',0.14); }
 function soundLevelUp(){ playTone(560,0.32,'sine',0.14); setTimeout(()=>playTone(720,0.26,'sine',0.12),70); }
 
-/* -------- Data & State (keep original keys) -------- */
+/* ---------------------------
+  Data & state (keep)
+  ---------------------------*/
 const POEMS = [
   "Eres la melodía que mi corazón no sabía que necesitaba.",
   "Cada mariposa que capturas me acerca más a ti.",
@@ -360,10 +606,28 @@ const POEMS = [
   "En cada pequeño detalle tuyo, hallé una canción que no sabía que necesitaba."
 ];
 
+const TYPE_PHRASES = {
+  gold: [
+    "Eres oro en mi vida; no te cambio por nada.",
+    "Tu brillo es la brújula que me guía.",
+    "La paz que tengo cuando estás cerca no cabe en palabras."
+  ],
+  blue: [
+    "Tu calma convierte mi tormenta en mar en calma.",
+    "Con cada mirada tuya el tiempo se desacelera.",
+    "Eres la nota perfecta de una melodía olvidada."
+  ],
+  pink: [
+    "Hay cosas que solo se dicen con el corazón en la mano.",
+    "Si volamos juntos, prometo sostener tu risa.",
+    "Tus manos dibujan rutas que quiero seguir."
+  ]
+};
+
 const COLLECT_IMAGES = {
-  gold: "data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%20200'><defs><radialGradient%20id='g'%20cx='50%25'%20cy='40%25'%20r='60%25'><stop%20offset='0'%20stop-color='%23ffd86b'/><stop%20offset='1'%20stop-color='%23ff9f3b'/></radialGradient><filter%20id='f'%20x='-30%25'%20y='-30%25'%20width='160%25'%20height='160%25'><feGaussianBlur%20stdDeviation='6'%20result='b'/></filter></defs><rect%20width='100%25'%20height='100%25'%20fill='transparent'/><g%20filter='url(%23f)'><ellipse%20cx='100'%20cy='100'%20rx='62'%20ry='44'%20fill='url(%23g)'%20opacity='0.95'/></g><path%20d='M60%20100%20C30%2060%2080%2050%20100%2070%20C120%2050%20170%2060%20140%20100%20C170%20140%20120%20150%20100%20130%20C80%20150%2030%20140%2060%20100Z'%20fill='rgba(255,255,255,.12)'/></svg>",
-  blue: "data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%20200'><defs><radialGradient%20id='g'%20cx='50%25'%20cy='40%25'%20r='60%25'><stop%20offset='0'%20stop-color='%239fb9ff'/><stop%20offset='1'%20stop-color='%236f9bff'/></radialGradient><filter%20id='f'%20x='-30%25'%20y='-30%25'%20width='160%25'%20height='160%25'><feGaussianBlur%20stdDeviation='6'%20result='b'/></filter></defs><rect%20width='100%25'%20height='100%25'%20fill='transparent'/><g%20filter='url(%23f)'><ellipse%20cx='100'%20cy='100'%20rx='62'%20ry='44'%20fill='url(%23g)'%20opacity='0.95'/></g><path%20d='M60%20100%20C30%2060%2080%2050%20100%2070%20C120%2050%20170%2060%20140%20100%20C170%20140%20120%20150%20100%20130%20C80%20150%2030%20140%2060%20100Z'%20fill='rgba(255,255,255,.06)'/></svg>",
-  pink: "data:image/svg+xml;utf8,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20200%20200'><defs><radialGradient%20id='g'%20cx='50%25'%20cy='40%25'%20r='60%25'><stop%20offset='0'%20stop-color='%23ffa3e0'/><stop%20offset='1'%20stop-color='%23d77bff'/></radialGradient><filter%20id='f'%20x='-30%25'%20y='-30%25'%20width='160%25'%20height='160%25'><feGaussianBlur%20stdDeviation='6'%20result='b'/></filter></defs><rect%20width='100%25'%20height='100%25'%20fill='transparent'/><g%20filter='url(%23f)'><ellipse%20cx='100'%20cy='100'%20rx='62'%20ry='44'%20fill='url(%23g)'%20opacity='0.95'/></g><path%20d='M60%20100%20C30%2060%2080%2050%20100%2070%20C120%2050%20170%2060%20140%20100%20C170%20140%20120%20150%20100%20130%20C80%20150%2030%20140%2060%20100Z'%20fill='rgba(255,255,255,.08)'/></svg>"
+  gold: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><radialGradient id='g' cx='50%' cy='40%' r='60%'><stop offset='0' stop-color='#ffd86b'/><stop offset='1' stop-color='#ff9f3b'/></radialGradient></defs><rect width='100%' height='100%' fill='transparent'/><ellipse cx='100' cy='100' rx='62' ry='44' fill='url(#g)' opacity='0.95'/></svg>",
+  blue: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><radialGradient id='g' cx='50%' cy='40%' r='60%'><stop offset='0' stop-color='#9fb9ff'/><stop offset='1' stop-color='#6f9bff'/></radialGradient></defs><rect width='100%' height='100%' fill='transparent'/><ellipse cx='100' cy='100' rx='62' ry='44' fill='url(#g)' opacity='0.95'/></svg>",
+  pink: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><radialGradient id='g' cx='50%' cy='40%' r='60%'><stop offset='0' stop-color='#ffa3e0'/><stop offset='1' stop-color='#d77bff'/></radialGradient></defs><rect width='100%' height='100%' fill='transparent'/><ellipse cx='100' cy='100' rx='62' ry='44' fill='url(#g)' opacity='0.95'/></svg>"
 };
 
 const stage = document.getElementById('stage');
@@ -377,37 +641,31 @@ const collectionGrid = document.getElementById('collectionGrid');
 const resultModal = document.getElementById('resultModal');
 const finalScoreEl = document.getElementById('finalScore');
 const levelProgressEl = document.getElementById('levelProgress');
+const nextBadge = document.getElementById('nextBadge');
 
 let score = 0;
 let level = 1;
 let unlocked = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ return []; } })();
 let collection = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ return {}; } })();
+let collectionDetails = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyCollectionDetails_v1')||'{}'); }catch(e){ return {}; } })();
 
-let spawnInterval = null;
+let spawnTimerId = null;
 let paused = false;
 let challengeCountdown = null;
 let challengeTimer = 30;
-// ==========================
-// Butterfly counters (Gold, Blue, Pink)
-// ==========================
 let butterflyCounters = { gold: 0, blue: 0, pink: 0 };
-
-// cargar desde localStorage si existe
 const storedCounters = JSON.parse(localStorage.getItem('butterflyCounters_v1') || 'null');
 if(storedCounters) butterflyCounters = storedCounters;
-
-// Inicializar HUD con contadores
 document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
 document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
 document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
 
-/* central arrays for active entities */
 const butterflies = [];
 const particles = [];
 
-/* ==========================
-   PARTICLES
-   ========================== */
+/* ---------------------------
+  PARTICLES (kept)
+  ---------------------------*/
 function createParticles(count=32){
   const rect = stage.getBoundingClientRect();
   for(let i=0;i<count;i++){
@@ -424,60 +682,45 @@ function createParticles(count=32){
     particles.push({el:p, dur: parseFloat(p.style.animationDuration)});
   }
 }
-createParticles(30);
+createParticles(28);
 
-/* ==========================
-   SPAWN LOGIC
-   ========================== */
-let spawnTimerId = null;
-function scheduleNextSpawn(rateMs = 1200){
-  clearTimeout(spawnTimerId);
-  spawnTimerId = setTimeout(()=>{ spawnButterfly(); scheduleNextSpawn(rateMs + (Math.random()*500 - 250)); }, rateMs + Math.random()*400);
-}
-function startSpawning(rateMs=1200){
-  if(spawnTimerId) clearTimeout(spawnTimerId);
-  scheduleNextSpawn(rateMs);
-}
-function stopSpawning(){
-  if(spawnTimerId) clearTimeout(spawnTimerId);
-  spawnTimerId = null;
-}
-
-/* ==========================
-   Create a butterfly (DOM + model entry)
-   ========================== */
+/* ---------------------------
+  SPAWN logic (kept + robust guard)
+  ---------------------------*/
 let butterflyId = 0;
 function spawnButterfly(){
+  const rect = stage.getBoundingClientRect();
+  // guard: if stage height is zero (race condition), retry slightly later
+  if(rect.width === 0 || rect.height === 0){
+    setTimeout(spawnButterfly, 120);
+    return;
+  }
+
   const b = document.createElement('div');
   b.className = 'butterfly';
   b.dataset.id = ++butterflyId;
 
-  // size variability
   const scale = (0.75 + Math.random()*0.9);
   b.style.width = (48*scale) + 'px';
   b.style.height = (48*scale) + 'px';
 
   b.innerHTML = `<div class="wing left"></div><div class="wing right"></div><div class="body"></div>`;
 
-  const rect = stage.getBoundingClientRect();
-  const startX = Math.random()*rect.width;
+  const startX = Math.random()*Math.max(80, rect.width-80);
   const startY = rect.height + 40;
   b.style.left = startX + 'px';
   b.style.top = startY + 'px';
 
-  // types & rarity
   const r = Math.random();
   if(r < 0.03){ b.dataset.type='gold'; b.dataset.points=5; }
   else if(r < 0.09){ b.dataset.type='blue'; b.dataset.points=2; }
   else if(r < 0.16){ b.dataset.type='pink'; b.dataset.points=1; }
   else { b.dataset.type='normal'; b.dataset.points=1; }
 
-  // add data-type class so CSS selectors work robustly
   b.classList.add(b.dataset.type);
 
   const paths = ['up','zigzag','wave'];
   const path = paths[Math.floor(Math.random()*paths.length)];
-
   const duration = 7000 + Math.random()*9000;
   const model = {
     id: b.dataset.id,
@@ -491,20 +734,15 @@ function spawnButterfly(){
     scale
   };
 
-  // pointer handler
   b.addEventListener('pointerdown', onCapture);
 
-  // append and register
   stage.appendChild(b);
   butterflies.push(model);
 
-  // auto remove as backup
   setTimeout(()=>{ if(b.parentNode){ b.remove(); } }, duration + 1400);
 }
 
-/* ==========================
-   Central animation loop
-   ========================== */
+/* animate loop (kept) */
 function animateAll(now){
   for(let i = butterflies.length - 1; i >= 0; i--){
     const m = butterflies[i];
@@ -538,22 +776,17 @@ function animateAll(now){
       butterflies.splice(i,1);
     }
   }
-
   requestAnimationFrame(animateAll);
 }
 requestAnimationFrame(animateAll);
-
-/* ==========================
-   Ease
-   ========================== */
 function easeInOutSine(x){ return -(Math.cos(Math.PI*x)-1)/2; }
 
-/* ==========================
-   Capture handling
-   ========================== */
+/* ---------------------------
+  Capture handling (kept)
+  ---------------------------*/
 let lastSpecialRomanticAt = -1;
 function onCapture(e){
-  if(audioCtx.state === 'suspended') audioCtx.resume();
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 
   const el = e.currentTarget;
   if(!el || el._captured) return;
@@ -571,45 +804,47 @@ function onCapture(e){
   const poem = POEMS[Math.floor(Math.random()*POEMS.length)];
   showFloatingMessage(poem);
 
-  if(el.dataset.type === 'gold'){
+  const type = el.dataset.type || 'normal';
+
+  if(type === 'gold'){
     butterflyCounters.gold++;
     collection.gold = true;
-    localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
-    localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+    const phrase = pickupTypePhrase('gold');
+    if(phrase) pushUnlocked(phrase);
+    saveCollectionState();
     document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
     showFloatingMessage('¡Eres increíble! ¡Capturaste una Dorada!');
     soundUnlock();
   }
 
-  if(el.dataset.type === 'blue'){
+  if(type === 'blue'){
     butterflyCounters.blue++;
-    localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+    const phrase = pickupTypePhrase('blue');
+    if(phrase) pushUnlocked(phrase);
+    saveCollectionState();
     document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
     slowAllButterflies(3500);
     showFloatingMessage('Mariposa azul - El tiempo parece ralentizarse.');
   }
 
-  if(el.dataset.type === 'pink'){
+  if(type === 'pink'){
     butterflyCounters.pink++;
-    localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+    const phrase = pickupTypePhrase('pink');
+    if(phrase) pushUnlocked(phrase);
+    saveCollectionState();
     document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
-    const special = "Mariposa Rosa - Hay cosas que sólo se dicen cuando volamos juntos.";
-    showFloatingMessage(special);
-    collection.pink = true;
-    localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
+    showFloatingMessage("Mariposa Rosa - Hay cosas que sólo se dicen cuando volamos juntos.");
+    soundUnlock();
   }
 
-  // unlock diary every 5 points
   if(score % 5 === 0){
     const remaining = POEMS.filter(p => !unlocked.includes(p));
     const pick = remaining.length ? remaining[Math.floor(Math.random()*remaining.length)] : POEMS[Math.floor(Math.random()*POEMS.length)];
-    unlocked.push(pick);
-    localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked));
+    pushUnlocked(pick);
     showFloatingMessage('Frase desbloqueada para tu Diario.');
     soundUnlock();
   }
 
-  // Level up every 10 points
   const newLevel = Math.floor(score / 10) + 1;
   if(newLevel > level){
     level = newLevel;
@@ -617,29 +852,46 @@ function onCapture(e){
     onLevelUp();
   }
   updateLevelProgress();
+  updateNextBadge();
 
-  // Romantic special message at 20 points (only once per crossing)
   if(score >= 20 && lastSpecialRomanticAt < 20){
     lastSpecialRomanticAt = 20;
     showFloatingMessage('✨ Mensaje romántico especial desbloqueado — 20 puntos ✨');
     const specialPhrase = "Cuando llegaste, el mundo cambió su color.";
-    if(!unlocked.includes(specialPhrase)){ unlocked.push(specialPhrase); localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); }
+    if(!unlocked.includes(specialPhrase)){ pushUnlocked(specialPhrase); }
     soundUnlock();
   }
 }
 
-/* ==========================
-   slow effect
-   ========================== */
+/* push phrase to diary (kept) */
+function pushUnlocked(phrase){
+  if(!phrase) return;
+  if(!unlocked.includes(phrase)) unlocked.push(phrase);
+  localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked));
+  renderDiary();
+}
+
+/* per-type phrase capture (kept) */
+function pickupTypePhrase(type){
+  if(!TYPE_PHRASES[type]) return null;
+  collectionDetails[type] = collectionDetails[type] || [];
+  const available = TYPE_PHRASES[type].filter(p => !collectionDetails[type].includes(p));
+  const pick = available.length ? available[Math.floor(Math.random()*available.length)] : TYPE_PHRASES[type][Math.floor(Math.random()*TYPE_PHRASES[type].length)];
+  if(!collectionDetails[type].includes(pick)) collectionDetails[type].push(pick);
+  localStorage.setItem('butterflyCollectionDetails_v1', JSON.stringify(collectionDetails));
+  return pick;
+}
+function saveCollectionState(){
+  localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
+  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
+}
+
+/* slow, level up (kept) */
 function slowAllButterflies(duration=3000){
   const list = Array.from(stage.querySelectorAll('.butterfly'));
   list.forEach(b=>{ b.style.transition = 'filter .3s, opacity .3s'; b.style.opacity = 0.78; b._slow = true; });
   setTimeout(()=>{ list.forEach(b=>{ if(b.parentNode){ b.style.opacity = 1; b._slow = false; } }); }, duration);
 }
-
-/* ==========================
-   Level up visuals & spawn rate tweak
-   ========================== */
 function onLevelUp(){
   soundLevelUp();
   const rate = Math.max(420, 1200 - (level-1)*80);
@@ -648,7 +900,7 @@ function onLevelUp(){
   showFloatingMessage('¡Nivel '+level+'!');
 }
 function spawnLevelParticles(){
-  const burstCount = 14 + Math.floor(level*2);
+  const burstCount = 12 + Math.floor(level*2);
   for(let i=0;i<burstCount;i++){
     const p = document.createElement('div');
     p.className = 'particle';
@@ -664,9 +916,7 @@ function spawnLevelParticles(){
   }
 }
 
-/* ==========================
-   Floating message
-   ========================== */
+/* floating message (kept) */
 let floatTimeout = null;
 function showFloatingMessage(text){
   floatingMsg.textContent = text;
@@ -677,9 +927,7 @@ function showFloatingMessage(text){
   floatTimeout = setTimeout(()=>{ floatingMsg.classList.remove('show'); }, 2200);
 }
 
-/* ==========================
-   Diary & Collection (modals)
-   ========================== */
+/* Diary & Collection rendering (adjusted renderCollection for preview only) */
 document.getElementById('diaryBtn').addEventListener('click', ()=> openDiary());
 document.getElementById('closeDiary').addEventListener('click', ()=> closeDiary());
 document.getElementById('clearDiary').addEventListener('click', ()=>{ unlocked = []; localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); renderDiary(); });
@@ -690,7 +938,7 @@ function renderDiary(){
     diaryList.innerHTML = '<div style="opacity:.6">No hay frases desbloqueadas. Captura 5 mariposas para empezar.</div>';
     return;
   }
-  unlocked.forEach(p=>{
+  unlocked.slice().reverse().forEach(p=>{
     const d = document.createElement('div'); d.className='entry'; d.textContent = p; diaryList.appendChild(d);
   });
 }
@@ -699,28 +947,74 @@ function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttrib
 
 document.getElementById('collectionBtn').addEventListener('click', ()=> openCollection());
 document.getElementById('closeCollection').addEventListener('click', ()=> closeCollection());
+
+/* === REPLACED renderCollection: creates a live visual preview using .butterfly.preview,
+       preserves all IDs and storage behavior, only changes rendering inside the modal === */
 function renderCollection(){
   collectionGrid.innerHTML = '';
   const keys = ['gold','blue','pink'];
   keys.forEach(k=>{
     const card = document.createElement('div'); card.className='collect-card';
-    if(collection[k]){
-      const img = document.createElement('img'); img.src = COLLECT_IMAGES[k]; card.appendChild(img);
-      const h = document.createElement('div'); h.textContent = k.charAt(0).toUpperCase()+k.slice(1)+' — Desbloqueada'; card.appendChild(h);
+
+    // THUMB wrapper
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = 'thumb';
+
+    if(collection[k] || (butterflyCounters[k] && butterflyCounters[k] > 0)){
+      // create a miniature "live" butterfly using same classes/animation
+      const preview = document.createElement('div');
+      preview.className = `butterfly preview ${k}`;
+      preview.style.width = '72px';
+      preview.style.height = '72px';
+      preview.innerHTML = `<div class="wing left"></div><div class="wing right"></div><div class="body"></div>`;
+      thumbWrap.appendChild(preview);
     } else {
-      const placeholder = document.createElement('div'); placeholder.style.width='100%'; placeholder.style.height='86px'; placeholder.style.display='grid'; placeholder.style.placeItems='center'; placeholder.style.opacity='.35'; placeholder.textContent='???'; card.appendChild(placeholder);
-      const h = document.createElement('div'); h.textContent = k.charAt(0).toUpperCase()+k.slice(1)+' — Bloqueada'; card.appendChild(h);
+      // fallback placeholder
+      const placeholder = document.createElement('div');
+      placeholder.style.width = '86px';
+      placeholder.style.height = '86px';
+      placeholder.style.display = 'grid';
+      placeholder.style.placeItems = 'center';
+      placeholder.style.opacity = '.35';
+      placeholder.textContent = '???';
+      thumbWrap.appendChild(placeholder);
     }
-    // show count (new): how many of this special type the player has captured
-    const cnt = document.createElement('div'); cnt.style.fontWeight='800'; cnt.style.marginTop='6px';
-    if(k === 'gold') cnt.textContent = `Capturadas: ${butterflyCounters.gold || 0}`;
-    if(k === 'blue') cnt.textContent = `Capturadas: ${butterflyCounters.blue || 0}`;
-    if(k === 'pink') cnt.textContent = `Capturadas: ${butterflyCounters.pink || 0}`;
-    card.appendChild(cnt);
+    card.appendChild(thumbWrap);
+
+    // meta area (keeps layout compact)
+    const metaWrap = document.createElement('div');
+    metaWrap.style.display = 'flex';
+    metaWrap.style.flexDirection = 'column';
+    metaWrap.style.alignItems = 'center';
+    metaWrap.style.width = '100%';
+
+    const title = document.createElement('div');
+    title.style.fontWeight = '800';
+    title.style.marginTop = '6px';
+    title.textContent = k.charAt(0).toUpperCase()+k.slice(1) + ((collection[k] || (butterflyCounters[k] && butterflyCounters[k] > 0)) ? ' — Desbloqueada' : ' — Bloqueada');
+    metaWrap.appendChild(title);
+
+    const cnt = document.createElement('div');
+    cnt.style.fontWeight='800';
+    cnt.style.marginTop='6px';
+    cnt.textContent = `Capturadas: ${butterflyCounters[k] || 0}`;
+    metaWrap.appendChild(cnt);
+
+    const phrasesBox = document.createElement('div'); phrasesBox.className = 'collect-phrases';
+    const list = collectionDetails[k] || [];
+    if(list.length){
+      list.forEach(ph=>{
+        const pEl = document.createElement('div'); pEl.style.marginBottom='6px'; pEl.textContent = "• " + ph; phrasesBox.appendChild(pEl);
+      });
+    } else {
+      const em = document.createElement('div'); em.style.opacity = '.5'; em.textContent = 'Sin frases capturadas aún.';
+      phrasesBox.appendChild(em);
+    }
+    metaWrap.appendChild(phrasesBox);
+
+    card.appendChild(metaWrap);
     collectionGrid.appendChild(card);
   });
-
-  // also update the numeric summary counters in modal header
   document.getElementById('colCountGold').textContent = butterflyCounters.gold || 0;
   document.getElementById('colCountBlue').textContent = butterflyCounters.blue || 0;
   document.getElementById('colCountPink').textContent = butterflyCounters.pink || 0;
@@ -728,27 +1022,102 @@ function renderCollection(){
 function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
 function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); }
 
-/* ==========================
-   Themes cycling
-   ========================== */
-const themes = ['theme-aurora','theme-default','theme-night','theme-sunrise','theme-galaxy'];
-let themeIndex = 0;
-document.getElementById('themeBtn').addEventListener('click', ()=>{
-  document.body.classList.remove(...themes);
-  themeIndex = (themeIndex + 1) % themes.length;
-  document.body.classList.add(themes[themeIndex]);
-});
+/* ---------------------------
+  Theme manager: available themes + modal
+  ---------------------------*/
+const THEMES = [
+  { id: 'theme-aurora', name: 'Aurora (default)', description: 'Estética púrpura suave y neón.' },
+  { id: 'theme-night', name: 'Noche (contraste)', description: 'Fondo oscuro, acentos azules.' },
+  { id: 'theme-sunset', name: 'Atardecer', description: 'Tonos cálidos y dorados.' },
+  { id: 'theme-pastel', name: 'Pastel', description: 'Tono claro y suave.' }
+];
 
-/* ==========================
-   Challenge 30s
-   ========================== */
+const themeGrid = document.getElementById('themeGrid');
+const themeModal = document.getElementById('themeModal');
+const closeThemeBtn = document.getElementById('closeTheme');
+const resetThemeBtn = document.getElementById('resetTheme');
+const themeBtn = document.getElementById('themeBtn');
+
+function buildThemeCards(){
+  themeGrid.innerHTML = '';
+  THEMES.forEach(t=>{
+    const card = document.createElement('div'); card.className = 'theme-card';
+    const preview = document.createElement('div'); preview.className = 'theme-preview';
+    // make a quick preview background that reflects the theme via inline style
+    if(t.id === 'theme-aurora') preview.style.background = 'linear-gradient(180deg,#0b0710,#25102b)';
+    if(t.id === 'theme-night') preview.style.background = 'linear-gradient(180deg,#03040a,#0b1020)';
+    if(t.id === 'theme-sunset') preview.style.background = 'linear-gradient(180deg,#2b0710,#3a151c)';
+    if(t.id === 'theme-pastel') preview.style.background = 'linear-gradient(180deg,#fff7fb,#f2f6ff)';
+    preview.style.border = '1px solid rgba(255,255,255,0.04)';
+    preview.style.display = 'block';
+    card.appendChild(preview);
+
+    const title = document.createElement('div'); title.style.fontWeight='800'; title.textContent = t.name; card.appendChild(title);
+    const desc = document.createElement('div'); desc.className='small'; desc.textContent = t.description; card.appendChild(desc);
+
+    const actions = document.createElement('div'); actions.className = 'theme-actions';
+    const applyBtn = document.createElement('button'); applyBtn.className = 'btn'; applyBtn.textContent = 'Aplicar';
+    applyBtn.addEventListener('click', ()=> { applyTheme(t.id); closeThemeModal(); });
+    const previewBtn = document.createElement('button'); previewBtn.className = 'btn'; previewBtn.textContent = 'Vista';
+    previewBtn.addEventListener('click', ()=> { applyTheme(t.id, {persist:false}); });
+    actions.appendChild(previewBtn); actions.appendChild(applyBtn);
+    card.appendChild(actions);
+    themeGrid.appendChild(card);
+  });
+}
+buildThemeCards();
+
+function applyTheme(themeId, opts={persist:true}){
+  // remove any theme-* classes
+  const body = document.body;
+  THEMES.forEach(t=> body.classList.remove(t.id));
+  body.classList.add(themeId);
+  // store
+  if(opts.persist !== false) localStorage.setItem('butterflyTheme', themeId);
+  // update logo gradient variable if necessary (CSS vars handle visuals)
+}
+
+/* theme modal controls */
+themeBtn.addEventListener('click', ()=> openThemeModal());
+closeThemeBtn.addEventListener('click', ()=> closeThemeModal());
+resetThemeBtn.addEventListener('click', ()=> { applyTheme('theme-aurora'); });
+
+function openThemeModal(){ themeModal.classList.add('show'); themeModal.setAttribute('aria-hidden','false'); themeModal.querySelector('.modal').classList.add('show'); }
+function closeThemeModal(){ themeModal.classList.remove('show'); themeModal.setAttribute('aria-hidden','true'); themeModal.querySelector('.modal').classList.remove('show'); }
+
+/* load saved theme on init (fallback to aurora) */
+function loadSavedTheme(){
+  const saved = localStorage.getItem('butterflyTheme');
+  if(saved && THEMES.some(t=>t.id === saved)){
+    applyTheme(saved);
+  } else {
+    applyTheme('theme-aurora');
+  }
+}
+
+// intentar reproducir música automáticamente
+setTimeout(async ()=>{
+  try{
+    await bgAudio.play();
+    musicPlaying = true;
+    musicToggleBtn.textContent = '🔊 Música On';
+  }catch(e){
+    // si falla, el usuario debe tocar la pantalla por bloqueo del navegador
+  }
+}, 300);
+
+
+/* ---------------------------
+  Challenge, music, mobile menu, spawning scheduler...
+  (kept original behaviors; only small wiring around theme)
+  ---------------------------*/
 document.getElementById('challengeBtn').addEventListener('click', ()=> startChallenge(30));
 document.getElementById('retryBtn').addEventListener('click', ()=> { closeResult(); resetAfterChallengeStart(); });
 document.getElementById('closeResult').addEventListener('click', ()=> { closeResult(); resumeNormal(); });
 
 function startChallenge(seconds=30){
   score = 0; scoreEl.textContent = '0';
-  unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2') || '[]') || unlocked;
+  try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2') || '[]') || unlocked; }catch(e){}
   level = 1; levelEl.textContent = level; updateLevelProgress();
   paused = false;
   document.getElementById('timerPanel').style.display = 'block';
@@ -772,16 +1141,35 @@ function closeResult(){ resultModal.classList.remove('show'); resultModal.setAtt
 function resetAfterChallengeStart(){ closeResult(); startSpawning(1200); document.getElementById('timerPanel').style.display = 'none'; }
 function resumeNormal(){ startSpawning(1200); }
 
-/* ==========================
-   Music: external mp3 + toggle
-   ========================== */
 const bgAudio = document.getElementById('bgMusic');
+// ===== Volúmenes (fijo, una sola vez) =====
+const musicSlider = document.getElementById('musicSlider');
+const fxSlider = document.getElementById('fxSlider');
+
+// cargar valores guardados
+musicSlider.value = localStorage.getItem('bgMusicVolume') || 0.3;
+fxSlider.value = localStorage.getItem('fxVolume') || 0.9;
+
+bgAudio.volume = Number(musicSlider.value);
+if(s_masterGain) s_masterGain.gain.value = Number(fxSlider.value);
+
+musicSlider.addEventListener('input', ()=>{
+  bgAudio.volume = Number(musicSlider.value);
+  localStorage.setItem('bgMusicVolume', bgAudio.volume);
+});
+
+fxSlider.addEventListener('input', ()=>{
+  if(s_masterGain){
+    s_masterGain.gain.value = Number(fxSlider.value);
+    localStorage.setItem('fxVolume', s_masterGain.gain.value);
+  }
+});
+
 let musicPlaying = false;
 const musicToggleBtn = document.getElementById('musicToggle');
-// ensure button shows actual state on load
 musicToggleBtn.textContent = '🔇 Música Off';
 document.getElementById('musicToggle').addEventListener('click', async ()=>{
-  if(audioCtx.state === 'suspended') await audioCtx.resume();
+  if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
   try{
     if(!musicPlaying){
       await bgAudio.play();
@@ -794,13 +1182,11 @@ document.getElementById('musicToggle').addEventListener('click', async ()=>{
       musicToggleBtn.textContent = '🔇 Música Off';
     }
   }catch(e){
-    showFloatingMessage('Toca para permitir reproducción de audio (algunos navegadores bloquean autoplay).');
+    showFloatingMessage('Toca la pantalla para permitir reproducción de audio.');
   }
 });
 
-/* ==========================
-   Touch prevention + mobile pointer support
-   ========================== */
+/* touch prevention + pointer bridging (kept) */
 document.addEventListener('touchmove', function(e){
   if(e.target.closest('#stage')) e.preventDefault();
 },{passive:false});
@@ -810,53 +1196,25 @@ stage.addEventListener('pointerdown', function(e){
   if(b) b.dispatchEvent(new Event('pointerdown',{bubbles:true,cancelable:true}));
 });
 
-/* ==========================
-   Level progress visual
-   ========================== */
-function updateLevelProgress(){
-  const exp = score;
-  const progressPct = ((exp % 10) / 10) * 100;
-  levelProgressEl.style.width = progressPct + '%';
-}
+/* Level progress & next badge (kept) */
+function updateLevelProgress(){ const exp = score; const progressPct = ((exp % 10) / 10) * 100; levelProgressEl.style.width = progressPct + '%'; }
+function updateNextBadge(){ const need = 5 - (score % 5 || 5); nextBadge.textContent = `Próx frase: ${need}`; }
 
-/* ==========================
-   Accessibility & helpers
-   ========================== */
+/* Accessibility helpers (kept) */
 document.addEventListener('keydown', (e)=>{
   if(e.key === 'Escape'){
     if(diaryModal.classList.contains('show')) closeDiary();
     if(collectionModal.classList.contains('show')) closeCollection();
     if(resultModal.classList.contains('show')) closeResult();
-    // hide mobile menu if open
+    if(themeModal.classList.contains('show')) closeThemeModal();
     document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('menuToggle').classList.remove('open');
   }
 });
 
-/* ==========================
-   Init & start
-   ========================== */
-(function init(){
-  document.body.classList.remove(...themes);
-  document.body.classList.add('theme-aurora');
-  themeIndex = 0;
-
-  document.getElementById('level').textContent = level;
-  scoreEl.textContent = score;
-  updateLevelProgress();
-  startSpawning(1200);
-
-  try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ unlocked = []; }
-  try{ collection = JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ collection = {}; }
-
-  // responsiveness: add particles on resize if needed
-  window.addEventListener('resize', ()=>{
-    const existing = stage.querySelectorAll('.particle').length;
-    const want = Math.max(16, Math.min(96, Math.floor(window.innerWidth/24)));
-    if(existing < want) createParticles(want - existing);
-  });
-
-  // build mobileMenu buttons that call original controls by id
-  const mobileMenu = document.getElementById('mobileMenu');
+/* Mobile menu (kept) and hamburger stacking already fixed earlier */
+(function buildMobileMenu() {
+  const mobilePanel = document.getElementById('mobilePanel');
   const mobileButtons = [
     {label:'Cambiar Tema', target:'themeBtn'},
     {label:'Desafío 30s', target:'challengeBtn'},
@@ -864,37 +1222,201 @@ document.addEventListener('keydown', (e)=>{
     {label:'Colección', target:'collectionBtn'},
     {label:'Música', target:'musicToggle'}
   ];
-  mobileButtons.forEach(b=>{
+
+  mobilePanel.innerHTML = '';
+
+  // ⛔ YA NO SE CREA NADA DENTRO DEL FOR EACH
+  mobileButtons.forEach(b => {
     const btn = document.createElement('button');
     btn.className = 'btn';
+    btn.style.width = '100%';
+    btn.style.textAlign = 'left';
+    btn.style.padding = '10px';
+    btn.style.marginBottom = '6px';
     btn.textContent = b.label;
-    btn.addEventListener('click', ()=> {
+
+    btn.addEventListener('click', () => {
       const orig = document.getElementById(b.target);
-      if(orig) orig.click();
-      // close mobile menu after action
-      mobileMenu.classList.remove('open');
+      if (orig) orig.click();
+      closeMobileMenu();
     });
-    mobileMenu.appendChild(btn);
+
+    mobilePanel.appendChild(btn);
   });
 
-  // hamburger toggle
-  document.getElementById('menuToggle').addEventListener('click', ()=> {
-    const m = document.getElementById('mobileMenu');
-    m.classList.toggle('open');
+  // ⛔ SLIDERS SE CREAN UNA SOLA VEZ AQUÍ (fuera del forEach)
+  const sliderContainer = document.createElement('div');
+  sliderContainer.style.marginTop = '10px';
+  sliderContainer.style.padding = '8px 0';
+
+  // Volumen Música
+  const musicVolLabel = document.createElement('div');
+  musicVolLabel.style.margin = '6px 0 2px';
+  musicVolLabel.style.fontSize = '13px';
+  musicVolLabel.style.opacity = '.8';
+  musicVolLabel.textContent = 'Volumen Música';
+
+  const musicSlider = document.createElement('input');
+  musicSlider.type = 'range';
+  musicSlider.min = 0;
+  musicSlider.max = 1;
+  musicSlider.step = 0.01;
+  musicSlider.value = bgAudio.volume || 0.3;
+  musicSlider.style.width = '100%';
+  musicSlider.addEventListener('input', () => {
+    bgAudio.volume = Number(musicSlider.value);
+    localStorage.setItem('bgMusicVolume', bgAudio.volume);
   });
 
-})();
-window.spawnButterfly = spawnButterfly;
-function removeButterflyById(id){
-  for(let i=butterflies.length-1;i>=0;i--){
-    if(butterflies[i].id == id){
-      if(butterflies[i].el.parentNode) butterflies[i].el.remove();
-      butterflies.splice(i,1);
+  // Volumen Efectos
+  const fxVolLabel = document.createElement('div');
+  fxVolLabel.style.margin = '6px 0 2px';
+  fxVolLabel.style.fontSize = '13px';
+  fxVolLabel.style.opacity = '.8';
+  fxVolLabel.textContent = 'Volumen Efectos';
+
+  const fxSlider = document.createElement('input');
+  fxSlider.type = 'range';
+  fxSlider.min = 0;
+  fxSlider.max = 1;
+  fxSlider.step = 0.01;
+  fxSlider.value = s_masterGain.gain.value;
+  fxSlider.style.width = '100%';
+  fxSlider.addEventListener('input', () => {
+    s_masterGain.gain.value = Number(fxSlider.value);
+    localStorage.setItem('fxVolume', s_masterGain.gain.value);
+  });
+
+  // Añadir sliders al contenedor
+  sliderContainer.appendChild(musicVolLabel);
+  sliderContainer.appendChild(musicSlider);
+  sliderContainer.appendChild(fxVolLabel);
+  sliderContainer.appendChild(fxSlider);
+
+  // Agregar una sola vez
+  mobilePanel.appendChild(sliderContainer);
+
+  // toggle del menú
+  const menuToggle = document.getElementById('menuToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+    menuToggle.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (ev) => {
+    const mroot = document.getElementById('mobileMenu');
+    const toggle = document.getElementById('menuToggle');
+    if (!mroot.contains(ev.target) && !toggle.contains(ev.target) && mroot.classList.contains('open')) {
+      closeMobileMenu();
     }
+  }, true);
+
+  function closeMobileMenu() {
+    mobileMenu.classList.remove('open');
+    menuToggle.classList.remove('open');
   }
+})();
+
+/* === REPLACED spawning scheduler: now spawns multiple butterflies per tick and adapts to screen size === */
+let spawnTimer = null;
+function scheduleNextSpawn(rateMs = 1200){
+  clearTimeout(spawnTimer);
+
+  // add variability in interval
+  const actualRate = Math.max(160, Math.round(rateMs + (Math.random()*600 - 300)));
+
+  spawnTimer = setTimeout(()=>{
+    // determine how many to spawn this tick based on width
+    const w = window.innerWidth || 1024;
+    let minCount = 1, maxCount = 3;
+    if(w >= 1400){ minCount = 3; maxCount = 6; }
+    else if(w >= 1000){ minCount = 2; maxCount = 4; }
+    else if(w >= 720){ minCount = 2; maxCount = 3; }
+    else { minCount = 1; maxCount = 2; } // mobile: fewer at once
+
+    const spawnCount = Math.floor(minCount + Math.random()*(maxCount - minCount + 1));
+
+    for(let i=0;i<spawnCount;i++){
+      // stagger slightly
+      setTimeout(()=>{ spawnButterfly(); }, Math.round(i * (actualRate / Math.max(3, spawnCount))));
+    }
+
+    // schedule next with slight variation
+    const nextBase = Math.max(220, rateMs + (Math.random()*800 - 400));
+    scheduleNextSpawn(nextBase);
+  }, actualRate);
 }
-startSpawning(1200);
+
+function startSpawning(rateMs=1200){ if(spawnTimer) clearTimeout(spawnTimer); scheduleNextSpawn(rateMs); }
+function stopSpawning(){ if(spawnTimer) clearTimeout(spawnTimer); spawnTimer = null; }
+function removeButterflyById(id){ for(let i=butterflies.length-1;i>=0;i--){ if(butterflies[i].id == id){ if(butterflies[i].el.parentNode) butterflies[i].el.remove(); butterflies.splice(i,1); } } }
+
+/* Init: load theme + spawn right away + restore data (kept) */
+(function init(){
+  // Restaurar volumen guardado
+  const svMus = localStorage.getItem('bgMusicVolume');
+  if(svMus !== null) bgAudio.volume = Number(svMus);
+
+  const svFx = localStorage.getItem('fxVolume');
+  if(svFx !== null && s_masterGain) s_masterGain.gain.value = Number(svFx);
+
+  // load saved theme (new)
+  loadSavedTheme();
+
+  document.getElementById('level').textContent = level;
+  scoreEl.textContent = score;
+  updateLevelProgress();
+  updateNextBadge();
+
+  // spawn a few right away so mobile users see activity immediately
+  spawnButterfly();
+  setTimeout(()=>spawnButterfly(), 220);
+  // start regular spawning
+  startSpawning(1200);
+
+  try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ unlocked = []; }
+  try{ collection = JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ collection = {}; }
+  try{ collectionDetails = JSON.parse(localStorage.getItem('butterflyCollectionDetails_v1')||'{}'); }catch(e){ collectionDetails = {}; }
+
+  window.addEventListener('resize', ()=>{
+    const existing = stage.querySelectorAll('.particle').length;
+    const want = Math.max(12, Math.min(96, Math.floor(window.innerWidth/24)));
+    if(existing < want) createParticles(want - existing);
+  });
+  // intentar autoplay
+  setTimeout(async ()=>{
+    try{
+      await bgAudio.play();
+      musicPlaying = true;
+      musicToggleBtn.textContent = '🔊 Música On';
+    }catch(e){}
+  }, 400);
+
+  // fallback: primer toque desbloquea audio
+  document.addEventListener('pointerdown', async ()=>{
+    if(!musicPlaying){
+      try{
+        await bgAudio.play();
+        musicPlaying = true;
+        musicToggleBtn.textContent = '🔊 Música On';
+      }catch(e){}
+    }
+  }, { once:true });
+})();
+// Forzar desbloqueo de audio al tocar la pantalla
+document.addEventListener('pointerdown', async ()=>{
+  if(!musicPlaying){
+    try{
+      await bgAudio.play();
+      musicPlaying = true;
+      musicToggleBtn.textContent = '🔊 Música On';
+    }catch(e){}
+  }
+}, { once:true });
+window.spawnButterfly = spawnButterfly;
+requestAnimationFrame(animateAll);
 </script>
 </body>
 </html>
-  
