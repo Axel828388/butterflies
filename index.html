@@ -778,7 +778,13 @@ function createParticles(count=32){
     stage.appendChild(p);
     particles.push({el:p, dur: parseFloat(p.style.animationDuration)});
   }
+  /* hide top-close buttons on small screens (we add bottom-centered ones) */
+  #closeDiary, #closeCollection, #closeTheme { display: none !important; }
 }
+
+/* When a modal is open, push header to background and soften it */
+.modal-open-ui .topbar{transform:translateY(-10px) scale(.99);opacity:.22;filter:blur(3px);transition:all .28s ease;}
+.modal-open-ui .topbar .title{opacity:.28}
 
 /* spawn heart-shaped particles at a specific position (relative to stage)
    type: 'gold'|'blue'|'pink' or other. x,y in pixels from stage left/top. */
@@ -1094,7 +1100,7 @@ function showFloatingMessage(text){
 }
 
 /* Diary & Collection rendering (adjusted renderCollection for preview only) */
-document.getElementById('diaryBtn').addEventListener('click', ()=> openDiary());
+document.getElementById('diaryBtn').addEventListener('click', ()=> { openDiary(); document.body.classList.add('modal-open-ui'); ensureModalFooter('diaryModal','closeDiary','Cerrar'); });
 document.getElementById('closeDiary').addEventListener('click', ()=> closeDiary());
 document.getElementById('clearDiary').addEventListener('click', ()=>{ unlocked = []; localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); renderDiary(); });
 
@@ -1139,7 +1145,7 @@ function renderDiary(){
   document.getElementById('diaryNext').disabled = (window.diaryPage >= pages-1);
 }
 function openDiary(){ renderDiary(); diaryModal.classList.add('show'); diaryModal.setAttribute('aria-hidden','false'); diaryModal.querySelector('.modal').classList.add('show'); }
-function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); }
+function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); document.body.classList.remove('modal-open-ui'); }
 
 document.getElementById('collectionBtn').addEventListener('click', ()=> openCollection());
 document.getElementById('closeCollection').addEventListener('click', ()=> closeCollection());
@@ -1209,8 +1215,8 @@ function renderCollection(){
   document.getElementById('colCountBlue').textContent = butterflyCounters.blue || 0;
   document.getElementById('colCountPink').textContent = butterflyCounters.pink || 0;
 }
-function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
-function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); }
+function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); document.body.classList.add('modal-open-ui'); ensureModalFooter('collectionModal','closeCollection','Cerrar'); }
+function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); document.body.classList.remove('modal-open-ui'); }
 
 /* ---------------------------
   Theme manager: available themes + modal
@@ -1274,6 +1280,29 @@ resetThemeBtn.addEventListener('click', ()=> { applyTheme('theme-aurora'); });
 
 function openThemeModal(){ themeModal.classList.add('show'); themeModal.setAttribute('aria-hidden','false'); themeModal.querySelector('.modal').classList.add('show'); }
 function closeThemeModal(){ themeModal.classList.remove('show'); themeModal.setAttribute('aria-hidden','true'); themeModal.querySelector('.modal').classList.remove('show'); }
+
+// Add a bottom-centered close button into modal content (used on mobile)
+function ensureModalFooter(modalId, closeBtnId, label){
+  try{
+    const mb = document.getElementById(modalId);
+    if(!mb) return;
+    const cont = mb.querySelector('.modal');
+    if(!cont) return;
+    if(cont.querySelector('.modal-footer-added')) return; // already added
+    const footer = document.createElement('div');
+    footer.className = 'modal-footer-added';
+    footer.style.display = 'flex';
+    footer.style.justifyContent = 'center';
+    footer.style.padding = '12px 0 6px';
+    footer.style.width = '100%';
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = label || 'Cerrar';
+    btn.addEventListener('click', ()=>{ const orig = document.getElementById(closeBtnId); if(orig) orig.click(); else { mb.classList.remove('show'); document.body.classList.remove('modal-open-ui'); } });
+    footer.appendChild(btn);
+    cont.appendChild(footer);
+  }catch(e){}
+}
 
 /* load saved theme on init (fallback to aurora) */
 function loadSavedTheme(){
