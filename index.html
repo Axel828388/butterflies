@@ -10,8 +10,7 @@
 <style>
 :root{
   --bg:#0f0b12;
-  --topbar-h:72px;
-  --footer-h:74px;
+  --header-h:72px;
   --card:rgba(20,10,30,.6);
   --accent:#8b5cf6;
   --accent-2:#b084ff;
@@ -81,13 +80,13 @@
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Poppins,Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
 body{background:var(--bg);color:var(--hud);overflow:hidden;-webkit-font-smoothing:antialiased}
-.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:var(--topbar-h,72px) 14px calc(var(--footer-h,74px) + env(safe-area-inset-bottom,18px));}
+.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:calc(var(--header-h) + env(safe-area-inset-top,12px)) 14px calc(74px + env(safe-area-inset-bottom,18px));}
 
 /* Drawer open overlay to darken and slightly blur the UI beneath the drawer */
-body.drawer-open::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.42);backdrop-filter:blur(4px);z-index:800;pointer-events:auto;transition:opacity .18s}
+body.drawer-open::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.42);backdrop-filter:blur(3px);z-index:700;pointer-events:none;transition:opacity .18s}
 
 /* Topbar */
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:700;position:fixed;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top,6px)) 14px 10px;background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:600;position:fixed;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top,6px)) 14px 10px;background:transparent;min-height:var(--header-h)}
 .title{display:flex;gap:12px;align-items:center}
 .logo{width:56px;height:56px;border-radius:12px;background:var(--logo-gradient);box-shadow:var(--butterfly-shadow);display:grid;place-items:center;font-weight:700;color:#fff;font-size:16px}
 .logo svg{width:36px;height:36px}
@@ -102,7 +101,7 @@ button.btn:active{transform:translateY(1px)}
 button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:center;min-width:44px}
 
 /* Hamburger (mobile) - stacked */
-.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px;align-items:center;position:relative;z-index:510}
+.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px;align-items:center;position:relative;z-index:820}
 .hamburger{ /* ensure column stacking when visible */
   display:inline-flex;
   flex-direction:column;
@@ -119,9 +118,9 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 
 /* Mobile slide panel */
 .mobileMenu{
-  position:fixed;right:0;top:0;height:100vh;display:flex;align-items:flex-start;z-index:950;transform:translateX(110%); transition:transform .28s cubic-bezier(.22,.9,.32,1);
+  position:fixed;right:0;top:0;height:100vh;display:flex;align-items:flex-start;z-index:800;transform:translateX(110%); transition:transform .28s cubic-bezier(.22,.9,.32,1);
 }
-.mobileMenu.panel{width:320px;height:100%;padding:14px;border-radius:12px 0 0 12px;box-shadow: -8px 18px 60px rgba(0,0,0,.6);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:1px solid rgba(255,255,255,0.03);backdrop-filter:blur(8px);overflow:auto;z-index:951}
+.mobileMenu.panel{width:320px;height:100%;padding:14px;border-radius:12px 0 0 12px;box-shadow: -8px 18px 60px rgba(0,0,0,.6);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:1px solid rgba(255,255,255,0.03);backdrop-filter:blur(8px);overflow:auto}
 .mobileMenu.open{transform:translateX(0)}
 
 /* Drawer menu items */
@@ -144,7 +143,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 .level-progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .28s cubic-bezier(.2,.9,.3,1)}
 
 /* Stage */
-.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - var(--topbar-h,72px) - var(--footer-h,74px) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
+.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - 220px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
 .particle{position:absolute;bottom:-10px;border-radius:50%;opacity:.9;pointer-events:none;animation:rise linear infinite}
 @keyframes rise{to{transform:translateY(-120vh);opacity:0}}
 
@@ -465,7 +464,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   .hud .panel{min-width:unset;padding:8px 10px}
   .logo{width:48px;height:48px;font-size:14px; border-radius:10px}
   .floating-msg{font-size:14px;padding:8px 12px}
-  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - var(--topbar-h,72px) - var(--footer-h,74px) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
+  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - 160px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
   .butterfly { min-width: 54px; min-height: 54px; }
 
   /* show hamburger on small screens */
@@ -778,13 +777,7 @@ function createParticles(count=32){
     stage.appendChild(p);
     particles.push({el:p, dur: parseFloat(p.style.animationDuration)});
   }
-  /* hide top-close buttons on small screens (we add bottom-centered ones) */
-  #closeDiary, #closeCollection, #closeTheme { display: none !important; }
 }
-
-/* When a modal is open, push header to background and soften it */
-.modal-open-ui .topbar{transform:translateY(-10px) scale(.99);opacity:.22;filter:blur(3px);transition:all .28s ease;}
-.modal-open-ui .topbar .title{opacity:.28}
 
 /* spawn heart-shaped particles at a specific position (relative to stage)
    type: 'gold'|'blue'|'pink' or other. x,y in pixels from stage left/top. */
@@ -1100,7 +1093,7 @@ function showFloatingMessage(text){
 }
 
 /* Diary & Collection rendering (adjusted renderCollection for preview only) */
-document.getElementById('diaryBtn').addEventListener('click', ()=> { openDiary(); document.body.classList.add('modal-open-ui'); ensureModalFooter('diaryModal','closeDiary','Cerrar'); });
+document.getElementById('diaryBtn').addEventListener('click', ()=> openDiary());
 document.getElementById('closeDiary').addEventListener('click', ()=> closeDiary());
 document.getElementById('clearDiary').addEventListener('click', ()=>{ unlocked = []; localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); renderDiary(); });
 
@@ -1145,7 +1138,7 @@ function renderDiary(){
   document.getElementById('diaryNext').disabled = (window.diaryPage >= pages-1);
 }
 function openDiary(){ renderDiary(); diaryModal.classList.add('show'); diaryModal.setAttribute('aria-hidden','false'); diaryModal.querySelector('.modal').classList.add('show'); }
-function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); document.body.classList.remove('modal-open-ui'); }
+function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); }
 
 document.getElementById('collectionBtn').addEventListener('click', ()=> openCollection());
 document.getElementById('closeCollection').addEventListener('click', ()=> closeCollection());
@@ -1215,8 +1208,8 @@ function renderCollection(){
   document.getElementById('colCountBlue').textContent = butterflyCounters.blue || 0;
   document.getElementById('colCountPink').textContent = butterflyCounters.pink || 0;
 }
-function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); document.body.classList.add('modal-open-ui'); ensureModalFooter('collectionModal','closeCollection','Cerrar'); }
-function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); document.body.classList.remove('modal-open-ui'); }
+function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
+function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); }
 
 /* ---------------------------
   Theme manager: available themes + modal
@@ -1280,29 +1273,6 @@ resetThemeBtn.addEventListener('click', ()=> { applyTheme('theme-aurora'); });
 
 function openThemeModal(){ themeModal.classList.add('show'); themeModal.setAttribute('aria-hidden','false'); themeModal.querySelector('.modal').classList.add('show'); }
 function closeThemeModal(){ themeModal.classList.remove('show'); themeModal.setAttribute('aria-hidden','true'); themeModal.querySelector('.modal').classList.remove('show'); }
-
-// Add a bottom-centered close button into modal content (used on mobile)
-function ensureModalFooter(modalId, closeBtnId, label){
-  try{
-    const mb = document.getElementById(modalId);
-    if(!mb) return;
-    const cont = mb.querySelector('.modal');
-    if(!cont) return;
-    if(cont.querySelector('.modal-footer-added')) return; // already added
-    const footer = document.createElement('div');
-    footer.className = 'modal-footer-added';
-    footer.style.display = 'flex';
-    footer.style.justifyContent = 'center';
-    footer.style.padding = '12px 0 6px';
-    footer.style.width = '100%';
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.textContent = label || 'Cerrar';
-    btn.addEventListener('click', ()=>{ const orig = document.getElementById(closeBtnId); if(orig) orig.click(); else { mb.classList.remove('show'); document.body.classList.remove('modal-open-ui'); } });
-    footer.appendChild(btn);
-    cont.appendChild(footer);
-  }catch(e){}
-}
 
 /* load saved theme on init (fallback to aurora) */
 function loadSavedTheme(){
@@ -1595,24 +1565,6 @@ function stopSpawning(){ if(spawnTimer) clearTimeout(spawnTimer); spawnTimer = n
 function removeButterflyById(id){ for(let i=butterflies.length-1;i>=0;i--){ if(butterflies[i].id == id){ if(butterflies[i].el.parentNode) butterflies[i].el.remove(); butterflies.splice(i,1); } } }
 
 /* Init: load theme + spawn right away + restore data (kept) */
-function updateLayoutSpace(){
-  try{
-    const topbar = document.querySelector('.topbar');
-    const footer = document.querySelector('.footer');
-    const app = document.querySelector('.app');
-    const stageEl = document.querySelector('.stage');
-    if(topbar && footer && app){
-      const th = Math.round(topbar.getBoundingClientRect().height);
-      const fh = Math.round(footer.getBoundingClientRect().height);
-      document.documentElement.style.setProperty('--topbar-h', th + 'px');
-      document.documentElement.style.setProperty('--footer-h', fh + 'px');
-      app.style.paddingTop = `calc(${th}px + env(safe-area-inset-top,0px))`;
-      app.style.paddingBottom = `calc(${fh}px + env(safe-area-inset-bottom,18px))`;
-      if(stageEl) stageEl.style.minHeight = `calc(100vh - ${th}px - ${fh}px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))`;
-    }
-  }catch(e){}
-}
-
 (function init(){
   // Restaurar volumen guardado
   const svMus = localStorage.getItem('bgMusicVolume');
@@ -1632,8 +1584,6 @@ function updateLayoutSpace(){
   // spawn a few right away so mobile users see activity immediately (fewer on narrow screens)
   spawnButterfly();
   setTimeout(()=>spawnButterfly(), 320);
-  // compute layout spacers for header/footer
-  updateLayoutSpace();
   // choose spawning rate based on viewport (slower on small screens)
   const defaultRate = window.innerWidth < 480 ? 1600 : 1200;
   startSpawning(defaultRate);
@@ -1646,8 +1596,6 @@ function updateLayoutSpace(){
     const existing = stage.querySelectorAll('.particle').length;
     const want = Math.max(12, Math.min(96, Math.floor(window.innerWidth/24)));
     if(existing < want) createParticles(want - existing);
-    // recompute header/footer sizes
-    updateLayoutSpace();
   });
   // intentar autoplay
   setTimeout(async ()=>{
@@ -1668,8 +1616,6 @@ function updateLayoutSpace(){
       }catch(e){}
     }
   }, { once:true });
-  // ensure layout sizes recomputed after initial paint
-  setTimeout(updateLayoutSpace, 300);
 })();
 // Forzar desbloqueo de audio al tocar la pantalla
 document.addEventListener('pointerdown', async ()=>{
