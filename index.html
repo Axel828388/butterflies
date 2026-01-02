@@ -189,8 +189,9 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 @keyframes burstOut{0%{opacity:1;transform:translate(0,0) scale(.8)}70%{opacity:1}100%{opacity:0;transform:translate(var(--tx,0),var(--ty,0)) scale(.6)}}
 
 /* Modal & Theme modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:900;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
 .modal-backdrop.show{display:flex}
+.modal-backdrop .modal{z-index:910}
 .modal{width:min(920px,94%);max-height:86vh;overflow:auto;background:var(--modal-bg);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px);box-shadow:0 20px 50px rgba(0,0,0,.6);transform:translateY(18px);opacity:0}
 .modal.show{animation:modalIn .28s cubic-bezier(.16,.9,.3,1) forwards}
 @keyframes modalIn{to{opacity:1;transform:none}}
@@ -1137,7 +1138,13 @@ function renderDiary(){
   document.getElementById('diaryPrev').disabled = (window.diaryPage === 0);
   document.getElementById('diaryNext').disabled = (window.diaryPage >= pages-1);
 }
-function openDiary(){ renderDiary(); diaryModal.classList.add('show'); diaryModal.setAttribute('aria-hidden','false'); diaryModal.querySelector('.modal').classList.add('show'); }
+function bringModalToFront(backdrop){
+  if(!window._modalZ) window._modalZ = 900;
+  window._modalZ += 10;
+  try{ backdrop.style.zIndex = window._modalZ; const m = backdrop.querySelector('.modal'); if(m) m.style.zIndex = window._modalZ + 5; }catch(e){}
+}
+
+function openDiary(){ renderDiary(); bringModalToFront(diaryModal); diaryModal.classList.add('show'); diaryModal.setAttribute('aria-hidden','false'); diaryModal.querySelector('.modal').classList.add('show'); }
 function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); }
 
 document.getElementById('collectionBtn').addEventListener('click', ()=> openCollection());
@@ -1208,7 +1215,7 @@ function renderCollection(){
   document.getElementById('colCountBlue').textContent = butterflyCounters.blue || 0;
   document.getElementById('colCountPink').textContent = butterflyCounters.pink || 0;
 }
-function openCollection(){ renderCollection(); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
+function openCollection(){ renderCollection(); bringModalToFront(collectionModal); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
 function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); }
 
 /* ---------------------------
@@ -1271,7 +1278,7 @@ themeBtn.addEventListener('click', ()=> openThemeModal());
 closeThemeBtn.addEventListener('click', ()=> closeThemeModal());
 resetThemeBtn.addEventListener('click', ()=> { applyTheme('theme-aurora'); });
 
-function openThemeModal(){ themeModal.classList.add('show'); themeModal.setAttribute('aria-hidden','false'); themeModal.querySelector('.modal').classList.add('show'); }
+function openThemeModal(){ bringModalToFront(themeModal); themeModal.classList.add('show'); themeModal.setAttribute('aria-hidden','false'); themeModal.querySelector('.modal').classList.add('show'); }
 function closeThemeModal(){ themeModal.classList.remove('show'); themeModal.setAttribute('aria-hidden','true'); themeModal.querySelector('.modal').classList.remove('show'); }
 
 /* load saved theme on init (fallback to aurora) */
