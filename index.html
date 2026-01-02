@@ -79,13 +79,13 @@
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Poppins,Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
 body{background:var(--bg);color:var(--hud);overflow:hidden;-webkit-font-smoothing:antialiased}
-.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:calc(14px + env(safe-area-inset-top,14px)) 14px calc(74px + env(safe-area-inset-bottom,18px));}
+.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:14px 14px calc(74px + env(safe-area-inset-bottom,18px));}
 
 /* Drawer open overlay to darken and slightly blur the UI beneath the drawer */
 body.drawer-open::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.42);backdrop-filter:blur(2px);z-index:200;pointer-events:none;transition:opacity .18s}
 
 /* Topbar */
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:60}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:500;position:sticky;top:calc(env(safe-area-inset-top,8px));}
 .title{display:flex;gap:12px;align-items:center}
 .logo{width:56px;height:56px;border-radius:12px;background:var(--logo-gradient);box-shadow:var(--butterfly-shadow);display:grid;place-items:center;font-weight:700;color:#fff;font-size:16px}
 .logo svg{width:36px;height:36px}
@@ -100,7 +100,7 @@ button.btn:active{transform:translateY(1px)}
 button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:center;min-width:44px}
 
 /* Hamburger (mobile) - stacked */
-.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px;align-items:center}
+.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px;align-items:center;position:relative;z-index:510}
 .hamburger{ /* ensure column stacking when visible */
   display:inline-flex;
   flex-direction:column;
