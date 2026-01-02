@@ -79,7 +79,7 @@
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Poppins,Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
 body{background:var(--bg);color:var(--hud);overflow:hidden;-webkit-font-smoothing:antialiased}
-.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:14px 14px 74px}
+.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:calc(14px + env(safe-area-inset-top,14px)) 14px calc(74px + env(safe-area-inset-bottom,18px));}
 
 /* Drawer open overlay to darken and slightly blur the UI beneath the drawer */
 body.drawer-open::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.42);backdrop-filter:blur(2px);z-index:200;pointer-events:none;transition:opacity .18s}
@@ -142,7 +142,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 .level-progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .28s cubic-bezier(.2,.9,.3,1)}
 
 /* Stage */
-.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - 240px); }
+.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - 220px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
 .particle{position:absolute;bottom:-10px;border-radius:50%;opacity:.9;pointer-events:none;animation:rise linear infinite}
 @keyframes rise{to{transform:translateY(-120vh);opacity:0}}
 
@@ -463,7 +463,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   .hud .panel{min-width:unset;padding:8px 10px}
   .logo{width:48px;height:48px;font-size:14px; border-radius:10px}
   .floating-msg{font-size:14px;padding:8px 12px}
-  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - 200px); }
+  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - 160px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
   .butterfly { min-width: 54px; min-height: 54px; }
 
   /* show hamburger on small screens */
