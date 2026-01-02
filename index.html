@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Captura las Mariposas</title>
+<!-- Load nicer UI font -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>☆CLM☆</title>
 <style>
 :root{
   --bg:#0f0b12;
@@ -74,9 +77,12 @@
   Base / Layout (kept + minor tweaks)
   ========================== */
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+html,body{height:100%;margin:0;font-family:Poppins,Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
 body{background:var(--bg);color:var(--hud);overflow:hidden;-webkit-font-smoothing:antialiased}
-.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:14px}
+.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:14px 14px 74px}
+
+/* Drawer open overlay to darken and slightly blur the UI beneath the drawer */
+body.drawer-open::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.42);backdrop-filter:blur(2px);z-index:200;pointer-events:none;transition:opacity .18s}
 
 /* Topbar */
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:60}
@@ -111,21 +117,32 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 
 /* Mobile slide panel */
 .mobileMenu{
-  position:fixed;right:16px;top:12px;background:transparent;padding:0;border-radius:12px;z-index:180;min-width:240px;
-  transform:translateX(110%); transition:transform .28s cubic-bezier(.22,.9,.32,1);
+  position:fixed;right:0;top:0;height:100vh;display:flex;align-items:flex-start;z-index:220;transform:translateX(110%); transition:transform .28s cubic-bezier(.22,.9,.32,1);
 }
-.mobileMenu.panel{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,0.04)}
+.mobileMenu.panel{width:320px;height:100%;padding:14px;border-radius:12px 0 0 12px;box-shadow: -8px 18px 60px rgba(0,0,0,.6);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:1px solid rgba(255,255,255,0.03);backdrop-filter:blur(8px);overflow:auto}
 .mobileMenu.open{transform:translateX(0)}
 
-/* HUD */
+/* Drawer menu items */
+.mobileMenu .menu-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:8px;background:transparent;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+.mobileMenu .menu-item:hover{background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent)}
+.mobileMenu .m-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(180deg,rgba(0,0,0,0.08),transparent);flex-shrink:0}
+.mobileMenu .m-label{font-weight:700}
+.mobileMenu .m-state{opacity:.85;font-size:13px;color:var(--accent-2)}
+
+/* Make sliders and controls fit nicely inside drawer */
+.mobileMenu .sliders{margin-top:10px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.03)}
+.mobileMenu input[type=range]{width:100%;margin-top:6px}
+
 .hud{position:absolute;right:18px;top:90px;z-index:60;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
 .hud .panel{background:var(--card);padding:8px 12px;border-radius:10px;font-weight:700;min-width:140px;display:flex;flex-direction:column;gap:6px}
+.hud .special{display:none}
+.hud .special > div{padding:6px 10px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);font-weight:800}
 .level-row{display:flex;align-items:center;gap:8px}
 .level-bar{height:8px;width:120px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
 .level-progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .28s cubic-bezier(.2,.9,.3,1)}
 
 /* Stage */
-.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - 180px); }
+.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - 240px); }
 .particle{position:absolute;bottom:-10px;border-radius:50%;opacity:.9;pointer-events:none;animation:rise linear infinite}
 @keyframes rise{to{transform:translateY(-120vh);opacity:0}}
 
@@ -149,12 +166,48 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 .floating-msg.show{animation:floatUp 2.1s ease forwards}
 @keyframes floatUp{0%{transform:translate(-50%,18px);opacity:0}10%{opacity:1}70%{transform:translate(-50%,-60px);opacity:.95}100%{transform:translate(-50%,-110px);opacity:0}}
 
+/* Top stats (centered) */
+.top-stats{position:relative;z-index:70}
+.top-stats .panel{min-width:120px;padding:10px 14px}
+
+/* Capture glow effect for special butterflies */
+.capture-glow{position:absolute;width:120px;height:120px;border-radius:999px;transform:translate(-50%,-50%) scale(.6);pointer-events:none;opacity:0;mix-blend-mode:screen;z-index:140;transition:transform .5s ease,opacity .5s ease}
+.capture-glow.fade{opacity:0.95;transform:translate(-50%,-50%) scale(1);animation:glowPulse .9s ease-out forwards}
+.capture-glow.gold{background:radial-gradient(circle at 30% 30%, rgba(255,240,180,0.95), rgba(255,150,40,0.12));box-shadow:0 0 40px rgba(255,190,70,0.9)}
+.capture-glow.blue{background:radial-gradient(circle at 30% 30%, rgba(170,220,255,0.95), rgba(80,140,255,0.12));box-shadow:0 0 44px rgba(80,150,255,0.9)}
+.capture-glow.pink{background:radial-gradient(circle at 30% 30%, rgba(255,190,230,0.95), rgba(200,110,255,0.12));box-shadow:0 0 44px rgba(220,120,255,0.9)}
+@keyframes glowPulse{0%{transform:translate(-50%,-50%) scale(.8);opacity:.8}50%{transform:translate(-50%,-50%) scale(1.05);opacity:1}100%{transform:translate(-50%,-50%) scale(.95);opacity:0}}
+
+/* Heart particle used for explosions */
+.particle.heart{border-radius:0;background:transparent;padding:0;display:grid;place-items:center}
+.particle.heart svg{width:18px;height:18px;display:block;transform:translateY(0);transition:transform .28s ease,opacity .3s}
+.particle.heart.gold svg{filter:drop-shadow(0 6px 18px rgba(255,190,70,0.18));}
+.particle.heart.blue svg{filter:drop-shadow(0 6px 18px rgba(80,140,255,0.12));}
+.particle.heart.pink svg{filter:drop-shadow(0 6px 18px rgba(200,110,255,0.12));}
+
+@keyframes burstOut{0%{opacity:1;transform:translate(0,0) scale(.8)}70%{opacity:1}100%{opacity:0;transform:translate(var(--tx,0),var(--ty,0)) scale(.6)}}
+
 /* Modal & Theme modal */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:200}
 .modal-backdrop.show{display:flex}
 .modal{width:min(920px,94%);max-height:86vh;overflow:auto;background:var(--modal-bg);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px);box-shadow:0 20px 50px rgba(0,0,0,.6);transform:translateY(18px);opacity:0}
 .modal.show{animation:modalIn .28s cubic-bezier(.16,.9,.3,1) forwards}
 @keyframes modalIn{to{opacity:1;transform:none}}
+
+/* Result modal: keep compact since it only shows final score */
+#resultModal .modal{
+  width: min(460px, 92%);
+  max-height: 56vh;
+  padding:14px;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:stretch;
+}
+#resultModal .modal h2{font-size:18px;margin:0 0 6px}
+#resultModal .modal p{margin:0}
+#resultModal .modal .btn{padding:8px 10px;font-size:13px}
 
 /* Theme modal specific styles */
 .theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
@@ -171,18 +224,18 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 /* Diary list entries: keep structure but improve spacing + readable on mobile */
 .diary-list{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
   gap:12px;
   margin-top:12px;
   padding-bottom:6px;
 }
 .entry{
   background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
-  padding:12px 14px;
-  border-radius:10px;
+  padding:14px 16px;
+  border-radius:12px;
   border:1px solid rgba(255,255,255,0.03);
   box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-  font-size:14px;
+  font-size:15px;
   line-height:1.4;
   position:relative;
   color:var(--hud);
@@ -193,7 +246,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   position:absolute;
   left:10px;
   top:6px;
-  font-size:34px;
+  font-size:36px;
   opacity:.10;
   color:var(--hud);
 }
@@ -209,7 +262,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 /* card layout: on desktop compact column, on larger screens allow row-like */
 .collect-card{
   background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
-  padding:10px;
+  padding:12px 14px;
   border-radius:10px;
   border:1px solid rgba(255,255,255,0.03);
   display:flex;
@@ -238,13 +291,21 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   margin-top:8px;
   max-height:140px;
   overflow:auto;
-  padding:8px;
-  border-radius:8px;
-  background:rgba(255,255,255,0.02);
-  font-size:13px;
-  line-height:1.3;
-  border:1px solid rgba(255,255,255,0.02);
+  padding:10px;
+  border-radius:10px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  font-size:14px;
+  line-height:1.4;
+  border:1px solid rgba(255,255,255,0.04);
 }
+
+.collection-header{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:8px}
+.col-badge{display:flex;flex-direction:column;align-items:center;min-width:72px;padding:8px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);}
+.col-badge .label{font-size:12px;opacity:.85}
+.col-badge .count{font-weight:900;font-size:18px;margin-top:6px}
+.col-badge.gold{color:#ffd86b}
+.col-badge.blue{color:#9fb9ff}
+.col-badge.pink{color:#d77bff}
 
 /* compact text for counters inside cards */
 .collect-card .counter{font-weight:800;margin-top:6px;font-size:13px;color:var(--hud)}
@@ -269,6 +330,25 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   width:100%;
   min-height:86px;
 }
+
+/* Collection single-category view (one page per type) */
+.collect-view{display:flex;flex-direction:column;gap:12px;align-items:center;padding:8px}
+.collect-view .collect-title{font-weight:900;font-size:20px;margin-bottom:6px}
+.collect-view .collect-preview{width:88px;height:88px;border-radius:12px;display:grid;place-items:center;box-shadow:var(--butterfly-shadow);margin-bottom:6px;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
+.collect-view .collect-preview.gold{box-shadow:0 12px 46px rgba(255,185,60,0.12), inset 0 0 18px rgba(255,220,140,0.03);border:1px solid rgba(255,180,60,0.12)}
+.collect-view .collect-preview.blue{box-shadow:0 12px 46px rgba(80,140,255,0.12), inset 0 0 18px rgba(150,190,255,0.03);border:1px solid rgba(100,140,255,0.12)}
+.collect-view .collect-preview.pink{box-shadow:0 12px 46px rgba(215,110,255,0.12), inset 0 0 18px rgba(240,170,255,0.03);border:1px solid rgba(200,110,255,0.12)}
+/* ensure the butterfly sits framed inside the preview */
+.collect-view .collect-preview .butterfly.preview{width:72px;height:72px;border-radius:10px;padding:4px;background:transparent;box-shadow:none;position:relative;left:auto;top:auto;transform:none!important;display:block;margin:0 auto}
+.collect-view .collect-count{opacity:.9;font-weight:800}
+.collect-view .collect-phrases-list{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.collect-view .collect-phrase-item{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-size:14px}
+
+/* Diary special marker */
+.entry .special-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:10px;vertical-align:middle}
+.entry .special-dot.gold{background:#ffd86b}
+.entry .special-dot.blue{background:#9fb9ff}
+.entry .special-dot.pink{background:#d77bff}
 
 /* Renderizar una mini-mariposa que use mismas clases/animaciones in-game */
 .collect-card .butterfly.preview{
@@ -323,7 +403,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
     border-radius:12px;
     padding:12px;
     margin:0 10px;
-    overflow:hidden;
+    overflow:auto; /* allow modal scrolling on mobile */
   }
   .modal .modal-inner-scroll{
     height:100%;
@@ -336,7 +416,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
     flex-direction:row;
     align-items:flex-start;
     gap:10px;
-    padding:10px;
+    padding:12px;
   }
   .collect-card > div:first-child svg,
   .collect-card > div:first-child img{
@@ -344,7 +424,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
     height:64px;
   }
   .collect-card .meta{display:flex;flex-direction:column;align-items:flex-start}
-  .collect-phrases{max-height:88px;font-size:12px;overflow:auto}
+  .collect-phrases{max-height:88px;font-size:13px;overflow:auto}
 
   /* diary single column */
   .diary-list{grid-template-columns:repeat(1,1fr)}
@@ -353,7 +433,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 }
 
 /* Footer */
-.footer{position:relative;z-index:40;display:flex;justify-content:center;padding:8px 0;color:rgba(255,255,255,0.5);font-size:13px}
+.footer{position:fixed;left:0;right:0;bottom:10px;z-index:220;display:flex;justify-content:center;padding:6px 0;color:rgba(255,255,255,0.85);font-size:13px;pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,0.6);background:linear-gradient(180deg,transparent,rgba(0,0,0,0.12));}
 
 /* HUD counters for special butterflies */
 .hud div { margin-bottom: 4px; font-weight: bold; font-size: 14px; }
@@ -369,16 +449,21 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   .title h1{font-size:16px}
   .controls button{padding:12px 16px;border-radius:14px; font-size:14px;}
   .hud{
-    right:8px;
+    right:12px;
+    left:12px;
     top:auto;
-    bottom:18px;
+    bottom:12px;
     gap:6px;
     font-size:13px;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
   }
-  .hud div { font-size: 12px; margin-bottom: 2px; }
+  .hud div { font-size: 12px; margin-bottom: 0; }
+  .hud .panel{min-width:unset;padding:8px 10px}
   .logo{width:48px;height:48px;font-size:14px; border-radius:10px}
   .floating-msg{font-size:14px;padding:8px 12px}
-  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - 160px); }
+  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - 200px); }
   .butterfly { min-width: 54px; min-height: 54px; }
 
   /* show hamburger on small screens */
@@ -389,28 +474,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 </style>
 </head>
 <body>
-  <div id="volumePanel" style="
-  position:absolute;
-  right:14px;
-  top:78px;
-  z-index:200;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  width:170px;
-  background:var(--card);
-  padding:8px 12px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.05);
-  backdrop-filter:blur(6px);
-  animation:fadeInVolume .45s ease forwards;
-">
-  <label style="font-size:12px; opacity:.75;">Volumen Música</label>
-  <input id="musicSlider" type="range" min="0" max="1" step="0.01"/>
-
-  <label style="font-size:12px; opacity:.75;">Volumen Efectos</label>
-  <input id="fxSlider" type="range" min="0" max="1" step="0.01"/>
-</div>
+  
 
   <div class="app" role="application" aria-label="Captura las Mariposas">
     <div class="topbar">
@@ -470,18 +534,21 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
       <div class="panel" id="mobilePanel"></div>
     </div>
 
+      <!-- Top stats (centered, prominent) -->
+      <div class="top-stats" id="topStats" aria-hidden="false" style="display:flex;gap:12px;align-items:center;justify-content:center;margin-top:6px">
+        <div class="panel" id="scorePanel">Puntos: <span id="score">0</span></div>
+        <div class="panel" id="levelPanel">Nivel: <span id="level">1</span>
+          <div class="level-row"><div class="level-bar" aria-hidden="true"><div id="levelProgress" class="level-progress" style="width:0%"></div></div></div>
+        </div>
+      </div>
+
     <div class="stage" id="stage" aria-hidden="false"></div>
 
     <div class="hud" id="hud" aria-live="polite">
-      <div id="goldCounter"></div>
-      <div id="blueCounter"></div>
-      <div id="pinkCounter"></div>
-      <div class="panel" id="scorePanel">Puntos: <span id="score">0</span></div>
-      <div class="panel" id="levelPanel">
-        Nivel: <span id="level">1</span>
-        <div class="level-row">
-          <div class="level-bar" aria-hidden="true"><div id="levelProgress" class="level-progress" style="width:0%"></div></div>
-        </div>
+      <div class="panel special" id="specialPanel" aria-hidden="true">
+        <div id="goldCounter">Gold: 0</div>
+        <div id="blueCounter">Blue: 0</div>
+        <div id="pinkCounter">Pink: 0</div>
       </div>
       <div class="panel" id="timerPanel" style="display:none">Tiempo: <span id="timer">30</span>s</div>
     </div>
@@ -495,11 +562,16 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   <div class="modal-backdrop" id="diaryModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <h2 style="margin:0">Diario — Frases desbloqueadas</h2>
+        <h2 style="margin:0">Diario ☆</h2>
         <div><button class="btn" id="closeDiary">Cerrar</button></div>
       </div>
-      <div class="diary-list" id="diaryList"></div>
-      <div style="margin-top:12px;text-align:right"><button class="btn" id="clearDiary">Borrar Diario</button></div>
+        <div class="diary-list" id="diaryList"></div>
+        <div class="diary-pagination" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px">
+          <button class="btn" id="diaryPrev">Anterior</button>
+          <div id="diaryPageInfo" style="opacity:.9;font-weight:700">Página 1</div>
+          <button class="btn" id="diaryNext">Siguiente</button>
+        </div>
+        <div style="margin-top:12px;text-align:right"><button class="btn" id="clearDiary">Borrar Diario</button></div>
     </div>
   </div>
 
@@ -507,14 +579,23 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
   <div class="modal-backdrop" id="collectionModal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal" role="document">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <h2 style="margin:0">Colección</h2>
+        <h2 style="margin:0">Colección ☆</h2>
         <div><button class="btn" id="closeCollection">Cerrar</button></div>
       </div>
       <p style="opacity:.7;margin-top:8px">Mariposas especiales que encontraste</p>
-      <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
-        <div style="font-weight:800"><span id="colCountGold">0</span></div>
-        <div style="font-weight:800"><span id="colCountBlue">0</span></div>
-        <div style="font-weight:800"><span id="colCountPink">0</span></div>
+      <div class="collection-header" style="margin-top:8px">
+        <div class="col-badge gold">
+          <div class="label">Gold</div>
+          <div class="count"><span id="colCountGold">0</span></div>
+        </div>
+        <div class="col-badge blue">
+          <div class="label">Blue</div>
+          <div class="count"><span id="colCountBlue">0</span></div>
+        </div>
+        <div class="col-badge pink">
+          <div class="label">Pink</div>
+          <div class="count"><span id="colCountPink">0</span></div>
+        </div>
       </div>
       <div class="collection-grid" id="collectionGrid"></div>
     </div>
@@ -551,12 +632,7 @@ button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:cente
 
   <audio id="bgMusic" src="musica.mp3" preload="auto"></audio>
   <div id="sliderContainer">
-  <div id="volumePanel">
-    <label>Volumen Música</label>
-    <input id="musicSlider" type="range" min="0" max="1" step="0.01">
-    <label>Volumen Efectos</label>
-    <input id="fxSlider" type="range" min="0" max="1" step="0.01">
-  </div>
+  <!-- sliderContainer removed: consolidated volume controls live in the main controls area to avoid duplicated IDs -->
 </div>
 
 <script>
@@ -603,24 +679,43 @@ const POEMS = [
   "Me has movido el mundo sin siquiera estar cerca.",
   "No prometo estrellas, pero sí quedarme cuando el cielo oscurece.",
   "Tu risa encontró mis silencios y les dio dirección.",
-  "En cada pequeño detalle tuyo, hallé una canción que no sabía que necesitaba."
+  "En cada pequeño detalle tuyo, hallé una canción que no sabía que necesitaba.",
+  "Eres la calma en mis días de tormenta.",
+  "Con cada gesto tuyo, mi mundo aprende nuevas palabras.",
+  "Quisiera ser el abrazo que repite tus días felices.",
+  "Tu cara aguarda un mapa a lugares que quiero descubrir.",
+  "Si la noche fuese un secreto, tu risa sería la llave.",
+  "Eres el porqué de mis sonrisas inesperadas.",
+  "Cada minuto contigo se vuelve mi recuerdo favorito.",
+  "Déjame ser la razón de tus pequeños milagros.",
+  "Tu voz me enseña a escuchar historias que no sabía que tenía.",
+  "Encontrarte fue como encontrar la forma correcta de respirar."
 ];
 
 const TYPE_PHRASES = {
   gold: [
     "Eres oro en mi vida; no te cambio por nada.",
     "Tu brillo es la brújula que me guía.",
-    "La paz que tengo cuando estás cerca no cabe en palabras."
+    "La paz que tengo cuando estoy contigo no cabe en palabras.",
+    "Contigo aprendí que lo valioso también puede ser ligero y libre.",
+    "Tu risa pinta mis días con luz nueva.",
+    "A tu lado el tiempo se vuelve un tesoro que guardo sin prisas."
   ],
   blue: [
     "Tu calma convierte mi tormenta en mar en calma.",
     "Con cada mirada tuya el tiempo se desacelera.",
-    "Eres la nota perfecta de una melodía olvidada."
+    "Eres la nota perfecta de una melodía olvidada.",
+    "Hay paz en tu silencio; en él encuentro un hogar.",
+    "Cuando te escucho respirar, el mundo gira más despacio.",
+    "Tu presencia es un faro que guía mis dudas hacia la orilla."
   ],
   pink: [
     "Hay cosas que solo se dicen con el corazón en la mano.",
     "Si volamos juntos, prometo sostener tu risa.",
-    "Tus manos dibujan rutas que quiero seguir."
+    "Tus manos dibujan rutas que quiero seguir.",
+    "Tu ternura es la brújula que me enseña a ser mejor.",
+    "Cada gesto tuyo revela un poema que quiero aprender de memoria.",
+    "Contigo aprendí que las promesas también pueden ser suaves como un abrazo." 
   ]
 };
 
@@ -682,7 +777,39 @@ function createParticles(count=32){
     particles.push({el:p, dur: parseFloat(p.style.animationDuration)});
   }
 }
-createParticles(28);
+
+/* spawn heart-shaped particles at a specific position (relative to stage)
+   type: 'gold'|'blue'|'pink' or other. x,y in pixels from stage left/top. */
+function spawnCaptureHearts(type='gold', x=0, y=0, count=12){
+  const colors = { gold: '#ffd86b', blue: '#9fb9ff', pink:'#ffa3e0' };
+  const fill = colors[type] || getComputedStyle(document.body).getPropertyValue('--accent') || '#d6b3ff';
+  for(let i=0;i<count;i++){
+    const p = document.createElement('div');
+    p.className = `particle heart ${type}`;
+    const size = 12 + Math.random()*10;
+    p.style.width = p.style.height = size + 'px';
+    // place centered on x,y
+    p.style.left = (x - size/2) + 'px';
+    p.style.top = (y - size/2) + 'px';
+    p.style.position = 'absolute';
+    // heart svg
+    const svg = `<svg class="${type}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="${fill}" d="M12 21s-7.5-4.9-9-8.1C1.3 9.3 4 5 7.5 5c2 .1 3.5 1.7 4.5 2.9 1-1.2 2.6-2.8 4.5-2.9C20 5 22.7 9.3 21 12.9 19.5 16.1 12 21 12 21z"/></svg>`;
+    p.innerHTML = svg;
+    // compute random direction
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 40 + Math.random()*80;
+    const tx = Math.round(Math.cos(angle)*dist) + 'px';
+    const ty = Math.round(Math.sin(angle)*dist) + 'px';
+    p.style.setProperty('--tx', tx);
+    p.style.setProperty('--ty', ty);
+    p.style.animation = `burstOut ${0.9 + Math.random()*0.6}s cubic-bezier(.22,.9,.32,1) forwards`;
+    stage.appendChild(p);
+    setTimeout(()=>{ if(p.parentNode) p.remove(); }, 1200);
+  }
+}
+// create initial particles based on viewport width (fewer on small screens)
+const initialParticleCount = Math.max(8, Math.min(48, Math.floor((window.innerWidth||1024)/24)));
+createParticles(initialParticleCount);
 
 /* ---------------------------
   SPAWN logic (kept + robust guard)
@@ -695,6 +822,10 @@ function spawnButterfly(){
     setTimeout(spawnButterfly, 120);
     return;
   }
+
+  // prevent too many butterflies on small screens for performance
+  const smallLimit = window.innerWidth < 480 ? 6 : 32;
+  if(butterflies.length >= smallLimit) return;
 
   const b = document.createElement('div');
   b.className = 'butterfly';
@@ -793,6 +924,28 @@ function onCapture(e){
   el._captured = true;
   el.style.pointerEvents = 'none';
   el.classList.add('pop-out');
+
+  // show a temporary glow at the capture location for special butterflies
+  try{
+    const type = el.dataset.type || 'normal';
+    if(type === 'gold' || type === 'blue' || type === 'pink'){
+      const r = el.getBoundingClientRect();
+      const s = stage.getBoundingClientRect();
+      const gx = r.left - s.left + r.width/2;
+      const gy = r.top - s.top + r.height/2;
+      const glow = document.createElement('div');
+      glow.className = 'capture-glow ' + type;
+      glow.style.left = gx + 'px';
+      glow.style.top = gy + 'px';
+      stage.appendChild(glow);
+      // trigger fade/animation
+      requestAnimationFrame(()=>{ glow.classList.add('fade'); });
+      setTimeout(()=>{ if(glow.parentNode) glow.remove(); }, 950);
+      // spawn heart burst at capture location
+      try{ spawnCaptureHearts(type, gx, gy, 12); }catch(e){}
+    }
+  }catch(err){ /* ignore positioning errors */ }
+
   setTimeout(()=>{ if(el.parentNode) el.remove(); }, 320);
 
   const pts = Number(el.dataset.points||1);
@@ -902,17 +1055,28 @@ function onLevelUp(){
 function spawnLevelParticles(){
   const burstCount = 12 + Math.floor(level*2);
   for(let i=0;i<burstCount;i++){
+    // heart-shaped burst particle
     const p = document.createElement('div');
-    p.className = 'particle';
-    const size = 3 + Math.random()*6;
+    p.className = 'particle heart';
+    const size = 10 + Math.random()*12;
     p.style.width = p.style.height = size + 'px';
+    // position around center-bottom
     p.style.left = (40 + Math.random()*20) + '%';
     p.style.bottom = '12%';
-    p.style.background = getComputedStyle(document.body).getPropertyValue('--accent') || '#9b57ff';
-    p.style.opacity = 0.95;
-    p.style.animationDuration = (0.8 + Math.random()*1.2) + 's';
+    // color using theme accent
+    const accent = getComputedStyle(document.body).getPropertyValue('--accent') || '#9b57ff';
+    const colorSvg = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="${accent.trim()}" d="M12 21s-7.5-4.9-9-8.1C1.3 9.3 4 5 7.5 5c2 .1 3.5 1.7 4.5 2.9 1-1.2 2.6-2.8 4.5-2.9C20 5 22.7 9.3 21 12.9 19.5 16.1 12 21 12 21z"/></svg>`;
+    p.innerHTML = colorSvg;
+    // animate outward
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 60 + Math.random()*80;
+    const tx = Math.round(Math.cos(angle)*dist) + 'px';
+    const ty = Math.round(Math.sin(angle)*dist) + 'px';
+    p.style.setProperty('--tx', tx);
+    p.style.setProperty('--ty', ty);
+    p.style.animation = `burstOut ${0.9 + Math.random()*0.6}s cubic-bezier(.22,.9,.32,1) forwards`;
     stage.appendChild(p);
-    setTimeout(()=>{ if(p.parentNode) p.remove(); }, 1600);
+    setTimeout(()=>{ if(p.parentNode) p.remove(); }, 1200);
   }
 }
 
@@ -932,15 +1096,45 @@ document.getElementById('diaryBtn').addEventListener('click', ()=> openDiary());
 document.getElementById('closeDiary').addEventListener('click', ()=> closeDiary());
 document.getElementById('clearDiary').addEventListener('click', ()=>{ unlocked = []; localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); renderDiary(); });
 
+// pagination controls for diary
+document.getElementById('diaryPrev').addEventListener('click', ()=>{ window.diaryPage = Math.max(0, (window.diaryPage||0) - 1); renderDiary(); });
+document.getElementById('diaryNext').addEventListener('click', ()=>{ window.diaryPage = (window.diaryPage||0) + 1; renderDiary(); });
+
 function renderDiary(){
+  // pagination-aware rendering with special-marker
   diaryList.innerHTML = '';
-  if(unlocked.length === 0){
+  if(!window.diaryPageSize) window.diaryPageSize = 8; // show more phrases per page
+  if(!window.diaryPage) window.diaryPage = 0;
+  const total = unlocked.length;
+  const pages = Math.max(1, Math.ceil(total / window.diaryPageSize));
+  if(total === 0){
     diaryList.innerHTML = '<div style="opacity:.6">No hay frases desbloqueadas. Captura 5 mariposas para empezar.</div>';
+    document.getElementById('diaryPageInfo').textContent = 'Página 0 de 0';
+    document.getElementById('diaryPrev').disabled = true;
+    document.getElementById('diaryNext').disabled = true;
     return;
   }
-  unlocked.slice().reverse().forEach(p=>{
-    const d = document.createElement('div'); d.className='entry'; d.textContent = p; diaryList.appendChild(d);
+  // clamp page
+  if(window.diaryPage < 0) window.diaryPage = 0;
+  if(window.diaryPage >= pages) window.diaryPage = pages - 1;
+
+  const start = window.diaryPage * window.diaryPageSize;
+  const slice = unlocked.slice().reverse().slice(start, start + window.diaryPageSize);
+  slice.forEach(p=>{
+    const d = document.createElement('div'); d.className='entry'; d.textContent = p;
+    // mark if this phrase is present in any collectionDetails (special)
+    try{
+      const types = Object.keys(collectionDetails || {});
+      let found = null;
+      for(const t of types){ if((collectionDetails[t]||[]).includes(p)){ found = t; break; } }
+      if(found){ const dot = document.createElement('span'); dot.className = `special-dot ${found}`; d.appendChild(dot); }
+    }catch(e){}
+    diaryList.appendChild(d);
   });
+
+  document.getElementById('diaryPageInfo').textContent = `Página ${window.diaryPage+1} de ${pages}`;
+  document.getElementById('diaryPrev').disabled = (window.diaryPage === 0);
+  document.getElementById('diaryNext').disabled = (window.diaryPage >= pages-1);
 }
 function openDiary(){ renderDiary(); diaryModal.classList.add('show'); diaryModal.setAttribute('aria-hidden','false'); diaryModal.querySelector('.modal').classList.add('show'); }
 function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); }
@@ -951,70 +1145,64 @@ document.getElementById('closeCollection').addEventListener('click', ()=> closeC
 /* === REPLACED renderCollection: creates a live visual preview using .butterfly.preview,
        preserves all IDs and storage behavior, only changes rendering inside the modal === */
 function renderCollection(){
+  // Single-category per page view: order -> gold, pink, blue
   collectionGrid.innerHTML = '';
-  const keys = ['gold','blue','pink'];
-  keys.forEach(k=>{
-    const card = document.createElement('div'); card.className='collect-card';
+  const order = ['gold','pink','blue'];
+  if(window.collectionCategoryIndex == null) window.collectionCategoryIndex = 0;
+  const idx = window.collectionCategoryIndex % order.length;
+  const k = order[idx];
 
-    // THUMB wrapper
-    const thumbWrap = document.createElement('div');
-    thumbWrap.className = 'thumb';
+  const section = document.createElement('div'); section.className = 'collect-view';
+  const title = document.createElement('div'); title.className = 'collect-title'; title.textContent = k.charAt(0).toUpperCase()+k.slice(1);
+  section.appendChild(title);
 
-    if(collection[k] || (butterflyCounters[k] && butterflyCounters[k] > 0)){
-      // create a miniature "live" butterfly using same classes/animation
-      const preview = document.createElement('div');
-      preview.className = `butterfly preview ${k}`;
-      preview.style.width = '72px';
-      preview.style.height = '72px';
-      preview.innerHTML = `<div class="wing left"></div><div class="wing right"></div><div class="body"></div>`;
-      thumbWrap.appendChild(preview);
-    } else {
-      // fallback placeholder
-      const placeholder = document.createElement('div');
-      placeholder.style.width = '86px';
-      placeholder.style.height = '86px';
-      placeholder.style.display = 'grid';
-      placeholder.style.placeItems = 'center';
-      placeholder.style.opacity = '.35';
-      placeholder.textContent = '???';
-      thumbWrap.appendChild(placeholder);
-    }
-    card.appendChild(thumbWrap);
+  const preview = document.createElement('div'); preview.className = 'collect-preview ' + k;
+  const pv = document.createElement('div'); pv.className = `butterfly preview ${k}`; pv.style.width='96px'; pv.style.height='96px'; pv.innerHTML = `<div class="wing left"></div><div class="wing right"></div><div class="body"></div>`;
+  preview.appendChild(pv);
+  section.appendChild(preview);
 
-    // meta area (keeps layout compact)
-    const metaWrap = document.createElement('div');
-    metaWrap.style.display = 'flex';
-    metaWrap.style.flexDirection = 'column';
-    metaWrap.style.alignItems = 'center';
-    metaWrap.style.width = '100%';
+  const cnt = document.createElement('div'); cnt.className = 'collect-count'; cnt.textContent = `Capturadas: ${butterflyCounters[k] || 0}`;
+  section.appendChild(cnt);
 
-    const title = document.createElement('div');
-    title.style.fontWeight = '800';
-    title.style.marginTop = '6px';
-    title.textContent = k.charAt(0).toUpperCase()+k.slice(1) + ((collection[k] || (butterflyCounters[k] && butterflyCounters[k] > 0)) ? ' — Desbloqueada' : ' — Bloqueada');
-    metaWrap.appendChild(title);
+  // phrases list (paginated within category if many)
+  const phrasesWrap = document.createElement('div'); phrasesWrap.className = 'collect-phrases-list'; phrasesWrap.id = 'collectPhrases';
+  const items = (collectionDetails[k] || []).slice().reverse();
+  const pageSize = 10;
+  if(!window.collectionPageForCategory) window.collectionPageForCategory = { gold:0, pink:0, blue:0 };
+  const page = window.collectionPageForCategory[k] || 0;
+  const pages = Math.max(1, Math.ceil(items.length / pageSize));
+  const slice = items.slice(page * pageSize, page * pageSize + pageSize);
+  if(slice.length === 0){ const empt = document.createElement('div'); empt.style.opacity='.6'; empt.textContent = 'Sin frases capturadas aún.'; phrasesWrap.appendChild(empt); }
+  else { slice.forEach(ph=>{ const it = document.createElement('div'); it.className='collect-phrase-item'; it.textContent = ph; phrasesWrap.appendChild(it); }); }
+  section.appendChild(phrasesWrap);
 
-    const cnt = document.createElement('div');
-    cnt.style.fontWeight='800';
-    cnt.style.marginTop='6px';
-    cnt.textContent = `Capturadas: ${butterflyCounters[k] || 0}`;
-    metaWrap.appendChild(cnt);
+  // controls: prev/next category and page controls for phrases
+  const controls = document.createElement('div'); controls.style.display='flex'; controls.style.gap='8px'; controls.style.marginTop='8px'; controls.style.width='100%'; controls.style.justifyContent='space-between';
+  const prevName = order[(idx - 1 + order.length) % order.length];
+  const nextName = order[(idx + 1) % order.length];
+  const prevLabel = prevName.charAt(0).toUpperCase() + prevName.slice(1);
+  const nextLabel = nextName.charAt(0).toUpperCase() + nextName.slice(1);
+  const catPrev = document.createElement('button'); catPrev.className='btn'; catPrev.textContent=`◀ ${prevLabel}`;
+  const catNext = document.createElement('button'); catNext.className='btn'; catNext.textContent=`${nextLabel} ▶`;
+  const pageControls = document.createElement('div'); pageControls.style.display='flex'; pageControls.style.gap='6px'; pageControls.style.alignItems='center';
+  const pagePrev = document.createElement('button'); pagePrev.className='btn'; pagePrev.textContent='Anterior';
+  const pageInfo = document.createElement('div'); pageInfo.style.fontWeight='700'; pageInfo.textContent = `${page+1} / ${pages}`;
+  const pageNext = document.createElement('button'); pageNext.className='btn'; pageNext.textContent='Siguiente';
+  pagePrev.disabled = (page === 0); pageNext.disabled = (page >= pages-1);
+  pageControls.appendChild(pagePrev); pageControls.appendChild(pageInfo); pageControls.appendChild(pageNext);
 
-    const phrasesBox = document.createElement('div'); phrasesBox.className = 'collect-phrases';
-    const list = collectionDetails[k] || [];
-    if(list.length){
-      list.forEach(ph=>{
-        const pEl = document.createElement('div'); pEl.style.marginBottom='6px'; pEl.textContent = "• " + ph; phrasesBox.appendChild(pEl);
-      });
-    } else {
-      const em = document.createElement('div'); em.style.opacity = '.5'; em.textContent = 'Sin frases capturadas aún.';
-      phrasesBox.appendChild(em);
-    }
-    metaWrap.appendChild(phrasesBox);
+  controls.appendChild(catPrev); controls.appendChild(pageControls); controls.appendChild(catNext);
+  section.appendChild(controls);
 
-    card.appendChild(metaWrap);
-    collectionGrid.appendChild(card);
-  });
+  collectionGrid.appendChild(section);
+
+  // handlers
+  catPrev.addEventListener('click', ()=>{ window.collectionCategoryIndex = (window.collectionCategoryIndex - 1 + order.length) % order.length; renderCollection(); });
+  catNext.addEventListener('click', ()=>{ window.collectionCategoryIndex = (window.collectionCategoryIndex + 1) % order.length; renderCollection(); });
+  pagePrev.addEventListener('click', ()=>{ window.collectionPageForCategory[k] = Math.max(0, (window.collectionPageForCategory[k]||0)-1); renderCollection(); });
+  pageNext.addEventListener('click', ()=>{ window.collectionPageForCategory[k] = Math.min(pages-1, (window.collectionPageForCategory[k]||0)+1); renderCollection(); });
+
+  // update badge counters
   document.getElementById('colCountGold').textContent = butterflyCounters.gold || 0;
   document.getElementById('colCountBlue').textContent = butterflyCounters.blue || 0;
   document.getElementById('colCountPink').textContent = butterflyCounters.pink || 0;
@@ -1120,28 +1308,30 @@ function startChallenge(seconds=30){
   try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2') || '[]') || unlocked; }catch(e){}
   level = 1; levelEl.textContent = level; updateLevelProgress();
   paused = false;
-  document.getElementById('timerPanel').style.display = 'block';
-  challengeTimer = seconds; document.getElementById('timer').textContent = challengeTimer;
+  challengeTimer = seconds;
   startSpawning(800);
+  showFloatingMessage('Desafío iniciado — atrapa tantas mariposas como puedas en ' + seconds + 's');
   if(challengeCountdown) clearInterval(challengeCountdown);
   challengeCountdown = setInterval(()=>{
-    challengeTimer--; document.getElementById('timer').textContent = challengeTimer;
+    challengeTimer--;
     if(challengeTimer <= 0){ endChallenge(); }
   },1000);
 }
+
 function endChallenge(){
   clearInterval(challengeCountdown);
   challengeCountdown = null;
-  document.getElementById('timerPanel').style.display = 'none';
   stopSpawning();
   finalScoreEl.textContent = score;
   resultModal.classList.add('show'); resultModal.setAttribute('aria-hidden','false'); resultModal.querySelector('.modal').classList.add('show');
 }
 function closeResult(){ resultModal.classList.remove('show'); resultModal.setAttribute('aria-hidden','true'); resultModal.querySelector('.modal').classList.remove('show'); }
-function resetAfterChallengeStart(){ closeResult(); startSpawning(1200); document.getElementById('timerPanel').style.display = 'none'; }
+function resetAfterChallengeStart(){ closeResult(); startSpawning(1200); }
 function resumeNormal(){ startSpawning(1200); }
 
 const bgAudio = document.getElementById('bgMusic');
+// ensure background music loops continuously
+bgAudio.loop = true;
 // ===== Volúmenes (fijo, una sola vez) =====
 const musicSlider = document.getElementById('musicSlider');
 const fxSlider = document.getElementById('fxSlider');
@@ -1175,7 +1365,6 @@ document.getElementById('musicToggle').addEventListener('click', async ()=>{
       await bgAudio.play();
       musicPlaying = true;
       musicToggleBtn.textContent = '🔊 Música On';
-      bgAudio.onended = ()=>{ musicPlaying = false; musicToggleBtn.textContent = '🔇 Música Off'; };
     } else {
       bgAudio.pause();
       musicPlaying = false;
@@ -1209,6 +1398,7 @@ document.addEventListener('keydown', (e)=>{
     if(themeModal.classList.contains('show')) closeThemeModal();
     document.getElementById('mobileMenu').classList.remove('open');
     document.getElementById('menuToggle').classList.remove('open');
+    document.body.classList.remove('drawer-open');
   }
 });
 
@@ -1225,23 +1415,40 @@ document.addEventListener('keydown', (e)=>{
 
   mobilePanel.innerHTML = '';
 
-  // ⛔ YA NO SE CREA NADA DENTRO DEL FOR EACH
-  mobileButtons.forEach(b => {
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.style.width = '100%';
-    btn.style.textAlign = 'left';
-    btn.style.padding = '10px';
-    btn.style.marginBottom = '6px';
-    btn.textContent = b.label;
+  const ICONS = {
+    palette: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7 3 3 7 3 12c0 2.2.9 4.2 2.4 5.6C6.9 18.9 9 19 11 19c3 0 5.5-1.5 6.7-3.8.4-.7.2-1.6-.5-2.1-.7-.5-1.6-.3-2.1.4C14.9 15.6 13.1 16 11 16c-1.2 0-2.4-.1-3.4-.4C6.3 15.2 5 13.8 5 12c0-3.9 3.1-7 7-7s7 3.1 7 7c0 .6.4 1 1 1s1-.4 1-1c0-4.97-4.03-9-9-9z" fill="currentColor"/></svg>`,
+    timer: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 1v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    book: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7v11a2 2 0 0 0 2 2h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 7V5a2 2 0 0 0-2-2H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    collection: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c1-6 6-9 11-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    music: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+  };
 
-    btn.addEventListener('click', () => {
-      const orig = document.getElementById(b.target);
-      if (orig) orig.click();
+  mobileButtons.forEach(b => {
+    const wrap = document.createElement('div');
+    wrap.className = 'menu-item';
+    const iconKey = (b.target === 'themeBtn') ? 'palette' : (b.target === 'challengeBtn' ? 'timer' : (b.target === 'diaryBtn' ? 'book' : (b.target === 'collectionBtn' ? 'collection' : 'music')));
+    const icon = ICONS[iconKey] || ICONS['palette'];
+    const iconEl = document.createElement('div'); iconEl.className = 'm-icon'; iconEl.innerHTML = icon;
+    const labelEl = document.createElement('div'); labelEl.className = 'm-label'; labelEl.textContent = b.label;
+    const stateEl = document.createElement('div'); stateEl.className = 'm-state';
+    if(b.target === 'musicToggle') stateEl.textContent = (musicPlaying ? 'On' : 'Off');
+    wrap.appendChild(iconEl); wrap.appendChild(labelEl); wrap.appendChild(stateEl);
+
+    wrap.addEventListener('click', () => {
+      if(b.target === 'challengeBtn'){
+        startChallenge(30);
+      } else if(b.target === 'musicToggle'){
+        document.getElementById('musicToggle').click();
+        // update state text
+        stateEl.textContent = musicPlaying ? 'On' : 'Off';
+      } else {
+        const orig = document.getElementById(b.target);
+        if (orig) orig.click();
+      }
       closeMobileMenu();
     });
 
-    mobilePanel.appendChild(btn);
+    mobilePanel.appendChild(wrap);
   });
 
   // ⛔ SLIDERS SE CREAN UNA SOLA VEZ AQUÍ (fuera del forEach)
@@ -1303,6 +1510,7 @@ document.addEventListener('keydown', (e)=>{
   menuToggle.addEventListener('click', () => {
     mobileMenu.classList.toggle('open');
     menuToggle.classList.toggle('open');
+    document.body.classList.toggle('drawer-open');
   });
 
   document.addEventListener('click', (ev) => {
@@ -1316,6 +1524,7 @@ document.addEventListener('keydown', (e)=>{
   function closeMobileMenu() {
     mobileMenu.classList.remove('open');
     menuToggle.classList.remove('open');
+    document.body.classList.remove('drawer-open');
   }
 })();
 
@@ -1328,13 +1537,14 @@ function scheduleNextSpawn(rateMs = 1200){
   const actualRate = Math.max(160, Math.round(rateMs + (Math.random()*600 - 300)));
 
   spawnTimer = setTimeout(()=>{
-    // determine how many to spawn this tick based on width
+    // determine how many to spawn this tick based on width (aggressively reduced on very small screens)
     const w = window.innerWidth || 1024;
     let minCount = 1, maxCount = 3;
     if(w >= 1400){ minCount = 3; maxCount = 6; }
     else if(w >= 1000){ minCount = 2; maxCount = 4; }
     else if(w >= 720){ minCount = 2; maxCount = 3; }
-    else { minCount = 1; maxCount = 2; } // mobile: fewer at once
+    else if(w >= 420){ minCount = 1; maxCount = 2; }
+    else { minCount = 1; maxCount = 1; } // very small mobiles: one at a time
 
     const spawnCount = Math.floor(minCount + Math.random()*(maxCount - minCount + 1));
 
@@ -1370,11 +1580,12 @@ function removeButterflyById(id){ for(let i=butterflies.length-1;i>=0;i--){ if(b
   updateLevelProgress();
   updateNextBadge();
 
-  // spawn a few right away so mobile users see activity immediately
+  // spawn a few right away so mobile users see activity immediately (fewer on narrow screens)
   spawnButterfly();
-  setTimeout(()=>spawnButterfly(), 220);
-  // start regular spawning
-  startSpawning(1200);
+  setTimeout(()=>spawnButterfly(), 320);
+  // choose spawning rate based on viewport (slower on small screens)
+  const defaultRate = window.innerWidth < 480 ? 1600 : 1200;
+  startSpawning(defaultRate);
 
   try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ unlocked = []; }
   try{ collection = JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ collection = {}; }
