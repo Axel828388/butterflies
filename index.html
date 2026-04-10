@@ -593,6 +593,45 @@
       line-height: 1.35;
     }
 
+    /* Challenge results */
+    .result-capture-grid {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-height: 180px;
+      overflow: auto;
+    }
+
+    .result-capture-item {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .result-capture-grid .butterfly.preview {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none !important;
+      width: 40px;
+      height: 40px;
+      pointer-events: none;
+      filter: none;
+    }
+
+    .result-capture-grid .butterfly.preview .butterfly-sprite {
+      transform: scale(0.82);
+    }
+
     @media (max-width: 720px) {
       .modal {
         width: calc(100% - 20px);
@@ -774,7 +813,32 @@
   <div id="resultModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal glass-panel p-6" role="document" style="max-width: 460px;">
       <h3 class="text-xl font-black">¡Fin del Reto!</h3>
-      <p class="text-sm opacity-75 mt-1">Puntos: <span id="finalScore" class="font-black">0</span></p>
+
+      <div class="mt-2 space-y-1">
+        <p class="text-sm opacity-75">Puntos: <span id="finalScore" class="font-black">0</span></p>
+        <p class="text-sm opacity-75">Capturadas: <span id="finalCapturesCount" class="font-black">0</span></p>
+      </div>
+
+      <div class="mt-4 grid grid-cols-3 gap-2">
+        <div class="glass-panel px-3 py-2 text-center">
+          <div class="text-[11px] opacity-70 font-black uppercase tracking-widest">Gold</div>
+          <div class="text-lg font-black" style="color:#ffd86b"><span id="finalGold">0</span></div>
+        </div>
+        <div class="glass-panel px-3 py-2 text-center">
+          <div class="text-[11px] opacity-70 font-black uppercase tracking-widest">Blue</div>
+          <div class="text-lg font-black" style="color:#9fb9ff"><span id="finalBlue">0</span></div>
+        </div>
+        <div class="glass-panel px-3 py-2 text-center">
+          <div class="text-[11px] opacity-70 font-black uppercase tracking-widest">Pink</div>
+          <div class="text-lg font-black" style="color:#d77bff"><span id="finalPink">0</span></div>
+        </div>
+      </div>
+
+      <p class="text-xs opacity-70 mt-4 mb-2 font-bold">Mariposas capturadas</p>
+      <div id="finalCapturesGrid" class="result-capture-grid">
+        <div class="text-sm opacity-60 text-center py-2 w-full">Atrapa mariposas durante el reto para verlas aquí.</div>
+      </div>
+
       <div class="flex gap-2 justify-end mt-4">
         <button id="retryBtn" class="btn px-3 py-2 text-xs" type="button">Reintentar</button>
         <button id="closeResult" class="btn px-3 py-2 text-xs" type="button">Cerrar</button>
@@ -1013,6 +1077,11 @@
 
     const resultModal = document.getElementById('resultModal');
     const finalScoreEl = document.getElementById('finalScore');
+    const finalCapturesCountEl = document.getElementById('finalCapturesCount');
+    const finalGoldEl = document.getElementById('finalGold');
+    const finalBlueEl = document.getElementById('finalBlue');
+    const finalPinkEl = document.getElementById('finalPink');
+    const finalCapturesGrid = document.getElementById('finalCapturesGrid');
 
     let score = 0;
     let level = 1;
@@ -1029,6 +1098,8 @@
     let isChallenge = false;
     let timeLeft = 30;
     let timerInterval = null;
+    let challengeCaptures = [];
+    let challengeCounts = { normal: 0, gold: 0, blue: 0, pink: 0 };
 
     // Pause interactions while overlays are up
     let paused = false;
@@ -1409,6 +1480,12 @@
       const gy = r.top - stageRect.top + r.height / 2;
 
       const type = el.dataset.type || 'normal';
+
+      if (isChallenge) {
+        const t = (type === 'gold' || type === 'blue' || type === 'pink') ? type : 'normal';
+        challengeCaptures.push(t);
+        challengeCounts[t] = (challengeCounts[t] || 0) + 1;
+      }
 
       if (type === 'gold' || type === 'blue' || type === 'pink') {
         const glow = document.createElement('div');
@@ -1797,6 +1874,9 @@
       captureCount = 0;
       timeLeft = seconds;
 
+      challengeCaptures = [];
+      challengeCounts = { normal: 0, gold: 0, blue: 0, pink: 0 };
+
       updateScoreUi();
       updateNextBadge();
 
@@ -1820,6 +1900,31 @@
       startSpawning(window.innerWidth < 480 ? 1200 : 850);
     }
 
+    function renderChallengeResults() {
+      if (finalCapturesCountEl) finalCapturesCountEl.textContent = String(challengeCaptures.length);
+      if (finalGoldEl) finalGoldEl.textContent = String(challengeCounts.gold || 0);
+      if (finalBlueEl) finalBlueEl.textContent = String(challengeCounts.blue || 0);
+      if (finalPinkEl) finalPinkEl.textContent = String(challengeCounts.pink || 0);
+
+      if (!finalCapturesGrid) return;
+      finalCapturesGrid.innerHTML = '';
+
+      if (!challengeCaptures.length) {
+        const empty = document.createElement('div');
+        empty.className = 'text-sm opacity-60 text-center py-2 w-full';
+        empty.textContent = 'No capturaste ninguna mariposa en esta ronda.';
+        finalCapturesGrid.appendChild(empty);
+        return;
+      }
+
+      for (const t of challengeCaptures) {
+        const item = document.createElement('div');
+        item.className = 'result-capture-item';
+        item.appendChild(makePreviewButterfly(t));
+        finalCapturesGrid.appendChild(item);
+      }
+    }
+
     function endChallenge() {
       if (timerInterval) {
         clearInterval(timerInterval);
@@ -1833,6 +1938,7 @@
       paused = true;
 
       finalScoreEl.textContent = String(score);
+      renderChallengeResults();
       openBackdrop(resultModal);
     }
 
