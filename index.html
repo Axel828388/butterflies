@@ -603,7 +603,7 @@
       flex-wrap: wrap;
       gap: 10px;
       justify-content: center;
-      max-height: 180px;
+      max-height: 220px;
       overflow: auto;
     }
 
@@ -630,6 +630,12 @@
 
     .result-capture-grid .butterfly.preview .butterfly-sprite {
       transform: scale(0.82);
+    }
+
+    @media (max-width: 520px) {
+      .result-capture-grid {
+        max-height: min(44vh, 360px);
+      }
     }
 
     @media (max-width: 720px) {
@@ -1300,7 +1306,9 @@
         return;
       }
 
-      const smallLimit = window.innerWidth < 480 ? 7 : 18;
+      const smallLimit = isChallenge
+        ? (window.innerWidth < 480 ? 12 : 26)
+        : (window.innerWidth < 480 ? 7 : 18);
       if (butterflies.length >= smallLimit) return;
 
       const r = Math.random();
@@ -1406,6 +1414,12 @@
         else if (w >= 720) { minCount = 2; maxCount = 3; }
         else if (w >= 420) { minCount = 1; maxCount = 2; }
         else { minCount = 1; maxCount = 1; }
+
+        if (isChallenge) {
+          // Make challenge mode feel more intense, especially on mobile.
+          minCount = Math.min(minCount + 1, 4);
+          maxCount = Math.min(maxCount + 2, 6);
+        }
 
         const spawnCount = Math.floor(minCount + Math.random() * (maxCount - minCount + 1));
 
@@ -1897,7 +1911,7 @@
       showFloatingMessage('Desafío iniciado — ¡atrápalas todas!');
 
       // Slightly faster spawn during challenge
-      startSpawning(window.innerWidth < 480 ? 1200 : 850);
+      startSpawning(window.innerWidth < 480 ? 950 : 700);
     }
 
     function renderChallengeResults() {
