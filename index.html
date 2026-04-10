@@ -397,17 +397,27 @@
       left: 16px;
       right: 16px;
       z-index: 500;
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas: "counters footer timer";
+      gap: 10px;
       align-items: center;
       pointer-events: none;
     }
 
+    .hud-counters {
+      grid-area: counters;
+    }
+
+    #timerDisplay {
+      grid-area: timer;
+      justify-self: end;
+    }
+
     .footer {
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
+      grid-area: footer;
+      justify-self: center;
+      align-self: center;
       max-width: min(58vw, 520px);
       padding: 10px 14px;
       text-align: center;
@@ -420,11 +430,34 @@
       word-break: break-word;
     }
 
+    @media (max-width: 520px) {
+      .hud-bottom {
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+          "counters timer"
+          "footer footer";
+        row-gap: 8px;
+        align-items: end;
+      }
+
+      .footer {
+        max-width: 100%;
+      }
+    }
+
     @media (max-width: 420px) {
       .footer {
         max-width: min(62vw, 520px);
         padding: 8px 10px;
         font-size: 10px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .hud-counters {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
       }
     }
 
@@ -616,7 +649,7 @@
     </div>
 
     <div class="hud-bottom">
-      <div class="flex gap-2">
+      <div class="hud-counters flex gap-2">
         <div class="glass-panel px-3 py-2 flex items-center gap-2">
           <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
           <span id="goldCount" class="text-sm font-black">0</span>
