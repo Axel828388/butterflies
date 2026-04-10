@@ -403,6 +403,31 @@
       pointer-events: none;
     }
 
+    .footer {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      max-width: min(58vw, 520px);
+      padding: 10px 14px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      opacity: 0.75;
+      pointer-events: none;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    @media (max-width: 420px) {
+      .footer {
+        max-width: min(62vw, 520px);
+        padding: 8px 10px;
+        font-size: 10px;
+      }
+    }
+
     .stat-card {
       pointer-events: auto;
       padding: 8px 16px;
@@ -605,6 +630,8 @@
           <span id="pinkCount" class="text-sm font-black">0</span>
         </div>
       </div>
+
+      <div class="footer glass-panel">Hecho con todo su amor y cariño por Axel Silva</div>
 
       <div id="timerDisplay" class="glass-panel px-4 py-2 hidden">
         <span class="text-xs font-black opacity-60 mr-2">TIEMPO</span>
