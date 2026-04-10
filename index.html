@@ -1,1641 +1,1865 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="es" class="h-full">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<!-- Load nicer UI font -->
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<title>☆CLM☆</title>
-<style>
-:root{
-  --bg:#0f0b12;
-  --header-h:72px;
-  --card:rgba(20,10,30,.6);
-  --accent:#8b5cf6;
-  --accent-2:#b084ff;
-  --hud:rgba(255,255,255,.92);
-  --butterfly-shadow:0 6px 18px rgba(139,92,246,.22);
-  --modal-bg:rgba(15,9,20,.6);
-  --particle:rgba(176,140,255,.14);
-  --panel-radius:14px;
-  --logo-gradient: linear-gradient(135deg,var(--accent),var(--accent-2));
-}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
+  <title>☆CLM☆</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            accent: 'var(--accent)',
+            'accent-2': 'var(--accent-2)',
+          },
+          borderRadius: {
+            'panel': 'var(--panel-radius)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      --header-h: 72px;
+      --card: rgba(255, 255, 255, 0.08);
+      --accent: #6366f1;
+      --accent-2: #ec4899;
+      --hud: #ffffff;
+      --butterfly-shadow: 0 10px 28px rgba(40, 140, 220, 0.18);
+      --modal-bg: rgba(15, 23, 42, 0.95);
+      --particle: rgba(255, 255, 255, 0.10);
+      --panel-radius: 24px;
+      --logo-gradient: linear-gradient(45deg, #6366f1, #a855f7);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.10);
+      --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
 
-/* Theme: aurora (default) */
-.theme-aurora{
-  --bg:linear-gradient(180deg,#0b0710 0%, #25102b 60%);
-  --card:rgba(28,10,36,.55);
-  --accent:#9b57ff;
-  --accent-2:#d6b3ff;
-  --hud:rgba(255,249,255,.95);
-  --modal-bg:rgba(22,8,30,.56);
-  --particle:rgba(188,160,255,.12);
-  --butterfly-shadow:0 10px 24px rgba(155,87,255,.22);
-  --logo-gradient: linear-gradient(135deg,#9b57ff,#d6b3ff);
-}
+    .theme-night {
+      --bg: linear-gradient(135deg, #020617 0%, #1e1b4b 100%);
+      --accent: #818cf8;
+      --accent-2: #f472b6;
+      --hud: rgba(230, 245, 255, 0.96);
+      --particle: rgba(60, 170, 255, 0.10);
+      --butterfly-shadow: 0 10px 28px rgba(40, 140, 220, 0.18);
+      --logo-gradient: linear-gradient(135deg, #3dd3ff, #37a6ff);
+    }
 
-/* Theme: night (high contrast dark) */
-.theme-night{
-  --bg:linear-gradient(180deg,#03040a 0%, #0b1020 70%);
-  --card:rgba(10,12,22,.8);
-  --accent:#3dd3ff;
-  --accent-2:#37a6ff;
-  --hud:rgba(230,245,255,.96);
-  --modal-bg:rgba(6,8,16,.78);
-  --particle:rgba(60,170,255,.10);
-  --butterfly-shadow:0 10px 28px rgba(40,140,220,.18);
-  --logo-gradient: linear-gradient(135deg,#3dd3ff,#37a6ff);
-}
+    .theme-aurora {
+      --bg: linear-gradient(135deg, #134e4a 0%, #0f172a 100%);
+      --accent: #2dd4bf;
+      --accent-2: #fbbf24;
+      --hud: rgba(255, 249, 255, 0.95);
+      --particle: rgba(188, 160, 255, 0.12);
+      --butterfly-shadow: 0 10px 24px rgba(155, 87, 255, 0.22);
+      --logo-gradient: linear-gradient(135deg, #2dd4bf, #fbbf24);
+    }
 
-/* Theme: sunset (warm) */
-.theme-sunset{
-  --bg:linear-gradient(180deg,#2b0710 0%, #3a151c 70%);
-  --card:rgba(40,14,22,.68);
-  --accent:#ff6b6b;
-  --accent-2:#ffb86b;
-  --hud:rgba(255,250,245,.95);
-  --modal-bg:rgba(40,14,22,.7);
-  --particle:rgba(255,140,120,.08);
-  --butterfly-shadow:0 10px 26px rgba(255,120,90,.16);
-  --logo-gradient: linear-gradient(135deg,#ff6b6b,#ffb86b);
-}
+    .theme-sunset {
+      --bg: linear-gradient(135deg, #450a0a 0%, #7c2d12 100%);
+      --accent: #fb923c;
+      --accent-2: #ef4444;
+      --hud: rgba(255, 250, 245, 0.95);
+      --particle: rgba(255, 140, 120, 0.08);
+      --butterfly-shadow: 0 10px 26px rgba(255, 120, 90, 0.16);
+      --logo-gradient: linear-gradient(135deg, #ff6b6b, #ffb86b);
+    }
 
-/* Theme: pastel (lightish) */
-.theme-pastel{
-  --bg:linear-gradient(180deg,#fff7fb 0%, #f2f6ff 100%);
-  --card:rgba(255,255,255,.88);
-  --accent:#b997ff;
-  --accent-2:#9bd1ff;
-  --hud:rgba(18,18,20,.92);
-  --modal-bg:rgba(255,255,255,.94);
-  --particle:rgba(150,170,255,.06);
-  --butterfly-shadow:0 10px 30px rgba(120,120,180,.06);
-  --logo-gradient: linear-gradient(135deg,#b997ff,#9bd1ff);
-}
+    .theme-pastel {
+      --bg: linear-gradient(180deg, #fff7fb 0%, #f2f6ff 100%);
+      --card: rgba(255, 255, 255, 0.88);
+      --accent: #b997ff;
+      --accent-2: #9bd1ff;
+      --hud: rgba(18, 18, 20, 0.92);
+      --modal-bg: rgba(255, 255, 255, 0.94);
+      --particle: rgba(150, 170, 255, 0.06);
+      --butterfly-shadow: 0 10px 30px rgba(120, 120, 180, 0.06);
+      --logo-gradient: linear-gradient(135deg, #b997ff, #9bd1ff);
+      --glass-border: 1px solid rgba(0, 0, 0, 0.06);
+      --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
 
-/* ==========================
-  Base / Layout (kept + minor tweaks)
-  ========================== */
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Poppins,Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
-body{background:var(--bg);color:var(--hud);overflow:hidden;-webkit-font-smoothing:antialiased}
-.app{position:relative;min-height:100vh;display:flex;flex-direction:column;gap:12px;padding:calc(var(--header-h) + env(safe-area-inset-top,12px)) 14px calc(74px + env(safe-area-inset-bottom,18px));}
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
 
-/* Drawer open overlay to darken and slightly blur the UI beneath the drawer */
-body.drawer-open::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,0.42);backdrop-filter:blur(3px);z-index:700;pointer-events:none;transition:opacity .18s}
+    html, body {
+      height: 100%;
+    }
 
-/* Topbar */
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:600;position:fixed;top:0;left:0;right:0;padding:calc(10px + env(safe-area-inset-top,6px)) 14px 10px;background:transparent;min-height:var(--header-h)}
-.title{display:flex;gap:12px;align-items:center}
-.logo{width:56px;height:56px;border-radius:12px;background:var(--logo-gradient);box-shadow:var(--butterfly-shadow);display:grid;place-items:center;font-weight:700;color:#fff;font-size:16px}
-.logo svg{width:36px;height:36px}
-.title h1{font-size:18px;margin:0}
-.title .subtitle{font-size:12px;opacity:.85;margin-top:3px;line-height:1.1}
-.badge-next{font-size:11px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,0.05);margin-left:8px;font-weight:700}
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--hud);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior-y: none;
+    }
 
-/* Controls */
-.controls{display:flex;gap:10px;align-items:center}
-button.btn{background:var(--card);color:var(--hud);border:1px solid rgba(255,255,255,.04);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600;backdrop-filter:blur(6px);transition:all .16s}
-button.btn:active{transform:translateY(1px)}
-button.icon{padding:8px;border-radius:10px;display:inline-grid;place-items:center;min-width:44px}
+    body.drawer-open::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(3px);
+      z-index: 700;
+      pointer-events: none;
+      transition: opacity 0.18s;
+    }
 
-/* Hamburger (mobile) - stacked */
-.hamburger{display:none;border:0;background:transparent;cursor:pointer;padding:8px;border-radius:10px;align-items:center;position:relative;z-index:820}
-.hamburger{ /* ensure column stacking when visible */
-  display:inline-flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  gap:6px;
-  width:46px;
-  height:46px;
-}
-.hamburger .bar{width:22px;height:2px;background:var(--hud);border-radius:2px;display:block;transition:transform .22s, opacity .18s}
-.hamburger.open .bar:nth-child(1){transform:translateY(6px) rotate(45deg)}
-.hamburger.open .bar:nth-child(2){opacity:0}
-.hamburger.open .bar:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+    .glass-panel {
+      background: var(--card);
+      border: var(--glass-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--panel-radius);
+      box-shadow: var(--glass-shadow);
+    }
 
-/* Mobile slide panel */
-.mobileMenu{
-  position:fixed;right:0;top:0;height:100vh;display:flex;align-items:flex-start;z-index:800;transform:translateX(110%); transition:transform .28s cubic-bezier(.22,.9,.32,1);
-}
-.mobileMenu.panel{width:320px;height:100%;padding:14px;border-radius:12px 0 0 12px;box-shadow: -8px 18px 60px rgba(0,0,0,.6);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-left:1px solid rgba(255,255,255,0.03);backdrop-filter:blur(8px);overflow:auto}
-.mobileMenu.open{transform:translateX(0)}
+    .app {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: calc(var(--header-h) + env(safe-area-inset-top, 12px)) 16px calc(74px + env(safe-area-inset-bottom, 18px)) 16px;
+    }
 
-/* Drawer menu items */
-.mobileMenu .menu-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:8px;background:transparent;border:1px solid rgba(255,255,255,0.02);cursor:pointer}
-.mobileMenu .menu-item:hover{background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent)}
-.mobileMenu .m-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(180deg,rgba(0,0,0,0.08),transparent);flex-shrink:0}
-.mobileMenu .m-label{font-weight:700}
-.mobileMenu .m-state{opacity:.85;font-size:13px;color:var(--accent-2)}
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-h);
+      padding: env(safe-area-inset-top, 12px) 16px 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 600;
+      background: rgba(0,0,0,0.18);
+      backdrop-filter: blur(10px);
+    }
 
-/* Make sliders and controls fit nicely inside drawer */
-.mobileMenu .sliders{margin-top:10px;padding-top:6px;border-top:1px dashed rgba(255,255,255,0.03)}
-.mobileMenu input[type=range]{width:100%;margin-top:6px}
+    .logo {
+      width: 48px;
+      height: 48px;
+      background: var(--logo-gradient);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--butterfly-shadow);
+      flex-shrink: 0;
+    }
 
-.hud{position:absolute;right:18px;top:90px;z-index:60;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-.hud .panel{background:var(--card);padding:8px 12px;border-radius:10px;font-weight:700;min-width:140px;display:flex;flex-direction:column;gap:6px}
-.hud .special{display:none}
-.hud .special > div{padding:6px 10px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);font-weight:800}
-.level-row{display:flex;align-items:center;gap:8px}
-.level-bar{height:8px;width:120px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
-.level-progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .28s cubic-bezier(.2,.9,.3,1)}
+    .btn {
+      background: var(--card);
+      border: var(--glass-border);
+      backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: transform 0.15s, background 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--hud);
+    }
 
-/* Stage */
-.stage{position:relative;flex:1;border-radius:14px;overflow:hidden;margin-top:8px;box-shadow:inset 0 0 120px rgba(0,0,0,.2);background:transparent; min-height: calc(100vh - 220px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
-.particle{position:absolute;bottom:-10px;border-radius:50%;opacity:.9;pointer-events:none;animation:rise linear infinite}
-@keyframes rise{to{transform:translateY(-120vh);opacity:0}}
+    .btn:active {
+      transform: scale(0.97);
+      background: rgba(255,255,255,0.15);
+    }
 
-/* Butterfly */
-.butterfly{position:absolute;left:0;top:0;transform-origin:center center;pointer-events:auto;width:48px;height:48px;display:block;z-index:30;filter:drop-shadow(var(--butterfly-shadow));transition:transform .12s ease}
-.butterfly .wing{position:absolute;width:56%;height:60%;top:4%;border-radius:60% 40% 60% 40%/70% 40% 60% 45%;opacity:0.98;transform-origin:10% 50%}
-.butterfly .wing.left{left:0;background:linear-gradient(135deg,var(--accent),transparent);transform-origin:right 50%}
-.butterfly .wing.right{right:0;background:linear-gradient(-135deg,var(--accent-2),transparent);transform-origin:left 50%}
-.butterfly .body{position:absolute;left:50%;top:12%;transform:translateX(-50%);width:10%;height:80%;background:rgba(255,255,255,.06);border-radius:8px}
-@keyframes flapL{0%{transform:rotate(8deg)}50%{transform:rotate(-20deg)}100%{transform:rotate(8deg)}}
-@keyframes flapR{0%{transform:rotate(-8deg)}50%{transform:rotate(20deg)}100%{transform:rotate(-8deg)}}
-.butterfly .wing.left{animation:flapL 900ms ease-in-out infinite}
-.butterfly .wing.right{animation:flapR 900ms ease-in-out infinite}
+    .stage {
+      position: relative;
+      flex: 1;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: inset 0 0 120px rgba(0,0,0,0.30);
+      touch-action: none;
+      background: rgba(255,255,255,0.02);
+    }
 
-/* Capture anim */
-.pop-out{animation:pop .28s ease forwards}
-@keyframes pop{to{transform:scale(.2);opacity:0;filter:blur(1px)}}
+    /* Ambient particles */
+    .particle.ambient {
+      position: absolute;
+      bottom: -12px;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0.6;
+      animation: ambientRise linear infinite;
+      background: var(--particle);
+      will-change: transform, opacity;
+    }
 
-/* Floating message */
-.floating-msg{position:fixed;left:50%;transform:translateX(-50%);bottom:8vh;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.02));padding:10px 16px;border-radius:999px;font-weight:700;opacity:0;pointer-events:none;z-index:120;box-shadow:0 6px 30px rgba(0,0,0,.38)}
-.floating-msg.show{animation:floatUp 2.1s ease forwards}
-@keyframes floatUp{0%{transform:translate(-50%,18px);opacity:0}10%{opacity:1}70%{transform:translate(-50%,-60px);opacity:.95}100%{transform:translate(-50%,-110px);opacity:0}}
+    @keyframes ambientRise {
+      to {
+        transform: translateY(-120vh);
+        opacity: 0;
+      }
+    }
 
-/* Top stats (centered) */
-.top-stats{position:relative;z-index:70}
-.top-stats .panel{min-width:120px;padding:10px 14px}
+    /* Burst particles (legacy burst circles) */
+    .particle.burst {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+      animation: burstRise 0.8s linear forwards;
+      will-change: transform, opacity;
+    }
 
-/* Capture glow effect for special butterflies */
-.capture-glow{position:absolute;width:120px;height:120px;border-radius:999px;transform:translate(-50%,-50%) scale(.6);pointer-events:none;opacity:0;mix-blend-mode:screen;z-index:140;transition:transform .5s ease,opacity .5s ease}
-.capture-glow.fade{opacity:0.95;transform:translate(-50%,-50%) scale(1);animation:glowPulse .9s ease-out forwards}
-.capture-glow.gold{background:radial-gradient(circle at 30% 30%, rgba(255,240,180,0.95), rgba(255,150,40,0.12));box-shadow:0 0 40px rgba(255,190,70,0.9)}
-.capture-glow.blue{background:radial-gradient(circle at 30% 30%, rgba(170,220,255,0.95), rgba(80,140,255,0.12));box-shadow:0 0 44px rgba(80,150,255,0.9)}
-.capture-glow.pink{background:radial-gradient(circle at 30% 30%, rgba(255,190,230,0.95), rgba(200,110,255,0.12));box-shadow:0 0 44px rgba(220,120,255,0.9)}
-@keyframes glowPulse{0%{transform:translate(-50%,-50%) scale(.8);opacity:.8}50%{transform:translate(-50%,-50%) scale(1.05);opacity:1}100%{transform:translate(-50%,-50%) scale(.95);opacity:0}}
+    @keyframes burstRise {
+      to { transform: translateY(-150px) scale(0); opacity: 0; }
+    }
 
-/* Heart particle used for explosions */
-.particle.heart{border-radius:0;background:transparent;padding:0;display:grid;place-items:center}
-.particle.heart svg{width:18px;height:18px;display:block;transform:translateY(0);transition:transform .28s ease,opacity .3s}
-.particle.heart.gold svg{filter:drop-shadow(0 6px 18px rgba(255,190,70,0.18));}
-.particle.heart.blue svg{filter:drop-shadow(0 6px 18px rgba(80,140,255,0.12));}
-.particle.heart.pink svg{filter:drop-shadow(0 6px 18px rgba(200,110,255,0.12));}
+    /* Heart particles */
+    .particle.heart {
+      border-radius: 0;
+      background: transparent;
+      display: grid;
+      place-items: center;
+      position: absolute;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
 
-@keyframes burstOut{0%{opacity:1;transform:translate(0,0) scale(.8)}70%{opacity:1}100%{opacity:0;transform:translate(var(--tx,0),var(--ty,0)) scale(.6)}}
+    .particle.heart svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
 
-/* Modal & Theme modal */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:900;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
-.modal-backdrop.show{display:flex}
-.modal-backdrop .modal{z-index:910}
-.modal{width:min(920px,94%);max-height:86vh;overflow:auto;background:var(--modal-bg);border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(8px);box-shadow:0 20px 50px rgba(0,0,0,.6);transform:translateY(18px);opacity:0}
-.modal.show{animation:modalIn .28s cubic-bezier(.16,.9,.3,1) forwards}
-@keyframes modalIn{to{opacity:1;transform:none}}
+    @keyframes burstOut {
+      0% { opacity: 1; transform: translate(0,0) scale(0.8); }
+      70% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--tx,0), var(--ty,0)) scale(0.6); }
+    }
 
-/* Result modal: keep compact since it only shows final score */
-#resultModal .modal{
-  width: min(460px, 92%);
-  max-height: 56vh;
-  padding:14px;
-  border-radius:12px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  align-items:stretch;
-}
-#resultModal .modal h2{font-size:18px;margin:0 0 6px}
-#resultModal .modal p{margin:0}
-#resultModal .modal .btn{padding:8px 10px;font-size:13px}
+    /* Butterfly rendering (copiado del estilo de Mobile Web Enhancer) */
+    .butterfly {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 56px;
+      height: 56px;
+      pointer-events: auto;
+      z-index: 30;
+      filter: drop-shadow(var(--butterfly-shadow));
+      will-change: transform;
+      transition: opacity 0.3s;
+      touch-action: manipulation;
+    }
 
-/* Theme modal specific styles */
-.theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:12px}
-.theme-card{border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:10px;display:flex;flex-direction:column;gap:8px;align-items:stretch}
-.theme-preview{height:86px;border-radius:8px;box-shadow:inset 0 -10px 20px rgba(0,0,0,0.08)}
-.theme-actions{display:flex;gap:8px;align-items:center;justify-content:space-between}
-.small{font-size:12px;opacity:.86}
+    .butterfly::after {
+      content: '';
+      position: absolute;
+      inset: -15px;
+    }
 
-/* ==========================
-  DIARY & COLLECTION — UPDATED STYLES (only visual changes)
-  (These rules replace the original ones to improve mobile rendering)
-  ========================== */
+    .butterfly-sprite {
+      position: absolute;
+      inset: 0;
+      transform: scale(var(--bscale, 1));
+      transform-origin: center;
+    }
 
-/* Diary list entries: keep structure but improve spacing + readable on mobile */
-.diary-list{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
-  gap:12px;
-  margin-top:12px;
-  padding-bottom:6px;
-}
-.entry{
-  background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
-  padding:14px 16px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.03);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-  font-size:15px;
-  line-height:1.4;
-  position:relative;
-  color:var(--hud);
-  word-wrap:break-word;
-}
-.entry:before{
-  content:"“";
-  position:absolute;
-  left:10px;
-  top:6px;
-  font-size:36px;
-  opacity:.10;
-  color:var(--hud);
-}
+    .wing {
+      position: absolute;
+      width: 28px;
+      height: 40px;
+      border-radius: 50% 50% 20% 50%;
+      top: 8px;
+    }
 
-/* Collection grid and cards: make thumbs preserve original SVG colors and stack nicely on mobile */
-.collection-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:12px;
-  margin-top:12px;
-}
+    .wing-l {
+      left: 2px;
+      transform-origin: right center;
+      animation: flapL 0.2s infinite alternate ease-in-out;
+    }
 
-/* card layout: on desktop compact column, on larger screens allow row-like */
-.collect-card{
-  background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);
-  padding:12px 14px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,0.03);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:8px;
-  min-height:120px;
-  transition:transform .14s, box-shadow .14s;
-}
-.collect-card:hover{transform:translateY(-4px);box-shadow:0 12px 36px rgba(0,0,0,0.45)}
+    .wing-r {
+      right: 2px;
+      transform-origin: left center;
+      border-radius: 50% 50% 50% 20%;
+      animation: flapR 0.2s infinite alternate ease-in-out;
+    }
 
-/* ensure svg thumbs aren't tinted by CSS and keep fixed size */
-.collect-card > div:first-child img,
-.collect-card > div:first-child svg,
-.collect-card > div:first-child > svg{
-  width:86px;
-  height:86px;
-  display:block;
-  border-radius:8px;
-  flex-shrink:0;
-}
+    @keyframes flapL { from { transform: rotateY(0deg); } to { transform: rotateY(70deg); } }
+    @keyframes flapR { from { transform: rotateY(0deg); } to { transform: rotateY(-70deg); } }
 
-/* phrases area */
-.collect-phrases{
-  width:100%;
-  margin-top:8px;
-  max-height:140px;
-  overflow:auto;
-  padding:10px;
-  border-radius:10px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-  font-size:14px;
-  line-height:1.4;
-  border:1px solid rgba(255,255,255,0.04);
-}
+    .body-center {
+      position: absolute;
+      width: 4px;
+      height: 32px;
+      background: #111;
+      left: 26px;
+      top: 12px;
+      border-radius: 2px;
+      z-index: 2;
+    }
 
-.collection-header{display:flex;gap:10px;align-items:center;justify-content:center;margin-top:8px}
-.col-badge{display:flex;flex-direction:column;align-items:center;min-width:72px;padding:8px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);}
-.col-badge .label{font-size:12px;opacity:.85}
-.col-badge .count{font-weight:900;font-size:18px;margin-top:6px}
-.col-badge.gold{color:#ffd86b}
-.col-badge.blue{color:#9fb9ff}
-.col-badge.pink{color:#d77bff}
+    /* Colores por tipo (mismos del Mobile Web Enhancer) */
+    .butterfly.normal .wing { background: rgba(255, 255, 255, 0.8); }
+    .butterfly.gold .wing { background: #fbbf24; }
+    .butterfly.blue .wing { background: #60a5fa; }
+    .butterfly.pink .wing { background: #f472b6; }
 
-/* compact text for counters inside cards */
-.collect-card .counter{font-weight:800;margin-top:6px;font-size:13px;color:var(--hud)}
+    .pop-out { animation: pop 0.28s ease forwards; }
+    @keyframes pop { to { transform: scale(0.2); opacity: 0; filter: blur(1px); } }
 
-/* custom scrollbar for phrases and diary for better touch control */
-.collect-phrases::-webkit-scrollbar, .diary-list::-webkit-scrollbar{height:10px;width:8px}
-.collect-phrases::-webkit-scrollbar-thumb, .diary-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:999px}
-.collect-phrases::-webkit-scrollbar-track, .diary-list::-webkit-scrollbar-track{background:transparent}
+    /* Capture glow */
+    .capture-glow {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      border-radius: 999px;
+      transform: translate(-50%, -50%) scale(0.6);
+      pointer-events: none;
+      opacity: 0;
+      mix-blend-mode: screen;
+      z-index: 140;
+    }
+    .capture-glow.fade {
+      opacity: 0.95;
+      transform: translate(-50%, -50%) scale(1);
+      animation: glowPulse 0.9s ease-out forwards;
+    }
+    .capture-glow.gold { background: radial-gradient(circle at 30% 30%, rgba(255,240,180,0.95), rgba(255,150,40,0.12)); box-shadow: 0 0 40px rgba(255,190,70,0.9); }
+    .capture-glow.blue { background: radial-gradient(circle at 30% 30%, rgba(170,220,255,0.95), rgba(80,140,255,0.12)); box-shadow: 0 0 44px rgba(80,150,255,0.9); }
+    .capture-glow.pink { background: radial-gradient(circle at 30% 30%, rgba(255,190,230,0.95), rgba(200,110,255,0.12)); box-shadow: 0 0 44px rgba(220,120,255,0.9); }
+    @keyframes glowPulse {
+      0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+      50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0; }
+    }
 
-/* small helper */
-.muted{color:rgba(255,255,255,0.6);font-size:13px}
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.70);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
 
-/* ==========================
-  PREVIEW: mini-mariposas in collection cards (live visual previews)
-  ========================== */
+    .modal-backdrop.show {
+      display: flex;
+    }
 
-/* container for the thumb (keeps SVG fallback working) */
-.collect-card .thumb{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  min-height:86px;
-}
+    .modal {
+      width: 90%;
+      max-width: 560px;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
 
-/* Collection single-category view (one page per type) */
-.collect-view{display:flex;flex-direction:column;gap:12px;align-items:center;padding:8px}
-.collect-view .collect-title{font-weight:900;font-size:20px;margin-bottom:6px}
-.collect-view .collect-preview{width:88px;height:88px;border-radius:12px;display:grid;place-items:center;box-shadow:var(--butterfly-shadow);margin-bottom:6px;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent)}
-.collect-view .collect-preview.gold{box-shadow:0 12px 46px rgba(255,185,60,0.12), inset 0 0 18px rgba(255,220,140,0.03);border:1px solid rgba(255,180,60,0.12)}
-.collect-view .collect-preview.blue{box-shadow:0 12px 46px rgba(80,140,255,0.12), inset 0 0 18px rgba(150,190,255,0.03);border:1px solid rgba(100,140,255,0.12)}
-.collect-view .collect-preview.pink{box-shadow:0 12px 46px rgba(215,110,255,0.12), inset 0 0 18px rgba(240,170,255,0.03);border:1px solid rgba(200,110,255,0.12)}
-/* ensure the butterfly sits framed inside the preview */
-.collect-view .collect-preview .butterfly.preview{width:72px;height:72px;border-radius:10px;padding:4px;background:transparent;box-shadow:none;position:relative;left:auto;top:auto;transform:none!important;display:block;margin:0 auto}
-.collect-view .collect-count{opacity:.9;font-weight:800}
-.collect-view .collect-phrases-list{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:6px}
-.collect-view .collect-phrase-item{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-size:14px}
+    .floating-msg {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 900;
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
 
-/* Diary special marker */
-.entry .special-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:10px;vertical-align:middle}
-.entry .special-dot.gold{background:#ffd86b}
-.entry .special-dot.blue{background:#9fb9ff}
-.entry .special-dot.pink{background:#d77bff}
+    .msg-active {
+      opacity: 1;
+      bottom: 122px;
+    }
 
-/* Renderizar una mini-mariposa que use mismas clases/animaciones in-game */
-.collect-card .butterfly.preview{
-  position:relative;
-  width:72px;
-  height:72px;
-  pointer-events:none; /* no interactiva */
-  transform:none !important;
-  filter:none !important;
-  box-shadow:none !important;
-  margin:0 auto;
-}
+    .hud-bottom {
+      position: fixed;
+      bottom: 24px;
+      left: 16px;
+      right: 16px;
+      z-index: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
 
-/* ajustar proporciones para el preview */
-.collect-card .butterfly.preview .wing{
-  width:50%;
-  height:50%;
-  top:10%;
-}
-.collect-card .butterfly.preview .body{
-  width:12%;
-  height:36%;
-  top:24%;
-}
+    .stat-card {
+      pointer-events: auto;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-/* colores específicos por tipo (preview sólo) */
-.collect-card .butterfly.preview.gold .wing.left{ background: linear-gradient(135deg,#ffd86b,#ff9f3b); }
-.collect-card .butterfly.preview.gold .wing.right{ background: linear-gradient(-135deg,#ff9f3b,#ffd86b); }
+    .hamburger {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
 
-.collect-card .butterfly.preview.blue .wing.left{ background: linear-gradient(135deg,#9fb9ff,#6f9bff); }
-.collect-card .butterfly.preview.blue .wing.right{ background: linear-gradient(-135deg,#6f9bff,#9fb9ff); }
+    .hamburger span {
+      width: 24px;
+      height: 2px;
+      background: currentColor;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
 
-.collect-card .butterfly.preview.pink .wing.left{ background: linear-gradient(135deg,#ffa3e0,#d77bff); }
-.collect-card .butterfly.preview.pink .wing.right{ background: linear-gradient(-135deg,#d77bff,#ffa3e0); }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Forzar animación de alas */
-.collect-card .butterfly.preview .wing.left{ animation: flapL 900ms ease-in-out infinite; }
-.collect-card .butterfly.preview .wing.right{ animation: flapR 900ms ease-in-out infinite; }
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 300px;
+      background: var(--modal-bg);
+      z-index: 800;
+      transform: translateX(110%);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: calc(var(--header-h) + 20px) 20px;
+      border-left: var(--glass-border);
+      overflow-y: auto;
+    }
 
-/* fallback sizing for existing SVG thumbnails inside card */
-.collect-card > div:first-child svg,
-.collect-card > div:first-child img{ max-width:86px; max-height:86px; }
+    .mobile-menu.open { transform: translateX(0); }
 
-/* ==========================
-  Modal mobile adjustments — keep modals accessible but full-width on mobile
-  ========================== */
-@media (max-width:720px){
-  .modal{
-    width: calc(100% - 20px);
-    height: 92vh;
-    max-height: 92vh;
-    border-radius:12px;
-    padding:12px;
-    margin:0 10px;
-    overflow:auto; /* allow modal scrolling on mobile */
-  }
-  .modal .modal-inner-scroll{
-    height:100%;
-    overflow:auto;
-    padding-right:6px;
-  }
+    .progress-container {
+      height: 6px;
+      background: rgba(255,255,255,0.10);
+      border-radius: 3px;
+      overflow: hidden;
+      width: 110px;
+    }
 
-  /* stack collection card content for narrow screens */
-  .collect-card{
-    flex-direction:row;
-    align-items:flex-start;
-    gap:10px;
-    padding:12px;
-  }
-  .collect-card > div:first-child svg,
-  .collect-card > div:first-child img{
-    width:64px;
-    height:64px;
-  }
-  .collect-card .meta{display:flex;flex-direction:column;align-items:flex-start}
-  .collect-phrases{max-height:88px;font-size:13px;overflow:auto}
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      width: 0%;
+      transition: width 0.3s;
+    }
 
-  /* diary single column */
-  .diary-list{grid-template-columns:repeat(1,1fr)}
-  .entry{font-size:15px;padding:12px;border-radius:10px}
-  #volumePanel { display:none !important; }
-}
+    .diary-item {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      font-size: 14px;
+      border-left: 3px solid var(--accent);
+      line-height: 1.35;
+      position: relative;
+    }
 
-/* Footer */
-.footer{position:fixed;left:0;right:0;bottom:10px;z-index:220;display:flex;justify-content:center;padding:6px 0;color:rgba(255,255,255,0.85);font-size:13px;pointer-events:none;text-shadow:0 2px 6px rgba(0,0,0,0.6);background:linear-gradient(180deg,transparent,rgba(0,0,0,0.12));}
+    .diary-item::before {
+      content: "“";
+      position: absolute;
+      left: 10px;
+      top: 5px;
+      font-size: 30px;
+      opacity: 0.10;
+    }
 
-/* HUD counters for special butterflies */
-.hud div { margin-bottom: 4px; font-weight: bold; font-size: 14px; }
-#goldCounter { color: #FFD700; }
-#blueCounter { color: #6490FF; }
-#pinkCounter { color: #D778FF; }
+    .special-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
 
-/* Mobile tweaks (kept) */
-@media (max-width:720px){
-  #volumePanel { display:none !important; }
-  body{padding:10px}
-  .butterfly{width:66px;height:66px; touch-action: manipulation;}
-  .title h1{font-size:16px}
-  .controls button{padding:12px 16px;border-radius:14px; font-size:14px;}
-  .hud{
-    right:12px;
-    left:12px;
-    top:auto;
-    bottom:12px;
-    gap:6px;
-    font-size:13px;
-    flex-direction:row;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .hud div { font-size: 12px; margin-bottom: 0; }
-  .hud .panel{min-width:unset;padding:8px 10px}
-  .logo{width:48px;height:48px;font-size:14px; border-radius:10px}
-  .floating-msg{font-size:14px;padding:8px 12px}
-  .stage{border-radius:10px; margin-top:6px; min-height: calc(100vh - 160px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); }
-  .butterfly { min-width: 54px; min-height: 54px; }
+    .special-dot.gold { background: #ffd86b; }
+    .special-dot.blue { background: #9fb9ff; }
+    .special-dot.pink { background: #d77bff; }
 
-  /* show hamburger on small screens */
-  .hamburger{display:inline-flex}
-  .controls{display:none} /* hide original controls (we expose them in mobileMenu) */
-  .mobileMenu{right:10px; top:12px; min-width:220px}
-}
-</style>
+    /* Collection */
+    .collect-preview {
+      width: 88px;
+      height: 88px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    }
+
+    .collect-preview .butterfly.preview {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none !important;
+      width: 56px;
+      height: 56px;
+      pointer-events: none;
+      filter: none;
+    }
+
+    .collect-preview .butterfly.preview .butterfly-sprite {
+      transform: scale(1);
+    }
+
+    .collect-phrase-item {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    @media (max-width: 720px) {
+      .modal {
+        width: calc(100% - 20px);
+        height: 92vh;
+        max-height: 92vh;
+        border-radius: 16px;
+        margin: 0 10px;
+      }
+    }
+  </style>
 </head>
-<body>
-  
-
-  <div class="app" role="application" aria-label="Captura las Mariposas">
-    <div class="topbar">
-      <div class="title" style="align-items:center">
-        <div class="logo" aria-hidden="true" title="Captura las Mariposas">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <g fill="none" stroke="#fff" stroke-opacity=".95" stroke-width="1.2">
-              <path d="M32 32c6-8 14-10 20-6 4 3 4 12-4 18-6 4-12 2-16-2" fill="rgba(255,255,255,0.06)"></path>
-              <path d="M32 32c-6-8-14-10-20-6-4 3-4 12 4 18 6 4 12 2 16-2" fill="rgba(255,255,255,0.06)"></path>
-              <circle cx="32" cy="30" r="1.6" fill="#fff"></circle>
-            </g>
-          </svg>
-        </div>
-        <div>
-          <h1>Captura las Mariposas</h1>
-          <div style="display:flex;align-items:center">
-            <div class="subtitle">Toca para atrapar mariposas y desbloquear frases románticas.</div>
-            <div class="badge-next" id="nextBadge" title="Capturas para la próxima frase">Próx frase: 5</div>
-          </div>
-        </div>
+<body class="theme-night">
+  <header class="topbar">
+    <div class="flex items-center gap-3">
+      <div class="logo" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 7c0-3-2-5-5-5-1.5 0-3 1-4 2-1-1-2.5-2-4-2-3 0-5 2-5 5 0 4 3 6 3 6l7 7 7-7s3-2 3-6Z"/>
+        </svg>
       </div>
-
-      <div style="display:flex;gap:8px;align-items:center">
-        <!-- hamburger (mobile) -->
-        <button class="hamburger" id="menuToggle" aria-label="Abrir menú">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-        </button>
-
-        <div class="controls" role="toolbar" aria-label="Controles del juego">
-          <button class="btn" id="themeBtn" title="Abrir selector de temas">Cambiar Tema</button>
-          <button class="btn" id="challengeBtn" title="Iniciar desafío 30s">Desafío 30s</button>
-          <button class="btn" id="diaryBtn" title="Abrir diario">Diario</button>
-          <button class="btn" id="collectionBtn" title="Abrir colección">Colección</button>
-          <button class="btn" id="musicToggle" title="Reproducir/pausar música">Música Off</button>
-            <div id="volumePanel" style="
-            margin-top:6px;
-            display:flex;
-            flex-direction:column;
-            gap:6px;
-            width:170px;
-            opacity:0;
-            animation:fadeInVolume .45s ease forwards;
-          ">
-            <label style="font-size:12px; opacity:.75;">Volumen Música</label>
-            <input id="musicSlider" type="range" min="0" max="1" step="0.01" style="width:100%;" />
-
-            <label style="font-size:12px; opacity:.75; margin-top:4px;">Volumen Efectos</label>
-            <input id="fxSlider" type="range" min="0" max="1" step="0.01" style="width:100%;" />
-          </div>
+      <div class="min-w-0">
+        <h1 class="text-lg font-black leading-none">☆CLM☆</h1>
+        <div class="flex items-center gap-2">
+          <p class="text-[10px] opacity-70 uppercase tracking-widest">Jardín de Almas</p>
+          <span id="nextBadge" class="text-[10px] font-black px-2 py-1 rounded-full bg-white/5 border border-white/10">Próx frase: 5</span>
         </div>
       </div>
     </div>
 
-    <div class="mobileMenu" id="mobileMenu" aria-hidden="true" role="menu">
-      <div class="panel" id="mobilePanel"></div>
+    <div class="flex items-center gap-2">
+      <button id="challengeBtn" class="btn text-xs px-3 bg-accent/20 border-accent/30 hidden md:flex" type="button">RETO 30s</button>
+      <div id="menuBtn" class="hamburger glass-panel" role="button" aria-label="Abrir menú" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="flex justify-between items-center mb-2">
+      <div class="stat-card glass-panel">
+        <span class="text-xs font-semibold opacity-60">NIVEL</span>
+        <span id="levelVal" class="text-lg font-black">1</span>
+        <div class="progress-container ml-2" aria-hidden="true">
+          <div id="levelProgress" class="progress-bar"></div>
+        </div>
+      </div>
+      <div class="stat-card glass-panel">
+        <span class="text-xs font-semibold opacity-60">PUNTOS</span>
+        <span id="scoreVal" class="text-xl font-black text-accent">0</span>
+      </div>
     </div>
 
-      <!-- Top stats (centered, prominent) -->
-      <div class="top-stats" id="topStats" aria-hidden="false" style="display:flex;gap:12px;align-items:center;justify-content:center;margin-top:6px">
-        <div class="panel" id="scorePanel">Puntos: <span id="score">0</span></div>
-        <div class="panel" id="levelPanel">Nivel: <span id="level">1</span>
-          <div class="level-row"><div class="level-bar" aria-hidden="true"><div id="levelProgress" class="level-progress" style="width:0%"></div></div></div>
+    <div id="stage" class="stage" aria-label="Escenario">
+      <!-- Butterflies + particles spawn here -->
+    </div>
+
+    <div class="hud-bottom">
+      <div class="flex gap-2">
+        <div class="glass-panel px-3 py-2 flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-yellow-400"></div>
+          <span id="goldCount" class="text-sm font-black">0</span>
+        </div>
+        <div class="glass-panel px-3 py-2 flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-blue-400"></div>
+          <span id="blueCount" class="text-sm font-black">0</span>
+        </div>
+        <div class="glass-panel px-3 py-2 flex items-center gap-2">
+          <div class="w-2 h-2 rounded-full bg-pink-400"></div>
+          <span id="pinkCount" class="text-sm font-black">0</span>
         </div>
       </div>
 
-    <div class="stage" id="stage" aria-hidden="false"></div>
-
-    <div class="hud" id="hud" aria-live="polite">
-      <div class="panel special" id="specialPanel" aria-hidden="true">
-        <div id="goldCounter">Gold: 0</div>
-        <div id="blueCounter">Blue: 0</div>
-        <div id="pinkCounter">Pink: 0</div>
+      <div id="timerDisplay" class="glass-panel px-4 py-2 hidden">
+        <span class="text-xs font-black opacity-60 mr-2">TIEMPO</span>
+        <span id="timerVal" class="text-lg font-black text-accent-2">30</span>
       </div>
-      <div class="panel" id="timerPanel" style="display:none">Tiempo: <span id="timer">30</span>s</div>
     </div>
+  </main>
 
-    <div class="footer">Hecho con todo su amor y cariño por Axel Silva </div>
+  <div id="floatingMsg" class="floating-msg glass-panel">
+    <p id="msgText" class="text-sm font-semibold text-center"></p>
   </div>
 
-  <div class="floating-msg" id="floatingMsg" aria-hidden="true"></div>
+  <aside id="mobileMenu" class="mobile-menu" aria-hidden="true">
+    <h2 class="text-xl font-black mb-6">Ajustes</h2>
+
+    <div class="space-y-3">
+      <button id="openDiaryBtn" class="w-full flex items-center justify-between p-4 glass-panel" type="button">
+        <span>Diario de Almas</span>
+        <span class="opacity-60">›</span>
+      </button>
+      <button id="openCollectionBtn" class="w-full flex items-center justify-between p-4 glass-panel" type="button">
+        <span>Colección</span>
+        <span class="opacity-60">›</span>
+      </button>
+      <button id="openThemeBtn" class="w-full flex items-center justify-between p-4 glass-panel" type="button">
+        <span>Apariencia</span>
+        <span class="opacity-60">›</span>
+      </button>
+      <button id="challengeMenuBtn" class="w-full flex items-center justify-between p-4 glass-panel bg-accent/20" type="button">
+        <span>Modo Reto</span>
+        <span class="opacity-60">›</span>
+      </button>
+    </div>
+
+    <div class="mt-8">
+      <p class="text-xs opacity-50 mb-2 uppercase font-black">Música y Sonido</p>
+
+      <div class="space-y-3">
+        <div>
+          <div class="text-xs font-bold opacity-70 mb-2">Volumen Música</div>
+          <input type="range" class="w-full accent-accent" id="musicVolume" min="0" max="1" step="0.01" value="0.3">
+        </div>
+        <div>
+          <div class="text-xs font-bold opacity-70 mb-2">Volumen Efectos</div>
+          <input type="range" class="w-full accent-accent" id="fxVolume" min="0" max="1" step="0.01" value="0.8">
+        </div>
+      </div>
+
+      <div class="mt-4 flex gap-2">
+        <button id="musicToggle" class="btn flex-1 justify-center" type="button">🔇 Música Off</button>
+      </div>
+    </div>
+  </aside>
 
   <!-- Diary Modal -->
-  <div class="modal-backdrop" id="diaryModal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <h2 style="margin:0">Diario ☆</h2>
-        <div><button class="btn" id="closeDiary">Cerrar</button></div>
+  <div id="diaryModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal glass-panel p-6" role="document">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-black">Diario de Almas</h3>
+        <button id="closeDiary" class="btn px-3 py-2 text-xs" type="button">Cerrar</button>
       </div>
-        <div class="diary-list" id="diaryList"></div>
-        <div class="diary-pagination" style="display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px">
-          <button class="btn" id="diaryPrev">Anterior</button>
-          <div id="diaryPageInfo" style="opacity:.9;font-weight:700">Página 1</div>
-          <button class="btn" id="diaryNext">Siguiente</button>
-        </div>
-        <div style="margin-top:12px;text-align:right"><button class="btn" id="clearDiary">Borrar Diario</button></div>
+
+      <div id="diaryContent" class="overflow-y-auto pr-2 space-y-2" style="min-height: 120px;"></div>
+
+      <div class="flex items-center justify-between mt-4 gap-2">
+        <button id="diaryPrev" class="btn px-3 py-2 text-xs" type="button">Anterior</button>
+        <div id="diaryPageInfo" class="text-xs font-black opacity-70">Página 1</div>
+        <button id="diaryNext" class="btn px-3 py-2 text-xs" type="button">Siguiente</button>
+      </div>
+
+      <div class="mt-4 flex justify-end">
+        <button id="clearDiary" class="btn px-3 py-2 text-xs" type="button">Borrar Diario</button>
+      </div>
     </div>
   </div>
 
   <!-- Collection Modal -->
-  <div class="modal-backdrop" id="collectionModal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <h2 style="margin:0">Colección ☆</h2>
-        <div><button class="btn" id="closeCollection">Cerrar</button></div>
+  <div id="collectionModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal glass-panel p-6" role="document">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-xl font-black">Colección</h3>
+        <button id="closeCollection" class="btn px-3 py-2 text-xs" type="button">Cerrar</button>
       </div>
-      <p style="opacity:.7;margin-top:8px">Mariposas especiales que encontraste</p>
-      <div class="collection-header" style="margin-top:8px">
-        <div class="col-badge gold">
-          <div class="label">Gold</div>
-          <div class="count"><span id="colCountGold">0</span></div>
+
+      <p class="text-xs opacity-70 mb-3">Mariposas especiales que encontraste</p>
+
+      <div class="flex gap-2 justify-center mb-4">
+        <div class="glass-panel px-3 py-2 text-center" style="min-width: 84px;">
+          <div class="text-xs opacity-70 font-bold">Gold</div>
+          <div class="text-lg font-black" style="color:#ffd86b"><span id="colCountGold">0</span></div>
         </div>
-        <div class="col-badge blue">
-          <div class="label">Blue</div>
-          <div class="count"><span id="colCountBlue">0</span></div>
+        <div class="glass-panel px-3 py-2 text-center" style="min-width: 84px;">
+          <div class="text-xs opacity-70 font-bold">Blue</div>
+          <div class="text-lg font-black" style="color:#9fb9ff"><span id="colCountBlue">0</span></div>
         </div>
-        <div class="col-badge pink">
-          <div class="label">Pink</div>
-          <div class="count"><span id="colCountPink">0</span></div>
+        <div class="glass-panel px-3 py-2 text-center" style="min-width: 84px;">
+          <div class="text-xs opacity-70 font-bold">Pink</div>
+          <div class="text-lg font-black" style="color:#d77bff"><span id="colCountPink">0</span></div>
         </div>
       </div>
-      <div class="collection-grid" id="collectionGrid"></div>
+
+      <div id="collectionGrid" class="overflow-y-auto pr-2" style="min-height: 140px;"></div>
     </div>
   </div>
 
   <!-- Result Modal -->
-  <div class="modal-backdrop" id="resultModal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document">
-      <h2 id="resultTitle">Desafío terminado</h2>
-      <p style="margin-top:6px">Puntos: <strong id="finalScore">0</strong></p>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px">
-        <button class="btn" id="retryBtn">Reintentar</button>
-        <button class="btn" id="closeResult">Cerrar</button>
+  <div id="resultModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal glass-panel p-6" role="document" style="max-width: 460px;">
+      <h3 class="text-xl font-black">¡Fin del Reto!</h3>
+      <p class="text-sm opacity-75 mt-1">Puntos: <span id="finalScore" class="font-black">0</span></p>
+      <div class="flex gap-2 justify-end mt-4">
+        <button id="retryBtn" class="btn px-3 py-2 text-xs" type="button">Reintentar</button>
+        <button id="closeResult" class="btn px-3 py-2 text-xs" type="button">Cerrar</button>
       </div>
     </div>
   </div>
 
-  <!-- THEME Modal -->
-  <div class="modal-backdrop" id="themeModal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal" role="document">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
-        <h2 style="margin:0">Temas</h2>
-        <div><button class="btn" id="closeTheme">Cerrar</button></div>
+  <!-- Theme Modal -->
+  <div id="themeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal glass-panel p-6" role="document">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-black">Temas</h3>
+        <button id="closeTheme" class="btn px-3 py-2 text-xs" type="button">Cerrar</button>
       </div>
-      <p class="small" style="opacity:.75;margin-top:8px">Elige un tema para la app. La selección se guarda y se aplica inmediatamente.</p>
-      <div class="theme-grid" id="themeGrid">
-        <!-- JS will populate theme cards -->
+
+      <div class="grid grid-cols-2 gap-3">
+        <button class="themeBtn p-4 rounded-xl border border-white/10 text-left" data-theme="night" type="button" style="background: rgba(2,6,23,0.7)">
+          <div class="w-full h-10 rounded mb-2" style="background: linear-gradient(180deg,#03040a,#0b1020)"></div>
+          <span class="text-sm font-black">Noche</span>
+        </button>
+        <button class="themeBtn p-4 rounded-xl border border-white/10 text-left" data-theme="aurora" type="button" style="background: rgba(19,78,74,0.55)">
+          <div class="w-full h-10 rounded mb-2" style="background: linear-gradient(180deg,#134e4a,#0f172a)"></div>
+          <span class="text-sm font-black">Aurora</span>
+        </button>
+        <button class="themeBtn p-4 rounded-xl border border-white/10 text-left" data-theme="sunset" type="button" style="background: rgba(69,10,10,0.55)">
+          <div class="w-full h-10 rounded mb-2" style="background: linear-gradient(180deg,#450a0a,#7c2d12)"></div>
+          <span class="text-sm font-black">Atardecer</span>
+        </button>
+        <button class="themeBtn p-4 rounded-xl border border-white/10 text-left" data-theme="pastel" type="button" style="background: rgba(255,255,255,0.2)">
+          <div class="w-full h-10 rounded mb-2" style="background: linear-gradient(180deg,#fff7fb,#f2f6ff)"></div>
+          <span class="text-sm font-black">Pastel</span>
+        </button>
       </div>
-      <div style="display:flex;justify-content:flex-end;margin-top:12px">
-        <button class="btn" id="resetTheme">Restablecer a Auroras</button>
+
+      <div class="flex justify-end mt-4">
+        <button id="resetTheme" class="btn px-3 py-2 text-xs" type="button">Restablecer</button>
       </div>
     </div>
   </div>
 
-  <audio id="bgMusic" src="musica.mp3" preload="auto"></audio>
-  <div id="sliderContainer">
-  <!-- sliderContainer removed: consolidated volume controls live in the main controls area to avoid duplicated IDs -->
-</div>
+  <audio id="bgMusic" src="musica.mp3" preload="auto" loop></audio>
 
-<script>
-/* --------------------------
-  Mantengo y extiendo funciones existentes:
-  - Preview en collection cards
-  - Spawn multiple butterflies per tick with variable frequency
-  ---------------------------*/
+  <script>
+    // --------------------
+    // Audio: FX (WebAudio) + Music (mp3)
+    // --------------------
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    try { audioCtx = new AudioContextCtor(); } catch (e) { audioCtx = null; }
 
-/* ---------------------------
-  Audio helpers (iguales)
-  ---------------------------*/
-const AudioContext = window.AudioContext || window.webkitAudioContext;
-let audioCtx;
-try{ audioCtx = new AudioContext(); }catch(e){ audioCtx = null; }
-let s_masterGain = audioCtx ? audioCtx.createGain() : null;
-if(s_masterGain){ s_masterGain.gain.value = 0.9; s_masterGain.connect(audioCtx.destination); }
-function playTone(freq, dur=0.14, type='sine', vol=0.12) {
-  if(!audioCtx) return;
-  const o = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
-  o.type = type;
-  o.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  g.gain.setValueAtTime(vol, audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
-  o.connect(g); g.connect(s_masterGain);
-  o.start(); o.stop(audioCtx.currentTime + dur);
-}
-function soundCapture(){ playTone(780,0.18,'sine',0.12); }
-function soundPop(){ playTone(420,0.12,'triangle',0.15); }
-function soundUnlock(){ playTone(880,0.36,'triangle',0.14); }
-function soundLevelUp(){ playTone(560,0.32,'sine',0.14); setTimeout(()=>playTone(720,0.26,'sine',0.12),70); }
-
-/* ---------------------------
-  Data & state (keep)
-  ---------------------------*/
-const POEMS = [
-  "Eres la melodía que mi corazón no sabía que necesitaba.",
-  "Cada mariposa que capturas me acerca más a ti.",
-  "Tu presencia convierte lo ordinario en extraordinario.",
-  "No sé de distancias: solo de personas que valen la espera.",
-  "Cada vez que sonríes, el mundo se vuelve un poco más brillante.",
-  "Tus ojos guardan secretos que quiero descubrir lentamente.",
-  "Me has movido el mundo sin siquiera estar cerca.",
-  "No prometo estrellas, pero sí quedarme cuando el cielo oscurece.",
-  "Tu risa encontró mis silencios y les dio dirección.",
-  "En cada pequeño detalle tuyo, hallé una canción que no sabía que necesitaba.",
-  "Eres la calma en mis días de tormenta.",
-  "Con cada gesto tuyo, mi mundo aprende nuevas palabras.",
-  "Quisiera ser el abrazo que repite tus días felices.",
-  "Tu cara aguarda un mapa a lugares que quiero descubrir.",
-  "Si la noche fuese un secreto, tu risa sería la llave.",
-  "Eres el porqué de mis sonrisas inesperadas.",
-  "Cada minuto contigo se vuelve mi recuerdo favorito.",
-  "Déjame ser la razón de tus pequeños milagros.",
-  "Tu voz me enseña a escuchar historias que no sabía que tenía.",
-  "Encontrarte fue como encontrar la forma correcta de respirar."
-];
-
-const TYPE_PHRASES = {
-  gold: [
-    "Eres oro en mi vida; no te cambio por nada.",
-    "Tu brillo es la brújula que me guía.",
-    "La paz que tengo cuando estoy contigo no cabe en palabras.",
-    "Contigo aprendí que lo valioso también puede ser ligero y libre.",
-    "Tu risa pinta mis días con luz nueva.",
-    "A tu lado el tiempo se vuelve un tesoro que guardo sin prisas."
-  ],
-  blue: [
-    "Tu calma convierte mi tormenta en mar en calma.",
-    "Con cada mirada tuya el tiempo se desacelera.",
-    "Eres la nota perfecta de una melodía olvidada.",
-    "Hay paz en tu silencio; en él encuentro un hogar.",
-    "Cuando te escucho respirar, el mundo gira más despacio.",
-    "Tu presencia es un faro que guía mis dudas hacia la orilla."
-  ],
-  pink: [
-    "Hay cosas que solo se dicen con el corazón en la mano.",
-    "Si volamos juntos, prometo sostener tu risa.",
-    "Tus manos dibujan rutas que quiero seguir.",
-    "Tu ternura es la brújula que me enseña a ser mejor.",
-    "Cada gesto tuyo revela un poema que quiero aprender de memoria.",
-    "Contigo aprendí que las promesas también pueden ser suaves como un abrazo." 
-  ]
-};
-
-const COLLECT_IMAGES = {
-  gold: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><radialGradient id='g' cx='50%' cy='40%' r='60%'><stop offset='0' stop-color='#ffd86b'/><stop offset='1' stop-color='#ff9f3b'/></radialGradient></defs><rect width='100%' height='100%' fill='transparent'/><ellipse cx='100' cy='100' rx='62' ry='44' fill='url(#g)' opacity='0.95'/></svg>",
-  blue: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><radialGradient id='g' cx='50%' cy='40%' r='60%'><stop offset='0' stop-color='#9fb9ff'/><stop offset='1' stop-color='#6f9bff'/></radialGradient></defs><rect width='100%' height='100%' fill='transparent'/><ellipse cx='100' cy='100' rx='62' ry='44' fill='url(#g)' opacity='0.95'/></svg>",
-  pink: "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><defs><radialGradient id='g' cx='50%' cy='40%' r='60%'><stop offset='0' stop-color='#ffa3e0'/><stop offset='1' stop-color='#d77bff'/></radialGradient></defs><rect width='100%' height='100%' fill='transparent'/><ellipse cx='100' cy='100' rx='62' ry='44' fill='url(#g)' opacity='0.95'/></svg>"
-};
-
-const stage = document.getElementById('stage');
-const scoreEl = document.getElementById('score');
-const levelEl = document.getElementById('level');
-const floatingMsg = document.getElementById('floatingMsg');
-const diaryModal = document.getElementById('diaryModal');
-const diaryList = document.getElementById('diaryList');
-const collectionModal = document.getElementById('collectionModal');
-const collectionGrid = document.getElementById('collectionGrid');
-const resultModal = document.getElementById('resultModal');
-const finalScoreEl = document.getElementById('finalScore');
-const levelProgressEl = document.getElementById('levelProgress');
-const nextBadge = document.getElementById('nextBadge');
-
-let score = 0;
-let level = 1;
-let unlocked = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ return []; } })();
-let collection = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ return {}; } })();
-let collectionDetails = (function(){ try{ return JSON.parse(localStorage.getItem('butterflyCollectionDetails_v1')||'{}'); }catch(e){ return {}; } })();
-
-let spawnTimerId = null;
-let paused = false;
-let challengeCountdown = null;
-let challengeTimer = 30;
-let butterflyCounters = { gold: 0, blue: 0, pink: 0 };
-const storedCounters = JSON.parse(localStorage.getItem('butterflyCounters_v1') || 'null');
-if(storedCounters) butterflyCounters = storedCounters;
-document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
-document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
-document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
-
-const butterflies = [];
-const particles = [];
-
-/* ---------------------------
-  PARTICLES (kept)
-  ---------------------------*/
-function createParticles(count=32){
-  const rect = stage.getBoundingClientRect();
-  for(let i=0;i<count;i++){
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = 2 + Math.random()*4;
-    p.style.width = p.style.height = size + 'px';
-    p.style.left = (Math.random()*100) + '%';
-    p.style.bottom = (-Math.random()*20) + 'px';
-    p.style.background = getComputedStyle(document.body).getPropertyValue('--particle') || 'rgba(200,160,255,0.12)';
-    p.style.animationDuration = (18 + Math.random()*36) + 's';
-    p.style.opacity = (0.04 + Math.random()*0.48);
-    stage.appendChild(p);
-    particles.push({el:p, dur: parseFloat(p.style.animationDuration)});
-  }
-}
-
-/* spawn heart-shaped particles at a specific position (relative to stage)
-   type: 'gold'|'blue'|'pink' or other. x,y in pixels from stage left/top. */
-function spawnCaptureHearts(type='gold', x=0, y=0, count=12){
-  const colors = { gold: '#ffd86b', blue: '#9fb9ff', pink:'#ffa3e0' };
-  const fill = colors[type] || getComputedStyle(document.body).getPropertyValue('--accent') || '#d6b3ff';
-  for(let i=0;i<count;i++){
-    const p = document.createElement('div');
-    p.className = `particle heart ${type}`;
-    const size = 12 + Math.random()*10;
-    p.style.width = p.style.height = size + 'px';
-    // place centered on x,y
-    p.style.left = (x - size/2) + 'px';
-    p.style.top = (y - size/2) + 'px';
-    p.style.position = 'absolute';
-    // heart svg
-    const svg = `<svg class="${type}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="${fill}" d="M12 21s-7.5-4.9-9-8.1C1.3 9.3 4 5 7.5 5c2 .1 3.5 1.7 4.5 2.9 1-1.2 2.6-2.8 4.5-2.9C20 5 22.7 9.3 21 12.9 19.5 16.1 12 21 12 21z"/></svg>`;
-    p.innerHTML = svg;
-    // compute random direction
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 40 + Math.random()*80;
-    const tx = Math.round(Math.cos(angle)*dist) + 'px';
-    const ty = Math.round(Math.sin(angle)*dist) + 'px';
-    p.style.setProperty('--tx', tx);
-    p.style.setProperty('--ty', ty);
-    p.style.animation = `burstOut ${0.9 + Math.random()*0.6}s cubic-bezier(.22,.9,.32,1) forwards`;
-    stage.appendChild(p);
-    setTimeout(()=>{ if(p.parentNode) p.remove(); }, 1200);
-  }
-}
-// create initial particles based on viewport width (fewer on small screens)
-const initialParticleCount = Math.max(8, Math.min(48, Math.floor((window.innerWidth||1024)/24)));
-createParticles(initialParticleCount);
-
-/* ---------------------------
-  SPAWN logic (kept + robust guard)
-  ---------------------------*/
-let butterflyId = 0;
-function spawnButterfly(){
-  const rect = stage.getBoundingClientRect();
-  // guard: if stage height is zero (race condition), retry slightly later
-  if(rect.width === 0 || rect.height === 0){
-    setTimeout(spawnButterfly, 120);
-    return;
-  }
-
-  // prevent too many butterflies on small screens for performance
-  const smallLimit = window.innerWidth < 480 ? 6 : 32;
-  if(butterflies.length >= smallLimit) return;
-
-  const b = document.createElement('div');
-  b.className = 'butterfly';
-  b.dataset.id = ++butterflyId;
-
-  const scale = (0.75 + Math.random()*0.9);
-  b.style.width = (48*scale) + 'px';
-  b.style.height = (48*scale) + 'px';
-
-  b.innerHTML = `<div class="wing left"></div><div class="wing right"></div><div class="body"></div>`;
-
-  const startX = Math.random()*Math.max(80, rect.width-80);
-  const startY = rect.height + 40;
-  b.style.left = startX + 'px';
-  b.style.top = startY + 'px';
-
-  const r = Math.random();
-  if(r < 0.03){ b.dataset.type='gold'; b.dataset.points=5; }
-  else if(r < 0.09){ b.dataset.type='blue'; b.dataset.points=2; }
-  else if(r < 0.16){ b.dataset.type='pink'; b.dataset.points=1; }
-  else { b.dataset.type='normal'; b.dataset.points=1; }
-
-  b.classList.add(b.dataset.type);
-
-  const paths = ['up','zigzag','wave'];
-  const path = paths[Math.floor(Math.random()*paths.length)];
-  const duration = 7000 + Math.random()*9000;
-  const model = {
-    id: b.dataset.id,
-    el: b,
-    sx: startX,
-    sy: startY,
-    t0: performance.now(),
-    duration,
-    path,
-    captured: false,
-    scale
-  };
-
-  b.addEventListener('pointerdown', onCapture);
-
-  stage.appendChild(b);
-  butterflies.push(model);
-
-  setTimeout(()=>{ if(b.parentNode){ b.remove(); } }, duration + 1400);
-}
-
-/* animate loop (kept) */
-function animateAll(now){
-  for(let i = butterflies.length - 1; i >= 0; i--){
-    const m = butterflies[i];
-    if(!m.el.parentNode){
-      butterflies.splice(i,1);
-      continue;
-    }
-    if(paused) { m.t0 += 0; continue; }
-
-    const elapsed = now - m.t0;
-    const p = Math.min(1, elapsed / m.duration);
-    const rect = stage.getBoundingClientRect();
-    const ease = easeInOutSine(p);
-    let x = m.sx;
-    let y = m.sy - (rect.height + 220) * ease;
-
-    if(m.path === 'zigzag'){
-      x = m.sx + Math.sin(p*Math.PI*6) * (60 + 80*p);
-    } else if(m.path === 'wave'){
-      x = m.sx + Math.sin(p*Math.PI*2) * 90;
-      y = m.sy - (rect.height*0.9) * ease - Math.sin(p*Math.PI*4)*12;
+    const masterGain = audioCtx ? audioCtx.createGain() : null;
+    if (masterGain && audioCtx) {
+      masterGain.connect(audioCtx.destination);
     }
 
-    const rot = Math.sin(p*Math.PI*2) * 12;
-    m.el.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
-    const bob = Math.sin(now/220 + m.sx) * 2;
-    m.el.style.top = (y + bob) + 'px';
-
-    if(p >= 1){
-      if(m.el.parentNode) m.el.remove();
-      butterflies.splice(i,1);
-    }
-  }
-  requestAnimationFrame(animateAll);
-}
-requestAnimationFrame(animateAll);
-function easeInOutSine(x){ return -(Math.cos(Math.PI*x)-1)/2; }
-
-/* ---------------------------
-  Capture handling (kept)
-  ---------------------------*/
-let lastSpecialRomanticAt = -1;
-function onCapture(e){
-  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-
-  const el = e.currentTarget;
-  if(!el || el._captured) return;
-  el._captured = true;
-  el.style.pointerEvents = 'none';
-  el.classList.add('pop-out');
-
-  // show a temporary glow at the capture location for special butterflies
-  try{
-    const type = el.dataset.type || 'normal';
-    if(type === 'gold' || type === 'blue' || type === 'pink'){
-      const r = el.getBoundingClientRect();
-      const s = stage.getBoundingClientRect();
-      const gx = r.left - s.left + r.width/2;
-      const gy = r.top - s.top + r.height/2;
-      const glow = document.createElement('div');
-      glow.className = 'capture-glow ' + type;
-      glow.style.left = gx + 'px';
-      glow.style.top = gy + 'px';
-      stage.appendChild(glow);
-      // trigger fade/animation
-      requestAnimationFrame(()=>{ glow.classList.add('fade'); });
-      setTimeout(()=>{ if(glow.parentNode) glow.remove(); }, 950);
-      // spawn heart burst at capture location
-      try{ spawnCaptureHearts(type, gx, gy, 12); }catch(e){}
-    }
-  }catch(err){ /* ignore positioning errors */ }
-
-  setTimeout(()=>{ if(el.parentNode) el.remove(); }, 320);
-
-  const pts = Number(el.dataset.points||1);
-  score += pts;
-  scoreEl.textContent = score;
-
-  soundCapture(); soundPop();
-
-  const poem = POEMS[Math.floor(Math.random()*POEMS.length)];
-  showFloatingMessage(poem);
-
-  const type = el.dataset.type || 'normal';
-
-  if(type === 'gold'){
-    butterflyCounters.gold++;
-    collection.gold = true;
-    const phrase = pickupTypePhrase('gold');
-    if(phrase) pushUnlocked(phrase);
-    saveCollectionState();
-    document.getElementById('goldCounter').textContent = `Gold: ${butterflyCounters.gold}`;
-    showFloatingMessage('¡Eres increíble! ¡Capturaste una Dorada!');
-    soundUnlock();
-  }
-
-  if(type === 'blue'){
-    butterflyCounters.blue++;
-    const phrase = pickupTypePhrase('blue');
-    if(phrase) pushUnlocked(phrase);
-    saveCollectionState();
-    document.getElementById('blueCounter').textContent = `Blue: ${butterflyCounters.blue}`;
-    slowAllButterflies(3500);
-    showFloatingMessage('Mariposa azul - El tiempo parece ralentizarse.');
-  }
-
-  if(type === 'pink'){
-    butterflyCounters.pink++;
-    const phrase = pickupTypePhrase('pink');
-    if(phrase) pushUnlocked(phrase);
-    saveCollectionState();
-    document.getElementById('pinkCounter').textContent = `Pink: ${butterflyCounters.pink}`;
-    showFloatingMessage("Mariposa Rosa - Hay cosas que sólo se dicen cuando volamos juntos.");
-    soundUnlock();
-  }
-
-  if(score % 5 === 0){
-    const remaining = POEMS.filter(p => !unlocked.includes(p));
-    const pick = remaining.length ? remaining[Math.floor(Math.random()*remaining.length)] : POEMS[Math.floor(Math.random()*POEMS.length)];
-    pushUnlocked(pick);
-    showFloatingMessage('Frase desbloqueada para tu Diario.');
-    soundUnlock();
-  }
-
-  const newLevel = Math.floor(score / 10) + 1;
-  if(newLevel > level){
-    level = newLevel;
-    levelEl.textContent = level;
-    onLevelUp();
-  }
-  updateLevelProgress();
-  updateNextBadge();
-
-  if(score >= 20 && lastSpecialRomanticAt < 20){
-    lastSpecialRomanticAt = 20;
-    showFloatingMessage('✨ Mensaje romántico especial desbloqueado — 20 puntos ✨');
-    const specialPhrase = "Cuando llegaste, el mundo cambió su color.";
-    if(!unlocked.includes(specialPhrase)){ pushUnlocked(specialPhrase); }
-    soundUnlock();
-  }
-}
-
-/* push phrase to diary (kept) */
-function pushUnlocked(phrase){
-  if(!phrase) return;
-  if(!unlocked.includes(phrase)) unlocked.push(phrase);
-  localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked));
-  renderDiary();
-}
-
-/* per-type phrase capture (kept) */
-function pickupTypePhrase(type){
-  if(!TYPE_PHRASES[type]) return null;
-  collectionDetails[type] = collectionDetails[type] || [];
-  const available = TYPE_PHRASES[type].filter(p => !collectionDetails[type].includes(p));
-  const pick = available.length ? available[Math.floor(Math.random()*available.length)] : TYPE_PHRASES[type][Math.floor(Math.random()*TYPE_PHRASES[type].length)];
-  if(!collectionDetails[type].includes(pick)) collectionDetails[type].push(pick);
-  localStorage.setItem('butterflyCollectionDetails_v1', JSON.stringify(collectionDetails));
-  return pick;
-}
-function saveCollectionState(){
-  localStorage.setItem('butterflyCollection_v1', JSON.stringify(collection));
-  localStorage.setItem('butterflyCounters_v1', JSON.stringify(butterflyCounters));
-}
-
-/* slow, level up (kept) */
-function slowAllButterflies(duration=3000){
-  const list = Array.from(stage.querySelectorAll('.butterfly'));
-  list.forEach(b=>{ b.style.transition = 'filter .3s, opacity .3s'; b.style.opacity = 0.78; b._slow = true; });
-  setTimeout(()=>{ list.forEach(b=>{ if(b.parentNode){ b.style.opacity = 1; b._slow = false; } }); }, duration);
-}
-function onLevelUp(){
-  soundLevelUp();
-  const rate = Math.max(420, 1200 - (level-1)*80);
-  startSpawning(rate);
-  spawnLevelParticles();
-  showFloatingMessage('¡Nivel '+level+'!');
-}
-function spawnLevelParticles(){
-  const burstCount = 12 + Math.floor(level*2);
-  for(let i=0;i<burstCount;i++){
-    // heart-shaped burst particle
-    const p = document.createElement('div');
-    p.className = 'particle heart';
-    const size = 10 + Math.random()*12;
-    p.style.width = p.style.height = size + 'px';
-    // position around center-bottom
-    p.style.left = (40 + Math.random()*20) + '%';
-    p.style.bottom = '12%';
-    // color using theme accent
-    const accent = getComputedStyle(document.body).getPropertyValue('--accent') || '#9b57ff';
-    const colorSvg = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="${accent.trim()}" d="M12 21s-7.5-4.9-9-8.1C1.3 9.3 4 5 7.5 5c2 .1 3.5 1.7 4.5 2.9 1-1.2 2.6-2.8 4.5-2.9C20 5 22.7 9.3 21 12.9 19.5 16.1 12 21 12 21z"/></svg>`;
-    p.innerHTML = colorSvg;
-    // animate outward
-    const angle = Math.random() * Math.PI * 2;
-    const dist = 60 + Math.random()*80;
-    const tx = Math.round(Math.cos(angle)*dist) + 'px';
-    const ty = Math.round(Math.sin(angle)*dist) + 'px';
-    p.style.setProperty('--tx', tx);
-    p.style.setProperty('--ty', ty);
-    p.style.animation = `burstOut ${0.9 + Math.random()*0.6}s cubic-bezier(.22,.9,.32,1) forwards`;
-    stage.appendChild(p);
-    setTimeout(()=>{ if(p.parentNode) p.remove(); }, 1200);
-  }
-}
-
-/* floating message (kept) */
-let floatTimeout = null;
-function showFloatingMessage(text){
-  floatingMsg.textContent = text;
-  floatingMsg.classList.remove('show');
-  void floatingMsg.offsetWidth;
-  floatingMsg.classList.add('show');
-  if(floatTimeout) clearTimeout(floatTimeout);
-  floatTimeout = setTimeout(()=>{ floatingMsg.classList.remove('show'); }, 2200);
-}
-
-/* Diary & Collection rendering (adjusted renderCollection for preview only) */
-document.getElementById('diaryBtn').addEventListener('click', ()=> openDiary());
-document.getElementById('closeDiary').addEventListener('click', ()=> closeDiary());
-document.getElementById('clearDiary').addEventListener('click', ()=>{ unlocked = []; localStorage.setItem('butterflyDiary_v2', JSON.stringify(unlocked)); renderDiary(); });
-
-// pagination controls for diary
-document.getElementById('diaryPrev').addEventListener('click', ()=>{ window.diaryPage = Math.max(0, (window.diaryPage||0) - 1); renderDiary(); });
-document.getElementById('diaryNext').addEventListener('click', ()=>{ window.diaryPage = (window.diaryPage||0) + 1; renderDiary(); });
-
-function renderDiary(){
-  // pagination-aware rendering with special-marker
-  diaryList.innerHTML = '';
-  if(!window.diaryPageSize) window.diaryPageSize = 8; // show more phrases per page
-  if(!window.diaryPage) window.diaryPage = 0;
-  const total = unlocked.length;
-  const pages = Math.max(1, Math.ceil(total / window.diaryPageSize));
-  if(total === 0){
-    diaryList.innerHTML = '<div style="opacity:.6">No hay frases desbloqueadas. Captura 5 mariposas para empezar.</div>';
-    document.getElementById('diaryPageInfo').textContent = 'Página 0 de 0';
-    document.getElementById('diaryPrev').disabled = true;
-    document.getElementById('diaryNext').disabled = true;
-    return;
-  }
-  // clamp page
-  if(window.diaryPage < 0) window.diaryPage = 0;
-  if(window.diaryPage >= pages) window.diaryPage = pages - 1;
-
-  const start = window.diaryPage * window.diaryPageSize;
-  const slice = unlocked.slice().reverse().slice(start, start + window.diaryPageSize);
-  slice.forEach(p=>{
-    const d = document.createElement('div'); d.className='entry'; d.textContent = p;
-    // mark if this phrase is present in any collectionDetails (special)
-    try{
-      const types = Object.keys(collectionDetails || {});
-      let found = null;
-      for(const t of types){ if((collectionDetails[t]||[]).includes(p)){ found = t; break; } }
-      if(found){ const dot = document.createElement('span'); dot.className = `special-dot ${found}`; d.appendChild(dot); }
-    }catch(e){}
-    diaryList.appendChild(d);
-  });
-
-  document.getElementById('diaryPageInfo').textContent = `Página ${window.diaryPage+1} de ${pages}`;
-  document.getElementById('diaryPrev').disabled = (window.diaryPage === 0);
-  document.getElementById('diaryNext').disabled = (window.diaryPage >= pages-1);
-}
-function bringModalToFront(backdrop){
-  if(!window._modalZ) window._modalZ = 900;
-  window._modalZ += 10;
-  try{ backdrop.style.zIndex = window._modalZ; const m = backdrop.querySelector('.modal'); if(m) m.style.zIndex = window._modalZ + 5; }catch(e){}
-}
-
-function openDiary(){ renderDiary(); bringModalToFront(diaryModal); diaryModal.classList.add('show'); diaryModal.setAttribute('aria-hidden','false'); diaryModal.querySelector('.modal').classList.add('show'); }
-function closeDiary(){ diaryModal.classList.remove('show'); diaryModal.setAttribute('aria-hidden','true'); diaryModal.querySelector('.modal').classList.remove('show'); }
-
-document.getElementById('collectionBtn').addEventListener('click', ()=> openCollection());
-document.getElementById('closeCollection').addEventListener('click', ()=> closeCollection());
-
-/* === REPLACED renderCollection: creates a live visual preview using .butterfly.preview,
-       preserves all IDs and storage behavior, only changes rendering inside the modal === */
-function renderCollection(){
-  // Single-category per page view: order -> gold, pink, blue
-  collectionGrid.innerHTML = '';
-  const order = ['gold','pink','blue'];
-  if(window.collectionCategoryIndex == null) window.collectionCategoryIndex = 0;
-  const idx = window.collectionCategoryIndex % order.length;
-  const k = order[idx];
-
-  const section = document.createElement('div'); section.className = 'collect-view';
-  const title = document.createElement('div'); title.className = 'collect-title'; title.textContent = k.charAt(0).toUpperCase()+k.slice(1);
-  section.appendChild(title);
-
-  const preview = document.createElement('div'); preview.className = 'collect-preview ' + k;
-  const pv = document.createElement('div'); pv.className = `butterfly preview ${k}`; pv.style.width='96px'; pv.style.height='96px'; pv.innerHTML = `<div class="wing left"></div><div class="wing right"></div><div class="body"></div>`;
-  preview.appendChild(pv);
-  section.appendChild(preview);
-
-  const cnt = document.createElement('div'); cnt.className = 'collect-count'; cnt.textContent = `Capturadas: ${butterflyCounters[k] || 0}`;
-  section.appendChild(cnt);
-
-  // phrases list (paginated within category if many)
-  const phrasesWrap = document.createElement('div'); phrasesWrap.className = 'collect-phrases-list'; phrasesWrap.id = 'collectPhrases';
-  const items = (collectionDetails[k] || []).slice().reverse();
-  const pageSize = 10;
-  if(!window.collectionPageForCategory) window.collectionPageForCategory = { gold:0, pink:0, blue:0 };
-  const page = window.collectionPageForCategory[k] || 0;
-  const pages = Math.max(1, Math.ceil(items.length / pageSize));
-  const slice = items.slice(page * pageSize, page * pageSize + pageSize);
-  if(slice.length === 0){ const empt = document.createElement('div'); empt.style.opacity='.6'; empt.textContent = 'Sin frases capturadas aún.'; phrasesWrap.appendChild(empt); }
-  else { slice.forEach(ph=>{ const it = document.createElement('div'); it.className='collect-phrase-item'; it.textContent = ph; phrasesWrap.appendChild(it); }); }
-  section.appendChild(phrasesWrap);
-
-  // controls: prev/next category and page controls for phrases
-  const controls = document.createElement('div'); controls.style.display='flex'; controls.style.gap='8px'; controls.style.marginTop='8px'; controls.style.width='100%'; controls.style.justifyContent='space-between';
-  const prevName = order[(idx - 1 + order.length) % order.length];
-  const nextName = order[(idx + 1) % order.length];
-  const prevLabel = prevName.charAt(0).toUpperCase() + prevName.slice(1);
-  const nextLabel = nextName.charAt(0).toUpperCase() + nextName.slice(1);
-  const catPrev = document.createElement('button'); catPrev.className='btn'; catPrev.textContent=`◀ ${prevLabel}`;
-  const catNext = document.createElement('button'); catNext.className='btn'; catNext.textContent=`${nextLabel} ▶`;
-  const pageControls = document.createElement('div'); pageControls.style.display='flex'; pageControls.style.gap='6px'; pageControls.style.alignItems='center';
-  const pagePrev = document.createElement('button'); pagePrev.className='btn'; pagePrev.textContent='Anterior';
-  const pageInfo = document.createElement('div'); pageInfo.style.fontWeight='700'; pageInfo.textContent = `${page+1} / ${pages}`;
-  const pageNext = document.createElement('button'); pageNext.className='btn'; pageNext.textContent='Siguiente';
-  pagePrev.disabled = (page === 0); pageNext.disabled = (page >= pages-1);
-  pageControls.appendChild(pagePrev); pageControls.appendChild(pageInfo); pageControls.appendChild(pageNext);
-
-  controls.appendChild(catPrev); controls.appendChild(pageControls); controls.appendChild(catNext);
-  section.appendChild(controls);
-
-  collectionGrid.appendChild(section);
-
-  // handlers
-  catPrev.addEventListener('click', ()=>{ window.collectionCategoryIndex = (window.collectionCategoryIndex - 1 + order.length) % order.length; renderCollection(); });
-  catNext.addEventListener('click', ()=>{ window.collectionCategoryIndex = (window.collectionCategoryIndex + 1) % order.length; renderCollection(); });
-  pagePrev.addEventListener('click', ()=>{ window.collectionPageForCategory[k] = Math.max(0, (window.collectionPageForCategory[k]||0)-1); renderCollection(); });
-  pageNext.addEventListener('click', ()=>{ window.collectionPageForCategory[k] = Math.min(pages-1, (window.collectionPageForCategory[k]||0)+1); renderCollection(); });
-
-  // update badge counters
-  document.getElementById('colCountGold').textContent = butterflyCounters.gold || 0;
-  document.getElementById('colCountBlue').textContent = butterflyCounters.blue || 0;
-  document.getElementById('colCountPink').textContent = butterflyCounters.pink || 0;
-}
-function openCollection(){ renderCollection(); bringModalToFront(collectionModal); collectionModal.classList.add('show'); collectionModal.setAttribute('aria-hidden','false'); collectionModal.querySelector('.modal').classList.add('show'); }
-function closeCollection(){ collectionModal.classList.remove('show'); collectionModal.setAttribute('aria-hidden','true'); collectionModal.querySelector('.modal').classList.remove('show'); }
-
-/* ---------------------------
-  Theme manager: available themes + modal
-  ---------------------------*/
-const THEMES = [
-  { id: 'theme-aurora', name: 'Aurora (default)', description: 'Estética púrpura suave y neón.' },
-  { id: 'theme-night', name: 'Noche (contraste)', description: 'Fondo oscuro, acentos azules.' },
-  { id: 'theme-sunset', name: 'Atardecer', description: 'Tonos cálidos y dorados.' },
-  { id: 'theme-pastel', name: 'Pastel', description: 'Tono claro y suave.' }
-];
-
-const themeGrid = document.getElementById('themeGrid');
-const themeModal = document.getElementById('themeModal');
-const closeThemeBtn = document.getElementById('closeTheme');
-const resetThemeBtn = document.getElementById('resetTheme');
-const themeBtn = document.getElementById('themeBtn');
-
-function buildThemeCards(){
-  themeGrid.innerHTML = '';
-  THEMES.forEach(t=>{
-    const card = document.createElement('div'); card.className = 'theme-card';
-    const preview = document.createElement('div'); preview.className = 'theme-preview';
-    // make a quick preview background that reflects the theme via inline style
-    if(t.id === 'theme-aurora') preview.style.background = 'linear-gradient(180deg,#0b0710,#25102b)';
-    if(t.id === 'theme-night') preview.style.background = 'linear-gradient(180deg,#03040a,#0b1020)';
-    if(t.id === 'theme-sunset') preview.style.background = 'linear-gradient(180deg,#2b0710,#3a151c)';
-    if(t.id === 'theme-pastel') preview.style.background = 'linear-gradient(180deg,#fff7fb,#f2f6ff)';
-    preview.style.border = '1px solid rgba(255,255,255,0.04)';
-    preview.style.display = 'block';
-    card.appendChild(preview);
-
-    const title = document.createElement('div'); title.style.fontWeight='800'; title.textContent = t.name; card.appendChild(title);
-    const desc = document.createElement('div'); desc.className='small'; desc.textContent = t.description; card.appendChild(desc);
-
-    const actions = document.createElement('div'); actions.className = 'theme-actions';
-    const applyBtn = document.createElement('button'); applyBtn.className = 'btn'; applyBtn.textContent = 'Aplicar';
-    applyBtn.addEventListener('click', ()=> { applyTheme(t.id); closeThemeModal(); });
-    const previewBtn = document.createElement('button'); previewBtn.className = 'btn'; previewBtn.textContent = 'Vista';
-    previewBtn.addEventListener('click', ()=> { applyTheme(t.id, {persist:false}); });
-    actions.appendChild(previewBtn); actions.appendChild(applyBtn);
-    card.appendChild(actions);
-    themeGrid.appendChild(card);
-  });
-}
-buildThemeCards();
-
-function applyTheme(themeId, opts={persist:true}){
-  // remove any theme-* classes
-  const body = document.body;
-  THEMES.forEach(t=> body.classList.remove(t.id));
-  body.classList.add(themeId);
-  // store
-  if(opts.persist !== false) localStorage.setItem('butterflyTheme', themeId);
-  // update logo gradient variable if necessary (CSS vars handle visuals)
-}
-
-/* theme modal controls */
-themeBtn.addEventListener('click', ()=> openThemeModal());
-closeThemeBtn.addEventListener('click', ()=> closeThemeModal());
-resetThemeBtn.addEventListener('click', ()=> { applyTheme('theme-aurora'); });
-
-function openThemeModal(){ bringModalToFront(themeModal); themeModal.classList.add('show'); themeModal.setAttribute('aria-hidden','false'); themeModal.querySelector('.modal').classList.add('show'); }
-function closeThemeModal(){ themeModal.classList.remove('show'); themeModal.setAttribute('aria-hidden','true'); themeModal.querySelector('.modal').classList.remove('show'); }
-
-/* load saved theme on init (fallback to aurora) */
-function loadSavedTheme(){
-  const saved = localStorage.getItem('butterflyTheme');
-  if(saved && THEMES.some(t=>t.id === saved)){
-    applyTheme(saved);
-  } else {
-    applyTheme('theme-aurora');
-  }
-}
-
-// intentar reproducir música automáticamente
-setTimeout(async ()=>{
-  try{
-    await bgAudio.play();
-    musicPlaying = true;
-    musicToggleBtn.textContent = '🔊 Música On';
-  }catch(e){
-    // si falla, el usuario debe tocar la pantalla por bloqueo del navegador
-  }
-}, 300);
-
-
-/* ---------------------------
-  Challenge, music, mobile menu, spawning scheduler...
-  (kept original behaviors; only small wiring around theme)
-  ---------------------------*/
-document.getElementById('challengeBtn').addEventListener('click', ()=> startChallenge(30));
-document.getElementById('retryBtn').addEventListener('click', ()=> { closeResult(); resetAfterChallengeStart(); });
-document.getElementById('closeResult').addEventListener('click', ()=> { closeResult(); resumeNormal(); });
-
-function startChallenge(seconds=30){
-  score = 0; scoreEl.textContent = '0';
-  try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2') || '[]') || unlocked; }catch(e){}
-  level = 1; levelEl.textContent = level; updateLevelProgress();
-  paused = false;
-  challengeTimer = seconds;
-  startSpawning(800);
-  showFloatingMessage('Desafío iniciado — atrapa tantas mariposas como puedas en ' + seconds + 's');
-  if(challengeCountdown) clearInterval(challengeCountdown);
-  challengeCountdown = setInterval(()=>{
-    challengeTimer--;
-    if(challengeTimer <= 0){ endChallenge(); }
-  },1000);
-}
-
-function endChallenge(){
-  clearInterval(challengeCountdown);
-  challengeCountdown = null;
-  stopSpawning();
-  finalScoreEl.textContent = score;
-  resultModal.classList.add('show'); resultModal.setAttribute('aria-hidden','false'); resultModal.querySelector('.modal').classList.add('show');
-}
-function closeResult(){ resultModal.classList.remove('show'); resultModal.setAttribute('aria-hidden','true'); resultModal.querySelector('.modal').classList.remove('show'); }
-function resetAfterChallengeStart(){ closeResult(); startSpawning(1200); }
-function resumeNormal(){ startSpawning(1200); }
-
-const bgAudio = document.getElementById('bgMusic');
-// ensure background music loops continuously
-bgAudio.loop = true;
-// ===== Volúmenes (fijo, una sola vez) =====
-const musicSlider = document.getElementById('musicSlider');
-const fxSlider = document.getElementById('fxSlider');
-
-// cargar valores guardados
-musicSlider.value = localStorage.getItem('bgMusicVolume') || 0.3;
-fxSlider.value = localStorage.getItem('fxVolume') || 0.9;
-
-bgAudio.volume = Number(musicSlider.value);
-if(s_masterGain) s_masterGain.gain.value = Number(fxSlider.value);
-
-musicSlider.addEventListener('input', ()=>{
-  bgAudio.volume = Number(musicSlider.value);
-  localStorage.setItem('bgMusicVolume', bgAudio.volume);
-});
-
-fxSlider.addEventListener('input', ()=>{
-  if(s_masterGain){
-    s_masterGain.gain.value = Number(fxSlider.value);
-    localStorage.setItem('fxVolume', s_masterGain.gain.value);
-  }
-});
-
-let musicPlaying = false;
-const musicToggleBtn = document.getElementById('musicToggle');
-musicToggleBtn.textContent = '🔇 Música Off';
-document.getElementById('musicToggle').addEventListener('click', async ()=>{
-  if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
-  try{
-    if(!musicPlaying){
-      await bgAudio.play();
-      musicPlaying = true;
-      musicToggleBtn.textContent = '🔊 Música On';
-    } else {
-      bgAudio.pause();
-      musicPlaying = false;
-      musicToggleBtn.textContent = '🔇 Música Off';
-    }
-  }catch(e){
-    showFloatingMessage('Toca la pantalla para permitir reproducción de audio.');
-  }
-});
-
-/* touch prevention + pointer bridging (kept) */
-document.addEventListener('touchmove', function(e){
-  if(e.target.closest('#stage')) e.preventDefault();
-},{passive:false});
-
-stage.addEventListener('pointerdown', function(e){
-  const b = e.target.closest('.butterfly');
-  if(b) b.dispatchEvent(new Event('pointerdown',{bubbles:true,cancelable:true}));
-});
-
-/* Level progress & next badge (kept) */
-function updateLevelProgress(){ const exp = score; const progressPct = ((exp % 10) / 10) * 100; levelProgressEl.style.width = progressPct + '%'; }
-function updateNextBadge(){ const need = 5 - (score % 5 || 5); nextBadge.textContent = `Próx frase: ${need}`; }
-
-/* Accessibility helpers (kept) */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape'){
-    if(diaryModal.classList.contains('show')) closeDiary();
-    if(collectionModal.classList.contains('show')) closeCollection();
-    if(resultModal.classList.contains('show')) closeResult();
-    if(themeModal.classList.contains('show')) closeThemeModal();
-    document.getElementById('mobileMenu').classList.remove('open');
-    document.getElementById('menuToggle').classList.remove('open');
-    document.body.classList.remove('drawer-open');
-  }
-});
-
-/* Mobile menu (kept) and hamburger stacking already fixed earlier */
-(function buildMobileMenu() {
-  const mobilePanel = document.getElementById('mobilePanel');
-  const mobileButtons = [
-    {label:'Cambiar Tema', target:'themeBtn'},
-    {label:'Desafío 30s', target:'challengeBtn'},
-    {label:'Diario', target:'diaryBtn'},
-    {label:'Colección', target:'collectionBtn'},
-    {label:'Música', target:'musicToggle'}
-  ];
-
-  mobilePanel.innerHTML = '';
-
-  const ICONS = {
-    palette: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3C7 3 3 7 3 12c0 2.2.9 4.2 2.4 5.6C6.9 18.9 9 19 11 19c3 0 5.5-1.5 6.7-3.8.4-.7.2-1.6-.5-2.1-.7-.5-1.6-.3-2.1.4C14.9 15.6 13.1 16 11 16c-1.2 0-2.4-.1-3.4-.4C6.3 15.2 5 13.8 5 12c0-3.9 3.1-7 7-7s7 3.1 7 7c0 .6.4 1 1 1s1-.4 1-1c0-4.97-4.03-9-9-9z" fill="currentColor"/></svg>`,
-    timer: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 1v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12A9 9 0 1 1 3 12a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    book: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7v11a2 2 0 0 0 2 2h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 7V5a2 2 0 0 0-2-2H7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    collection: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M5 20c1-6 6-9 11-9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-    music: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`
-  };
-
-  mobileButtons.forEach(b => {
-    const wrap = document.createElement('div');
-    wrap.className = 'menu-item';
-    const iconKey = (b.target === 'themeBtn') ? 'palette' : (b.target === 'challengeBtn' ? 'timer' : (b.target === 'diaryBtn' ? 'book' : (b.target === 'collectionBtn' ? 'collection' : 'music')));
-    const icon = ICONS[iconKey] || ICONS['palette'];
-    const iconEl = document.createElement('div'); iconEl.className = 'm-icon'; iconEl.innerHTML = icon;
-    const labelEl = document.createElement('div'); labelEl.className = 'm-label'; labelEl.textContent = b.label;
-    const stateEl = document.createElement('div'); stateEl.className = 'm-state';
-    if(b.target === 'musicToggle') stateEl.textContent = (musicPlaying ? 'On' : 'Off');
-    wrap.appendChild(iconEl); wrap.appendChild(labelEl); wrap.appendChild(stateEl);
-
-    wrap.addEventListener('click', () => {
-      if(b.target === 'challengeBtn'){
-        startChallenge(30);
-      } else if(b.target === 'musicToggle'){
-        document.getElementById('musicToggle').click();
-        // update state text
-        stateEl.textContent = musicPlaying ? 'On' : 'Off';
-      } else {
-        const orig = document.getElementById(b.target);
-        if (orig) orig.click();
+    function playTone(freq, dur, type = 'sine', vol = 0.08) {
+      if (!audioCtx || !masterGain) return;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
       }
-      closeMobileMenu();
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      g.gain.setValueAtTime(vol, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+      osc.connect(g);
+      g.connect(masterGain);
+      osc.start();
+      osc.stop(audioCtx.currentTime + dur);
+    }
+
+    const sounds = {
+      capture: () => playTone(780, 0.16, 'sine', 0.10),
+      pop: () => playTone(420, 0.12, 'triangle', 0.10),
+      special: () => { playTone(523.25, 0.28, 'sine', 0.14); setTimeout(() => playTone(659.25, 0.28, 'sine', 0.14), 90); },
+      levelUp: () => { [523, 659, 783, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.35, 'sine', 0.10), i * 90)); },
+      ui: () => playTone(600, 0.06, 'sine', 0.035),
+    };
+
+    const bgMusic = document.getElementById('bgMusic');
+    const musicToggleBtn = document.getElementById('musicToggle');
+    const musicVolumeSlider = document.getElementById('musicVolume');
+    const fxVolumeSlider = document.getElementById('fxVolume');
+
+    let musicPlaying = false;
+
+    function setFxVolume(v) {
+      if (!masterGain) return;
+      masterGain.gain.value = v;
+      localStorage.setItem('clm_fxVolume', String(v));
+    }
+
+    function setMusicVolume(v) {
+      bgMusic.volume = v;
+      localStorage.setItem('clm_musicVolume', String(v));
+    }
+
+    async function ensureAudioUnlocked() {
+      if (audioCtx && audioCtx.state === 'suspended') {
+        try { await audioCtx.resume(); } catch (e) {}
+      }
+    }
+
+    async function tryStartMusic({ silent = false } = {}) {
+      if (!musicPlaying) return false;
+      await ensureAudioUnlocked();
+      try {
+        await bgMusic.play();
+        musicToggleBtn.textContent = '🔊 Música On';
+        return true;
+      } catch (e) {
+        // Autoplay can be blocked; keep "musicPlaying" as desired state.
+        musicToggleBtn.textContent = '🔊 Música On';
+        if (!silent) showFloatingMessage('Toca la pantalla para activar audio.');
+        return false;
+      }
+    }
+
+    async function setMusicPlaying(next, { silent = false } = {}) {
+      musicPlaying = !!next;
+      localStorage.setItem('clm_musicPlaying', musicPlaying ? '1' : '0');
+
+      if (!musicPlaying) {
+        bgMusic.pause();
+        musicToggleBtn.textContent = '🔇 Música Off';
+        return;
+      }
+
+      musicToggleBtn.textContent = '🔊 Música On';
+      await tryStartMusic({ silent });
+    }
+
+    function wireUiClickFx() {
+      document.addEventListener('pointerdown', (ev) => {
+        const el = ev.target.closest('button, .hamburger');
+        if (!el) return;
+        sounds.ui();
+      }, { capture: true });
+    }
+
+    // --------------------
+    // Data (Diary + Special phrases)
+    // --------------------
+    const POEMS = [
+      "Eres la melodía que mi corazón no sabía que necesitaba.",
+      "Cada mariposa que capturas me acerca más a ti.",
+      "Tu presencia convierte lo ordinario en extraordinario.",
+      "No sé de distancias: solo de personas que valen la espera.",
+      "Cada vez que sonríes, el mundo se vuelve un poco más brillante.",
+      "Tus ojos guardan secretos que quiero descubrir lentamente.",
+      "Me has movido el mundo sin siquiera estar cerca.",
+      "No prometo estrellas, pero sí quedarme cuando el cielo oscurece.",
+      "Tu risa encontró mis silencios y les dio dirección.",
+      "En cada pequeño detalle tuyo, hallé una canción que no sabía que necesitaba.",
+      "Eres la calma en mis días de tormenta.",
+      "Con cada gesto tuyo, mi mundo aprende nuevas palabras.",
+      "Quisiera ser el abrazo que repite tus días felices.",
+      "Tu cara guarda un mapa a lugares que quiero descubrir.",
+      "Si la noche fuese un secreto, tu risa sería la llave.",
+      "Eres el porqué de mis sonrisas inesperadas.",
+      "Cada minuto contigo se vuelve mi recuerdo favorito.",
+      "Déjame ser la razón de tus pequeños milagros.",
+      "Tu voz me enseña a escuchar historias que no sabía que tenía.",
+      "Encontrarte fue como encontrar la forma correcta de respirar.",
+      "Tu nombre en mi mente suena como hogar.",
+      "Contigo, hasta el silencio se siente acompañado.",
+      "Eres la casualidad más bonita que me pasó.",
+      "Si el mundo se apaga, tu luz me vuelve a encender.",
+      "Me gusta cómo tu existencia vuelve suaves mis días.",
+      "Tu abrazo es una pausa donde mi alma descansa.",
+      "A tu lado aprendí que la ternura también es valentía.",
+      "No busco perfección: busco quedarme donde estás tú.",
+      "Tus detalles pequeños tienen el poder de cambiarme el día.",
+      "Cuando dudas, yo te elijo otra vez.",
+      "Si me pierdo, que sea en tus ojos; ahí siempre hay camino.",
+      "Eres mi refugio cuando la vida va deprisa."
+    ];
+
+    const TYPE_PHRASES = {
+      gold: [
+        "Eres oro en mi vida; no te cambio por nada.",
+        "Tu brillo es la brújula que me guía.",
+        "La paz que tengo cuando estoy contigo no cabe en palabras.",
+        "Contigo aprendí que lo valioso también puede ser ligero y libre.",
+        "Tu risa pinta mis días con luz nueva.",
+        "A tu lado el tiempo se vuelve un tesoro que guardo sin prisas.",
+        "Tu presencia vale más que cualquier fortuna.",
+        "Eres mi mejor tesoro, y me gusta cuidarlo.",
+        "Brillas incluso cuando no te das cuenta."
+      ],
+      blue: [
+        "Tu calma convierte mi tormenta en mar en calma.",
+        "Con cada mirada tuya el tiempo se desacelera.",
+        "Eres la nota perfecta de una melodía olvidada.",
+        "Hay paz en tu silencio; en él encuentro un hogar.",
+        "Cuando te escucho respirar, el mundo gira más despacio.",
+        "Tu presencia es un faro que guía mis dudas hacia la orilla.",
+        "A tu lado, mi mente aprende a descansar.",
+        "Tu calma me devuelve el aire cuando lo necesito.",
+        "Eres mi pausa favorita entre tanta prisa."
+      ],
+      pink: [
+        "Hay cosas que solo se dicen con el corazón en la mano.",
+        "Si volamos juntos, prometo sostener tu risa.",
+        "Tus manos dibujan rutas que quiero seguir.",
+        "Tu ternura es la brújula que me enseña a ser mejor.",
+        "Cada gesto tuyo revela un poema que quiero aprender de memoria.",
+        "Contigo aprendí que las promesas también pueden ser suaves como un abrazo.",
+        "Amarte es sencillo: lo difícil es no sonreír al pensarte.",
+        "Tu ternura me enseña a confiar sin miedo.",
+        "Contigo, el amor se vuelve gesto y no promesa."
+      ]
+    };
+
+    // --------------------
+    // State
+    // --------------------
+    const stage = document.getElementById('stage');
+    const scoreVal = document.getElementById('scoreVal');
+    const levelVal = document.getElementById('levelVal');
+    const levelProgress = document.getElementById('levelProgress');
+    const floatingMsg = document.getElementById('floatingMsg');
+    const msgText = document.getElementById('msgText');
+
+    const nextBadge = document.getElementById('nextBadge');
+
+    const diaryModal = document.getElementById('diaryModal');
+    const diaryContent = document.getElementById('diaryContent');
+    const diaryPrev = document.getElementById('diaryPrev');
+    const diaryNext = document.getElementById('diaryNext');
+    const diaryPageInfo = document.getElementById('diaryPageInfo');
+
+    const collectionModal = document.getElementById('collectionModal');
+    const collectionGrid = document.getElementById('collectionGrid');
+
+    const resultModal = document.getElementById('resultModal');
+    const finalScoreEl = document.getElementById('finalScore');
+
+    let score = 0;
+    let level = 1;
+    let captureCount = 0;
+
+    let counters = { gold: 0, blue: 0, pink: 0 };
+    let diaryEntries = [];
+    let collectionDetails = { gold: [], blue: [], pink: [] };
+
+    let butterflies = [];
+    let butterflyId = 0;
+
+    // Challenge
+    let isChallenge = false;
+    let timeLeft = 30;
+    let timerInterval = null;
+
+    // Pause interactions while overlays are up
+    let paused = false;
+
+    // Spawn scheduler
+    let spawnTimer = null;
+
+    // --------------------
+    // Persistence + migration
+    // --------------------
+    function safeJsonParse(value, fallback) {
+      try {
+        const parsed = JSON.parse(value);
+        return parsed ?? fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function loadState() {
+      // migrate old key from Mobile: clm_phrases
+      const legacy = safeJsonParse(localStorage.getItem('clm_phrases'), []);
+      const storedDiary = safeJsonParse(localStorage.getItem('clm_diary_v1'), []);
+      const merged = Array.from(new Set([...(Array.isArray(storedDiary) ? storedDiary : []), ...(Array.isArray(legacy) ? legacy : [])]));
+      diaryEntries = merged;
+      localStorage.setItem('clm_diary_v1', JSON.stringify(diaryEntries));
+
+      const storedCounters = safeJsonParse(localStorage.getItem('clm_counters_v1'), null);
+      if (storedCounters && typeof storedCounters === 'object') {
+        counters = { ...counters, ...storedCounters };
+      }
+
+      const storedDetails = safeJsonParse(localStorage.getItem('clm_collectionDetails_v1'), null);
+      if (storedDetails && typeof storedDetails === 'object') {
+        collectionDetails = {
+          gold: Array.isArray(storedDetails.gold) ? storedDetails.gold : [],
+          blue: Array.isArray(storedDetails.blue) ? storedDetails.blue : [],
+          pink: Array.isArray(storedDetails.pink) ? storedDetails.pink : [],
+        };
+      }
+
+      // Theme (keeps Mobile key)
+      const savedTheme = localStorage.getItem('clm_theme');
+      if (savedTheme) {
+        applyTheme(savedTheme);
+      } else {
+        applyTheme('night');
+      }
+
+      // Audio
+      const savedMusicVol = Number(localStorage.getItem('clm_musicVolume') ?? '0.3');
+      const savedFxVol = Number(localStorage.getItem('clm_fxVolume') ?? '0.8');
+      musicVolumeSlider.value = String(isFinite(savedMusicVol) ? savedMusicVol : 0.3);
+      fxVolumeSlider.value = String(isFinite(savedFxVol) ? savedFxVol : 0.8);
+      setMusicVolume(Number(musicVolumeSlider.value));
+      setFxVolume(Number(fxVolumeSlider.value));
+
+      const savedMusicPlaying = localStorage.getItem('clm_musicPlaying');
+      // Default: music ON unless the user explicitly turned it off.
+      musicPlaying = savedMusicPlaying === null ? true : savedMusicPlaying === '1';
+      localStorage.setItem('clm_musicPlaying', musicPlaying ? '1' : '0');
+      musicToggleBtn.textContent = musicPlaying ? '🔊 Música On' : '🔇 Música Off';
+
+      updateCounters();
+      updateScoreUi();
+      updateNextBadge();
+    }
+
+    function persistCounters() {
+      localStorage.setItem('clm_counters_v1', JSON.stringify(counters));
+    }
+
+    function persistCollectionDetails() {
+      localStorage.setItem('clm_collectionDetails_v1', JSON.stringify(collectionDetails));
+    }
+
+    function persistDiary() {
+      localStorage.setItem('clm_diary_v1', JSON.stringify(diaryEntries));
+    }
+
+    // --------------------
+    // UI helpers
+    // --------------------
+    function showFloatingMessage(txt) {
+      msgText.textContent = txt;
+      floatingMsg.classList.add('msg-active');
+      setTimeout(() => floatingMsg.classList.remove('msg-active'), 2200);
+    }
+
+    function updateScoreUi() {
+      scoreVal.textContent = String(score);
+
+      const nextLevel = Math.floor(score / 500) + 1;
+      const progressPct = ((score % 500) / 500) * 100;
+      levelProgress.style.width = `${progressPct}%`;
+
+      if (nextLevel > level) {
+        level = nextLevel;
+        levelVal.textContent = String(level);
+        sounds.levelUp();
+        showFloatingMessage(`¡NIVEL ${level}!`);
+      }
+    }
+
+    function updateCounters() {
+      document.getElementById('goldCount').textContent = String(counters.gold);
+      document.getElementById('blueCount').textContent = String(counters.blue);
+      document.getElementById('pinkCount').textContent = String(counters.pink);
+    }
+
+    function updateNextBadge() {
+      const next = 5 - (captureCount % 5 || 5);
+      nextBadge.textContent = `Próx frase: ${next}`;
+    }
+
+    // --------------------
+    // Particles
+    // --------------------
+    function createAmbientParticles(count) {
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle ambient';
+        const size = 2 + Math.random() * 5;
+        p.style.width = `${size}px`;
+        p.style.height = `${size}px`;
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.bottom = `${-Math.random() * 20}px`;
+        p.style.animationDuration = `${18 + Math.random() * 36}s`;
+        p.style.opacity = String(0.05 + Math.random() * 0.35);
+        stage.appendChild(p);
+      }
+    }
+
+    function spawnCaptureHearts(type, x, y, count = 12) {
+      const colors = { gold: '#ffd86b', blue: '#9fb9ff', pink: '#ffa3e0' };
+      const fill = colors[type] || getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#d6b3ff';
+
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = `particle heart ${type}`;
+        const size = 12 + Math.random() * 10;
+        p.style.width = `${size}px`;
+        p.style.height = `${size}px`;
+        p.style.left = `${x - size / 2}px`;
+        p.style.top = `${y - size / 2}px`;
+
+        p.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="${fill}" d="M12 21s-7.5-4.9-9-8.1C1.3 9.3 4 5 7.5 5c2 .1 3.5 1.7 4.5 2.9 1-1.2 2.6-2.8 4.5-2.9C20 5 22.7 9.3 21 12.9 19.5 16.1 12 21 12 21z"/></svg>`;
+
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 40 + Math.random() * 80;
+        const tx = Math.round(Math.cos(angle) * dist);
+        const ty = Math.round(Math.sin(angle) * dist);
+        p.style.setProperty('--tx', `${tx}px`);
+        p.style.setProperty('--ty', `${ty}px`);
+        p.style.animation = `burstOut ${0.9 + Math.random() * 0.6}s cubic-bezier(.22,.9,.32,1) forwards`;
+
+        stage.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
+      }
+    }
+
+    function createLegacyBurst(x, y, type) {
+      const colors = { normal: 'white', gold: '#fbbf24', blue: '#60a5fa', pink: '#f472b6' };
+      for (let i = 0; i < 8; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle burst';
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        p.style.width = '6px';
+        p.style.height = '6px';
+        p.style.backgroundColor = colors[type] || 'white';
+        p.style.transform = `rotate(${Math.random() * 360}deg)`;
+        stage.appendChild(p);
+        setTimeout(() => p.remove(), 800);
+      }
+    }
+
+    // --------------------
+    // Spawning + animation
+    // --------------------
+    function makeButterflyEl(type) {
+      const b = document.createElement('div');
+      b.className = `butterfly ${type}`;
+      b.innerHTML = `
+        <div class="butterfly-sprite">
+          <div class="wing wing-l"></div>
+          <div class="wing wing-r"></div>
+          <div class="body-center"></div>
+        </div>
+      `;
+      return b;
+    }
+
+    function spawnButterfly() {
+      const rect = stage.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) {
+        setTimeout(spawnButterfly, 120);
+        return;
+      }
+
+      const smallLimit = window.innerWidth < 480 ? 7 : 18;
+      if (butterflies.length >= smallLimit) return;
+
+      const r = Math.random();
+      let type = 'normal';
+      let points = 10;
+
+      if (r > 0.95) { type = 'gold'; points = 100; }
+      else if (r > 0.88) { type = 'blue'; points = 50; }
+      else if (r > 0.80) { type = 'pink'; points = 50; }
+
+      const el = makeButterflyEl(type);
+      el.dataset.id = String(++butterflyId);
+      el.dataset.type = type;
+      el.dataset.points = String(points);
+
+      const scale = 0.75 + Math.random() * 0.85;
+      el.style.setProperty('--bscale', scale.toFixed(3));
+
+      const startX = Math.random() * Math.max(80, rect.width - 80);
+      const startY = rect.height + 40;
+
+      const paths = ['up', 'zigzag', 'wave'];
+      const path = paths[Math.floor(Math.random() * paths.length)];
+      const duration = 6500 + Math.random() * 8500;
+
+      const model = {
+        id: Number(el.dataset.id),
+        el,
+        sx: startX,
+        sy: startY,
+        t0: performance.now(),
+        duration,
+        path,
+        scale,
+        captured: false,
+      };
+
+      el.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        onCapture(model);
+      });
+
+      stage.appendChild(el);
+      butterflies.push(model);
+
+      setTimeout(() => {
+        if (el.parentNode && !el._captured) el.remove();
+      }, duration + 1600);
+    }
+
+    function easeInOutSine(x) {
+      return -(Math.cos(Math.PI * x) - 1) / 2;
+    }
+
+    function animateAll(now) {
+      for (let i = butterflies.length - 1; i >= 0; i--) {
+        const m = butterflies[i];
+
+        if (!m.el.parentNode) {
+          butterflies.splice(i, 1);
+          continue;
+        }
+
+        const elapsed = now - m.t0;
+        const p = Math.min(1, elapsed / m.duration);
+        const rect = stage.getBoundingClientRect();
+
+        const ease = easeInOutSine(p);
+        let x = m.sx;
+        let y = m.sy - (rect.height + 220) * ease;
+
+        if (m.path === 'zigzag') {
+          x = m.sx + Math.sin(p * Math.PI * 6) * (60 + 80 * p);
+        } else if (m.path === 'wave') {
+          x = m.sx + Math.sin(p * Math.PI * 2) * 90;
+          y = m.sy - (rect.height * 0.9) * ease - Math.sin(p * Math.PI * 4) * 12;
+        }
+
+        const rot = Math.sin(p * Math.PI * 2) * 12;
+        const bob = Math.sin(now / 220 + m.sx) * 2;
+
+        m.el.style.transform = `translate3d(${x}px, ${y + bob}px, 0) rotate(${rot}deg)`;
+
+        if (p >= 1) {
+          m.el.remove();
+          butterflies.splice(i, 1);
+        }
+      }
+
+      requestAnimationFrame(animateAll);
+    }
+
+    function scheduleNextSpawn(rateMs = 1200) {
+      clearTimeout(spawnTimer);
+
+      const actualRate = Math.max(180, Math.round(rateMs + (Math.random() * 600 - 300)));
+
+      spawnTimer = setTimeout(() => {
+        const w = window.innerWidth || 1024;
+        let minCount = 1, maxCount = 3;
+
+        if (w >= 1000) { minCount = 2; maxCount = 4; }
+        else if (w >= 720) { minCount = 2; maxCount = 3; }
+        else if (w >= 420) { minCount = 1; maxCount = 2; }
+        else { minCount = 1; maxCount = 1; }
+
+        const spawnCount = Math.floor(minCount + Math.random() * (maxCount - minCount + 1));
+
+        for (let i = 0; i < spawnCount; i++) {
+          setTimeout(() => spawnButterfly(), Math.round(i * (actualRate / Math.max(3, spawnCount))));
+        }
+
+        const nextBase = Math.max(240, rateMs + (Math.random() * 800 - 400));
+        scheduleNextSpawn(nextBase);
+      }, actualRate);
+    }
+
+    function startSpawning(rateMs = 1200) {
+      clearTimeout(spawnTimer);
+      scheduleNextSpawn(rateMs);
+    }
+
+    function stopSpawning() {
+      clearTimeout(spawnTimer);
+      spawnTimer = null;
+    }
+
+    // --------------------
+    // Capture / Diary / Collection
+    // --------------------
+    function pushDiaryEntry(text) {
+      if (!text) return;
+      if (!diaryEntries.includes(text)) diaryEntries.push(text);
+      persistDiary();
+      renderDiary();
+    }
+
+    function pickupTypePhrase(type) {
+      const list = TYPE_PHRASES[type] || [];
+      const used = collectionDetails[type] || [];
+      const available = list.filter(p => !used.includes(p));
+      const pick = available.length ? available[Math.floor(Math.random() * available.length)] : (list.length ? list[Math.floor(Math.random() * list.length)] : null);
+      if (!pick) return null;
+      if (!used.includes(pick)) used.push(pick);
+      collectionDetails[type] = used;
+      persistCollectionDetails();
+      return pick;
+    }
+
+    function unlockEveryFiveCaptures() {
+      if (captureCount % 5 !== 0) return;
+      const remaining = POEMS.filter(p => !diaryEntries.includes(p));
+      const pick = remaining.length ? remaining[Math.floor(Math.random() * remaining.length)] : POEMS[Math.floor(Math.random() * POEMS.length)];
+      pushDiaryEntry(pick);
+      sounds.special();
+      showFloatingMessage('Frase desbloqueada para tu Diario.');
+    }
+
+    function onCapture(model) {
+      if (paused) return;
+      if (mobileMenu.classList.contains('open')) {
+        closeMenu();
+        return;
+      }
+
+      const el = model.el;
+      if (!el || el._captured) return;
+      el._captured = true;
+      el.style.pointerEvents = 'none';
+      const sprite = el.querySelector('.butterfly-sprite');
+      if (sprite) sprite.classList.add('pop-out');
+      else el.classList.add('pop-out');
+
+      const stageRect = stage.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      const gx = r.left - stageRect.left + r.width / 2;
+      const gy = r.top - stageRect.top + r.height / 2;
+
+      const type = el.dataset.type || 'normal';
+
+      if (type === 'gold' || type === 'blue' || type === 'pink') {
+        const glow = document.createElement('div');
+        glow.className = 'capture-glow ' + type;
+        glow.style.left = `${gx}px`;
+        glow.style.top = `${gy}px`;
+        stage.appendChild(glow);
+        requestAnimationFrame(() => glow.classList.add('fade'));
+        setTimeout(() => glow.remove(), 950);
+        spawnCaptureHearts(type, gx, gy, 12);
+      } else {
+        createLegacyBurst(gx, gy, 'normal');
+      }
+
+      setTimeout(() => el.remove(), 320);
+
+      const pts = Number(el.dataset.points || '1');
+      score += pts;
+      captureCount++;
+      updateScoreUi();
+      updateNextBadge();
+
+      if (type !== 'normal') {
+        counters[type]++;
+        persistCounters();
+        updateCounters();
+        const phrase = pickupTypePhrase(type);
+        if (phrase) pushDiaryEntry(phrase);
+        sounds.special();
+
+        if (type === 'gold') showFloatingMessage('¡Capturaste una Dorada!');
+        if (type === 'blue') {
+          slowAllButterflies(3500);
+          showFloatingMessage('Mariposa azul — calma absoluta.');
+        }
+        if (type === 'pink') showFloatingMessage('Mariposa rosa — ternura valiente.');
+      } else {
+        sounds.capture();
+        sounds.pop();
+        const poem = POEMS[Math.floor(Math.random() * POEMS.length)];
+        showFloatingMessage(poem);
+      }
+
+      unlockEveryFiveCaptures();
+
+      // Special unlock similar to butterflies/index.html (scaled for higher point values)
+      if (score >= 200 && !window.__clmSpecial200) {
+        window.__clmSpecial200 = true;
+        const specialPhrase = 'Cuando llegaste, el mundo cambió su color.';
+        pushDiaryEntry(specialPhrase);
+        showFloatingMessage('✨ Mensaje romántico especial desbloqueado ✨');
+        sounds.special();
+      }
+    }
+
+    function slowAllButterflies(duration = 3000) {
+      const list = Array.from(stage.querySelectorAll('.butterfly'));
+      list.forEach(b => {
+        b.style.transition = 'filter .3s, opacity .3s';
+        b.style.opacity = '0.78';
+      });
+      setTimeout(() => {
+        list.forEach(b => {
+          if (b.parentNode) b.style.opacity = '1';
+        });
+      }, duration);
+    }
+
+    // --------------------
+    // Diary rendering (pagination + dots for special phrases)
+    // --------------------
+    let diaryPage = 0;
+    const diaryPageSize = 8;
+
+    function phraseTypeMarker(phrase) {
+      if (!phrase) return null;
+      if ((collectionDetails.gold || []).includes(phrase)) return 'gold';
+      if ((collectionDetails.blue || []).includes(phrase)) return 'blue';
+      if ((collectionDetails.pink || []).includes(phrase)) return 'pink';
+      return null;
+    }
+
+    function renderDiary() {
+      diaryContent.innerHTML = '';
+
+      if (!Array.isArray(diaryEntries) || diaryEntries.length === 0) {
+        diaryContent.innerHTML = '<p class="text-center opacity-40 py-10">Captura mariposas y desbloquea frases...</p>';
+        diaryPageInfo.textContent = 'Página 0 de 0';
+        diaryPrev.disabled = true;
+        diaryNext.disabled = true;
+        return;
+      }
+
+      const total = diaryEntries.length;
+      const pages = Math.max(1, Math.ceil(total / diaryPageSize));
+      diaryPage = Math.max(0, Math.min(diaryPage, pages - 1));
+
+      const start = diaryPage * diaryPageSize;
+      const items = diaryEntries.slice().reverse().slice(start, start + diaryPageSize);
+
+      for (const phrase of items) {
+        const d = document.createElement('div');
+        d.className = 'diary-item';
+        d.textContent = phrase;
+
+        const t = phraseTypeMarker(phrase);
+        if (t) {
+          const dot = document.createElement('span');
+          dot.className = `special-dot ${t}`;
+          d.appendChild(dot);
+        }
+
+        diaryContent.appendChild(d);
+      }
+
+      diaryPageInfo.textContent = `Página ${diaryPage + 1} de ${pages}`;
+      diaryPrev.disabled = (diaryPage === 0);
+      diaryNext.disabled = (diaryPage >= pages - 1);
+    }
+
+    // --------------------
+    // Collection rendering (one category at a time)
+    // --------------------
+    let collectionCategoryIndex = 0;
+    let collectionPageForCategory = { gold: 0, pink: 0, blue: 0 };
+
+    function makePreviewButterfly(type) {
+      const el = document.createElement('div');
+      el.className = `butterfly preview ${type}`;
+      el.innerHTML = `
+        <div class="butterfly-sprite">
+          <div class="wing wing-l"></div>
+          <div class="wing wing-r"></div>
+          <div class="body-center"></div>
+        </div>
+      `;
+      el.style.setProperty('--bscale', '1');
+      return el;
+    }
+
+    function renderCollection() {
+      const order = ['gold', 'pink', 'blue'];
+      const idx = ((collectionCategoryIndex % order.length) + order.length) % order.length;
+      const k = order[idx];
+
+      collectionGrid.innerHTML = '';
+
+      document.getElementById('colCountGold').textContent = String(counters.gold || 0);
+      document.getElementById('colCountBlue').textContent = String(counters.blue || 0);
+      document.getElementById('colCountPink').textContent = String(counters.pink || 0);
+
+      const wrap = document.createElement('div');
+      wrap.className = 'space-y-3';
+
+      const titleRow = document.createElement('div');
+      titleRow.className = 'flex items-center justify-between';
+      titleRow.innerHTML = `<div class="text-lg font-black">${k.charAt(0).toUpperCase() + k.slice(1)}</div><div class="text-xs opacity-70 font-bold">Capturadas: ${counters[k] || 0}</div>`;
+      wrap.appendChild(titleRow);
+
+      const previewRow = document.createElement('div');
+      previewRow.className = 'flex items-center gap-3';
+
+      const pvBox = document.createElement('div');
+      pvBox.className = 'collect-preview';
+      pvBox.appendChild(makePreviewButterfly(k));
+
+      const desc = document.createElement('div');
+      desc.className = 'text-xs opacity-70 leading-snug';
+      desc.textContent = 'Desliza por frases capturadas en esta categoría.';
+
+      previewRow.appendChild(pvBox);
+      previewRow.appendChild(desc);
+      wrap.appendChild(previewRow);
+
+      const phrases = (collectionDetails[k] || []).slice().reverse();
+      const pageSize = 10;
+      const pages = Math.max(1, Math.ceil(phrases.length / pageSize));
+      const page = Math.max(0, Math.min(collectionPageForCategory[k] || 0, pages - 1));
+      collectionPageForCategory[k] = page;
+
+      const slice = phrases.slice(page * pageSize, page * pageSize + pageSize);
+
+      const list = document.createElement('div');
+      list.className = 'space-y-2';
+      if (slice.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'text-sm opacity-60 text-center py-8';
+        empty.textContent = 'Sin frases aún. Captura una mariposa especial.';
+        list.appendChild(empty);
+      } else {
+        for (const ph of slice) {
+          const it = document.createElement('div');
+          it.className = 'collect-phrase-item';
+          it.textContent = ph;
+          list.appendChild(it);
+        }
+      }
+      wrap.appendChild(list);
+
+      const controls = document.createElement('div');
+      controls.className = 'flex items-center justify-between gap-2 pt-2';
+
+      const prevCat = document.createElement('button');
+      prevCat.className = 'btn px-3 py-2 text-xs';
+      prevCat.type = 'button';
+      prevCat.textContent = '◀';
+
+      const pageInfo = document.createElement('div');
+      pageInfo.className = 'text-xs font-black opacity-70';
+      pageInfo.textContent = `${page + 1} / ${pages}`;
+
+      const nextCat = document.createElement('button');
+      nextCat.className = 'btn px-3 py-2 text-xs';
+      nextCat.type = 'button';
+      nextCat.textContent = '▶';
+
+      const pagePrev = document.createElement('button');
+      pagePrev.className = 'btn px-3 py-2 text-xs';
+      pagePrev.type = 'button';
+      pagePrev.textContent = 'Anterior';
+      pagePrev.disabled = (page === 0);
+
+      const pageNext = document.createElement('button');
+      pageNext.className = 'btn px-3 py-2 text-xs';
+      pageNext.type = 'button';
+      pageNext.textContent = 'Siguiente';
+      pageNext.disabled = (page >= pages - 1);
+
+      const pageGroup = document.createElement('div');
+      pageGroup.className = 'flex items-center gap-2';
+      pageGroup.appendChild(pagePrev);
+      pageGroup.appendChild(pageInfo);
+      pageGroup.appendChild(pageNext);
+
+      controls.appendChild(prevCat);
+      controls.appendChild(pageGroup);
+      controls.appendChild(nextCat);
+      wrap.appendChild(controls);
+
+      prevCat.addEventListener('click', () => {
+        collectionCategoryIndex = (collectionCategoryIndex - 1 + order.length) % order.length;
+        renderCollection();
+      });
+
+      nextCat.addEventListener('click', () => {
+        collectionCategoryIndex = (collectionCategoryIndex + 1) % order.length;
+        renderCollection();
+      });
+
+      pagePrev.addEventListener('click', () => {
+        collectionPageForCategory[k] = Math.max(0, (collectionPageForCategory[k] || 0) - 1);
+        renderCollection();
+      });
+
+      pageNext.addEventListener('click', () => {
+        collectionPageForCategory[k] = Math.min(pages - 1, (collectionPageForCategory[k] || 0) + 1);
+        renderCollection();
+      });
+
+      collectionGrid.appendChild(wrap);
+    }
+
+    // --------------------
+    // Menu + Modals
+    // --------------------
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    function openMenu() {
+      mobileMenu.classList.add('open');
+      menuBtn.classList.add('open');
+      document.body.classList.add('drawer-open');
+      mobileMenu.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeMenu() {
+      mobileMenu.classList.remove('open');
+      menuBtn.classList.remove('open');
+      document.body.classList.remove('drawer-open');
+      mobileMenu.setAttribute('aria-hidden', 'true');
+    }
+
+    function toggleMenu() {
+      if (mobileMenu.classList.contains('open')) closeMenu();
+      else openMenu();
+    }
+
+    menuBtn.addEventListener('click', toggleMenu);
+    menuBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') toggleMenu();
     });
 
-    mobilePanel.appendChild(wrap);
-  });
+    document.addEventListener('click', (ev) => {
+      if (!mobileMenu.classList.contains('open')) return;
+      const insideMenu = mobileMenu.contains(ev.target);
+      const onToggle = menuBtn.contains(ev.target);
+      if (!insideMenu && !onToggle) {
+        closeMenu();
+      }
+    }, true);
 
-  // ⛔ SLIDERS SE CREAN UNA SOLA VEZ AQUÍ (fuera del forEach)
-  const sliderContainer = document.createElement('div');
-  sliderContainer.style.marginTop = '10px';
-  sliderContainer.style.padding = '8px 0';
-
-  // Volumen Música
-  const musicVolLabel = document.createElement('div');
-  musicVolLabel.style.margin = '6px 0 2px';
-  musicVolLabel.style.fontSize = '13px';
-  musicVolLabel.style.opacity = '.8';
-  musicVolLabel.textContent = 'Volumen Música';
-
-  const musicSlider = document.createElement('input');
-  musicSlider.type = 'range';
-  musicSlider.min = 0;
-  musicSlider.max = 1;
-  musicSlider.step = 0.01;
-  musicSlider.value = bgAudio.volume || 0.3;
-  musicSlider.style.width = '100%';
-  musicSlider.addEventListener('input', () => {
-    bgAudio.volume = Number(musicSlider.value);
-    localStorage.setItem('bgMusicVolume', bgAudio.volume);
-  });
-
-  // Volumen Efectos
-  const fxVolLabel = document.createElement('div');
-  fxVolLabel.style.margin = '6px 0 2px';
-  fxVolLabel.style.fontSize = '13px';
-  fxVolLabel.style.opacity = '.8';
-  fxVolLabel.textContent = 'Volumen Efectos';
-
-  const fxSlider = document.createElement('input');
-  fxSlider.type = 'range';
-  fxSlider.min = 0;
-  fxSlider.max = 1;
-  fxSlider.step = 0.01;
-  fxSlider.value = s_masterGain.gain.value;
-  fxSlider.style.width = '100%';
-  fxSlider.addEventListener('input', () => {
-    s_masterGain.gain.value = Number(fxSlider.value);
-    localStorage.setItem('fxVolume', s_masterGain.gain.value);
-  });
-
-  // Añadir sliders al contenedor
-  sliderContainer.appendChild(musicVolLabel);
-  sliderContainer.appendChild(musicSlider);
-  sliderContainer.appendChild(fxVolLabel);
-  sliderContainer.appendChild(fxSlider);
-
-  // Agregar una sola vez
-  mobilePanel.appendChild(sliderContainer);
-
-  // toggle del menú
-  const menuToggle = document.getElementById('menuToggle');
-  const mobileMenu = document.getElementById('mobileMenu');
-
-  menuToggle.addEventListener('click', () => {
-    mobileMenu.classList.toggle('open');
-    menuToggle.classList.toggle('open');
-    document.body.classList.toggle('drawer-open');
-  });
-
-  document.addEventListener('click', (ev) => {
-    const mroot = document.getElementById('mobileMenu');
-    const toggle = document.getElementById('menuToggle');
-    if (!mroot.contains(ev.target) && !toggle.contains(ev.target) && mroot.classList.contains('open')) {
-      closeMobileMenu();
-    }
-  }, true);
-
-  function closeMobileMenu() {
-    mobileMenu.classList.remove('open');
-    menuToggle.classList.remove('open');
-    document.body.classList.remove('drawer-open');
-  }
-})();
-
-/* === REPLACED spawning scheduler: now spawns multiple butterflies per tick and adapts to screen size === */
-let spawnTimer = null;
-function scheduleNextSpawn(rateMs = 1200){
-  clearTimeout(spawnTimer);
-
-  // add variability in interval
-  const actualRate = Math.max(160, Math.round(rateMs + (Math.random()*600 - 300)));
-
-  spawnTimer = setTimeout(()=>{
-    // determine how many to spawn this tick based on width (aggressively reduced on very small screens)
-    const w = window.innerWidth || 1024;
-    let minCount = 1, maxCount = 3;
-    if(w >= 1400){ minCount = 3; maxCount = 6; }
-    else if(w >= 1000){ minCount = 2; maxCount = 4; }
-    else if(w >= 720){ minCount = 2; maxCount = 3; }
-    else if(w >= 420){ minCount = 1; maxCount = 2; }
-    else { minCount = 1; maxCount = 1; } // very small mobiles: one at a time
-
-    const spawnCount = Math.floor(minCount + Math.random()*(maxCount - minCount + 1));
-
-    for(let i=0;i<spawnCount;i++){
-      // stagger slightly
-      setTimeout(()=>{ spawnButterfly(); }, Math.round(i * (actualRate / Math.max(3, spawnCount))));
+    function openBackdrop(backdropEl) {
+      backdropEl.classList.add('show');
+      backdropEl.setAttribute('aria-hidden', 'false');
     }
 
-    // schedule next with slight variation
-    const nextBase = Math.max(220, rateMs + (Math.random()*800 - 400));
-    scheduleNextSpawn(nextBase);
-  }, actualRate);
-}
-
-function startSpawning(rateMs=1200){ if(spawnTimer) clearTimeout(spawnTimer); scheduleNextSpawn(rateMs); }
-function stopSpawning(){ if(spawnTimer) clearTimeout(spawnTimer); spawnTimer = null; }
-function removeButterflyById(id){ for(let i=butterflies.length-1;i>=0;i--){ if(butterflies[i].id == id){ if(butterflies[i].el.parentNode) butterflies[i].el.remove(); butterflies.splice(i,1); } } }
-
-/* Init: load theme + spawn right away + restore data (kept) */
-(function init(){
-  // Restaurar volumen guardado
-  const svMus = localStorage.getItem('bgMusicVolume');
-  if(svMus !== null) bgAudio.volume = Number(svMus);
-
-  const svFx = localStorage.getItem('fxVolume');
-  if(svFx !== null && s_masterGain) s_masterGain.gain.value = Number(svFx);
-
-  // load saved theme (new)
-  loadSavedTheme();
-
-  document.getElementById('level').textContent = level;
-  scoreEl.textContent = score;
-  updateLevelProgress();
-  updateNextBadge();
-
-  // spawn a few right away so mobile users see activity immediately (fewer on narrow screens)
-  spawnButterfly();
-  setTimeout(()=>spawnButterfly(), 320);
-  // choose spawning rate based on viewport (slower on small screens)
-  const defaultRate = window.innerWidth < 480 ? 1600 : 1200;
-  startSpawning(defaultRate);
-
-  try{ unlocked = JSON.parse(localStorage.getItem('butterflyDiary_v2')||'[]'); }catch(e){ unlocked = []; }
-  try{ collection = JSON.parse(localStorage.getItem('butterflyCollection_v1')||'{}'); }catch(e){ collection = {}; }
-  try{ collectionDetails = JSON.parse(localStorage.getItem('butterflyCollectionDetails_v1')||'{}'); }catch(e){ collectionDetails = {}; }
-
-  window.addEventListener('resize', ()=>{
-    const existing = stage.querySelectorAll('.particle').length;
-    const want = Math.max(12, Math.min(96, Math.floor(window.innerWidth/24)));
-    if(existing < want) createParticles(want - existing);
-  });
-  // intentar autoplay
-  setTimeout(async ()=>{
-    try{
-      await bgAudio.play();
-      musicPlaying = true;
-      musicToggleBtn.textContent = '🔊 Música On';
-    }catch(e){}
-  }, 400);
-
-  // fallback: primer toque desbloquea audio
-  document.addEventListener('pointerdown', async ()=>{
-    if(!musicPlaying){
-      try{
-        await bgAudio.play();
-        musicPlaying = true;
-        musicToggleBtn.textContent = '🔊 Música On';
-      }catch(e){}
+    function closeBackdrop(backdropEl) {
+      backdropEl.classList.remove('show');
+      backdropEl.setAttribute('aria-hidden', 'true');
     }
-  }, { once:true });
-})();
-// Forzar desbloqueo de audio al tocar la pantalla
-document.addEventListener('pointerdown', async ()=>{
-  if(!musicPlaying){
-    try{
-      await bgAudio.play();
-      musicPlaying = true;
-      musicToggleBtn.textContent = '🔊 Música On';
-    }catch(e){}
-  }
-}, { once:true });
-window.spawnButterfly = spawnButterfly;
-requestAnimationFrame(animateAll);
-</script>
+
+    // Diary
+    document.getElementById('openDiaryBtn').addEventListener('click', () => {
+      renderDiary();
+      openBackdrop(diaryModal);
+      closeMenu();
+    });
+    document.getElementById('closeDiary').addEventListener('click', () => closeBackdrop(diaryModal));
+
+    diaryPrev.addEventListener('click', () => { diaryPage = Math.max(0, diaryPage - 1); renderDiary(); });
+    diaryNext.addEventListener('click', () => { diaryPage = diaryPage + 1; renderDiary(); });
+
+    document.getElementById('clearDiary').addEventListener('click', () => {
+      diaryEntries = [];
+      persistDiary();
+      renderDiary();
+      showFloatingMessage('Diario borrado.');
+    });
+
+    diaryModal.addEventListener('click', (e) => {
+      if (e.target === diaryModal) closeBackdrop(diaryModal);
+    });
+
+    // Collection
+    document.getElementById('openCollectionBtn').addEventListener('click', () => {
+      renderCollection();
+      openBackdrop(collectionModal);
+      closeMenu();
+    });
+    document.getElementById('closeCollection').addEventListener('click', () => closeBackdrop(collectionModal));
+
+    collectionModal.addEventListener('click', (e) => {
+      if (e.target === collectionModal) closeBackdrop(collectionModal);
+    });
+
+    // Theme
+    const themeModal = document.getElementById('themeModal');
+
+    function applyTheme(theme) {
+      // theme: night|aurora|sunset|pastel
+      document.body.classList.remove('theme-night', 'theme-aurora', 'theme-sunset', 'theme-pastel');
+      document.body.classList.add(`theme-${theme}`);
+      localStorage.setItem('clm_theme', theme);
+    }
+
+    document.getElementById('openThemeBtn').addEventListener('click', () => {
+      openBackdrop(themeModal);
+      closeMenu();
+    });
+    document.getElementById('closeTheme').addEventListener('click', () => closeBackdrop(themeModal));
+    document.getElementById('resetTheme').addEventListener('click', () => {
+      applyTheme('aurora');
+      closeBackdrop(themeModal);
+    });
+
+    themeModal.addEventListener('click', (e) => {
+      if (e.target === themeModal) closeBackdrop(themeModal);
+    });
+
+    document.querySelectorAll('.themeBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const t = btn.dataset.theme;
+        applyTheme(t);
+        closeBackdrop(themeModal);
+      });
+    });
+
+    // Challenge
+    function startChallenge(seconds = 30) {
+      if (isChallenge) return;
+
+      paused = false;
+      isChallenge = true;
+      score = 0;
+      level = 1;
+      captureCount = 0;
+      timeLeft = seconds;
+
+      updateScoreUi();
+      updateNextBadge();
+
+      document.getElementById('timerDisplay').classList.remove('hidden');
+      document.getElementById('timerVal').textContent = String(timeLeft);
+
+      closeMenu();
+
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timerVal').textContent = String(timeLeft);
+        if (timeLeft <= 0) {
+          endChallenge();
+        }
+      }, 1000);
+
+      showFloatingMessage('Desafío iniciado — ¡atrápalas todas!');
+
+      // Slightly faster spawn during challenge
+      startSpawning(window.innerWidth < 480 ? 1200 : 850);
+    }
+
+    function endChallenge() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      isChallenge = false;
+      document.getElementById('timerDisplay').classList.add('hidden');
+
+      // Freeze the game state while result is open
+      stopSpawning();
+      paused = true;
+
+      finalScoreEl.textContent = String(score);
+      openBackdrop(resultModal);
+    }
+
+    document.getElementById('challengeBtn').addEventListener('click', () => startChallenge(30));
+    document.getElementById('challengeMenuBtn').addEventListener('click', () => startChallenge(30));
+
+    document.getElementById('retryBtn').addEventListener('click', () => {
+      closeBackdrop(resultModal);
+      startChallenge(30);
+    });
+
+    // When closing result, resume normal play
+    document.getElementById('closeResult').addEventListener('click', () => {
+      closeBackdrop(resultModal);
+      paused = false;
+      const defaultRate = window.innerWidth < 480 ? 1600 : 1200;
+      startSpawning(defaultRate);
+    });
+
+    // Music controls
+    musicToggleBtn.addEventListener('click', async () => {
+      await setMusicPlaying(!musicPlaying);
+    });
+
+    musicVolumeSlider.addEventListener('input', () => setMusicVolume(Number(musicVolumeSlider.value)));
+    fxVolumeSlider.addEventListener('input', () => setFxVolume(Number(fxVolumeSlider.value)));
+
+    // Escape key closes UI
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      closeMenu();
+      closeBackdrop(diaryModal);
+      closeBackdrop(collectionModal);
+      closeBackdrop(themeModal);
+      closeBackdrop(resultModal);
+    });
+
+    // Prevent zoom/gestures
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    stage.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
+
+    // --------------------
+    // Init
+    // --------------------
+    window.addEventListener('load', () => {
+      loadState();
+      wireUiClickFx();
+
+      // ambient particles based on width
+      const initialParticleCount = Math.max(10, Math.min(64, Math.floor((window.innerWidth || 1024) / 24)));
+      createAmbientParticles(initialParticleCount);
+
+      // start anim + spawn
+      requestAnimationFrame(animateAll);
+      spawnButterfly();
+      setTimeout(() => spawnButterfly(), 320);
+      const defaultRate = window.innerWidth < 480 ? 1600 : 1200;
+      startSpawning(defaultRate);
+
+      // Try restore music state (requires gesture in many browsers)
+      // Attempt autoplay on load; if blocked, it will start on the first tap anywhere.
+      setTimeout(() => {
+        tryStartMusic({ silent: true });
+      }, 250);
+
+      async function autoStartMusicOnInteraction() {
+        if (!musicPlaying) {
+          document.removeEventListener('pointerdown', autoStartMusicOnInteraction);
+          return;
+        }
+        const started = await tryStartMusic({ silent: true });
+        if (started) {
+          document.removeEventListener('pointerdown', autoStartMusicOnInteraction);
+        }
+      }
+
+      document.addEventListener('pointerdown', autoStartMusicOnInteraction, { passive: true });
+
+      window.addEventListener('resize', () => {
+        // add more particles if needed
+        const existing = stage.querySelectorAll('.particle.ambient').length;
+        const want = Math.max(12, Math.min(96, Math.floor((window.innerWidth || 1024) / 24)));
+        if (existing < want) {
+          createAmbientParticles(want - existing);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
