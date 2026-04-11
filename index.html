@@ -74,7 +74,7 @@
     }
 
     .theme-pastel {
-      --bg: linear-gradient(180deg, #fff7fb 0%, #f2f6ff 100%);
+      --bg: linear-gradient(180deg, #ffe5f1 0%, #f4ecff 100%);
       --card: rgba(255, 255, 255, 0.88);
       --accent: #b997ff;
       --accent-2: #9bd1ff;
@@ -709,7 +709,7 @@
         </div>
       </div>
 
-      <div class="footer glass-panel">Hecho con todo su amor y cariño por Axel Silva</div>
+      <div class="footer glass-panel">Hecho con todo su amor y cariño por Axel Silva para Ari de Silva</div>
 
       <div id="timerDisplay" class="glass-panel px-4 py-2 hidden">
         <span class="text-xs font-black opacity-60 mr-2">TIEMPO</span>
@@ -874,7 +874,7 @@
           <span class="text-sm font-black">Atardecer</span>
         </button>
         <button class="themeBtn p-4 rounded-xl border border-white/10 text-left" data-theme="pastel" type="button" style="background: rgba(255,255,255,0.2)">
-          <div class="w-full h-10 rounded mb-2" style="background: linear-gradient(180deg,#fff7fb,#f2f6ff)"></div>
+          <div class="w-full h-10 rounded mb-2" style="background: linear-gradient(180deg,#ffe5f1,#f4ecff)"></div>
           <span class="text-sm font-black">Pastel</span>
         </button>
       </div>
@@ -1327,18 +1327,38 @@
       const scale = 0.75 + Math.random() * 0.85;
       el.style.setProperty('--bscale', scale.toFixed(3));
 
-      const startX = Math.random() * Math.max(80, rect.width - 80);
-      const startY = rect.height + 40;
+      let startX = Math.random() * Math.max(80, rect.width - 80);
+      let startY = rect.height + 40;
 
-      const paths = ['up', 'zigzag', 'wave'];
-      const path = paths[Math.floor(Math.random() * paths.length)];
-      const duration = 6500 + Math.random() * 8500;
+      const sideChance = isChallenge ? 0.34 : 0.22;
+      let path = 'up';
+      let endX = null;
+
+      if (Math.random() < sideChance) {
+        path = 'side';
+        const fromLeft = Math.random() < 0.5;
+        const off = 70;
+        startX = fromLeft ? -off : rect.width + off;
+        endX = fromLeft ? rect.width + off : -off;
+        const topPad = 26;
+        const bottomPad = 74;
+        const usableH = Math.max(120, rect.height - topPad - bottomPad);
+        startY = topPad + Math.random() * usableH;
+      } else {
+        const paths = ['up', 'zigzag', 'wave'];
+        path = paths[Math.floor(Math.random() * paths.length)];
+      }
+
+      const duration = path === 'side'
+        ? (5200 + Math.random() * 7000)
+        : (6500 + Math.random() * 8500);
 
       const model = {
         id: Number(el.dataset.id),
         el,
         sx: startX,
         sy: startY,
+        ex: endX,
         t0: performance.now(),
         duration,
         path,
@@ -1380,7 +1400,11 @@
         let x = m.sx;
         let y = m.sy - (rect.height + 220) * ease;
 
-        if (m.path === 'zigzag') {
+        if (m.path === 'side') {
+          const ex = (typeof m.ex === 'number') ? m.ex : (rect.width + 70);
+          x = m.sx + (ex - m.sx) * ease;
+          y = m.sy + Math.sin(p * Math.PI * 4) * 10;
+        } else if (m.path === 'zigzag') {
           x = m.sx + Math.sin(p * Math.PI * 6) * (60 + 80 * p);
         } else if (m.path === 'wave') {
           x = m.sx + Math.sin(p * Math.PI * 2) * 90;
